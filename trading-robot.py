@@ -1,6 +1,6 @@
 import yfinance as yf
 import numpy as np
-from llama3 import LLaMA
+from ollama import llama3
 import alpaca_trade_api as tradeapi
 import os
 
