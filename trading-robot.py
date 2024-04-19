@@ -3,12 +3,13 @@ import numpy as np
 from llama3 import LLaMA
 import alpaca_trade_api as tradeapi
 
-# Set API credentials
-alpaca_api_key = 'YOUR_API_KEY'
-alpaca_secret_key = 'YOUR_SECRET_KEY'
+# Configure Alpaca API
+API_KEY_ID = os.getenv('APCA_API_KEY_ID')
+API_SECRET_KEY = os.getenv('APCA_API_SECRET_KEY')
+API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 
-# Create Alpaca API connection
-alpaca_api = tradeapi.REST(alpaca_api_key, alpaca_secret_key)
+# Initialize Alpaca API
+api = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
 # Load LLaMA model
 llama_model = LLaMA()
@@ -19,7 +20,7 @@ min_profit_margin = 0.05  # minimum profit margin (5%)
 max_drawdown = 0.1  # maximum drawdown (10%)
 
 # Get ETF funds list from Alpaca
-etf_funds_list = alpaca_api.list_etfs()
+etf_funds_list = ['AGQ', 'UGL']
 
 # Initialize data structures for trading decisions
 buy_decisions = []
