@@ -1,6 +1,6 @@
 import yfinance as yf
 import numpy as np
-from ollama import llama3
+import ollama
 import alpaca_trade_api as tradeapi
 import os
 
@@ -13,7 +13,7 @@ API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 api = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
 # Load LLaMA model
-llama_model = LLaMA()
+llama_model = ollama
 
 # Set trading parameters
 trading_period = 14  # days
