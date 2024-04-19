@@ -20,7 +20,7 @@ api = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
 # Initialize LLaMA model (assuming there's a specific initialization for llama3)
 prompt = "search yfinance for stock price of SPY"
-output = ollama.chat(model="llama3", prompt=prompt)
+output = ollama.chat(model="llama3")
 print(output)
 
 # Set trading parameters
@@ -45,16 +45,17 @@ for symbol in etf_funds_list:
     drawdowns = (prices - np.max(prices)) / (np.max(prices) - np.min(prices))
 
     # Use LLaMA to predict ETF fund performance
-    prompt = "search yfinance for stock price of SPY"
-
     llama_input = {'returns': returns, 'drawdowns': drawdowns}
-    prediction = llama_input
+    prediction = ollama.chat(model="llama3", input=llama_input)
 
-    input = ollama.chat(model="llama3", prompt=llama_input)
-    print(output)
+    # Extract numerical prediction from the dictionary
+    prediction_value = prediction['prediction']
 
-
-
+    # Make trading decisions based on predictions
+    if prediction_value > 0:
+        buy_decisions.append((symbol, prediction_value))
+    elif prediction_value < 0:
+        sell_decisions.append((symbol, -prediction_value))
 
     # Make trading decisions based on predictions
     if prediction > 0:
