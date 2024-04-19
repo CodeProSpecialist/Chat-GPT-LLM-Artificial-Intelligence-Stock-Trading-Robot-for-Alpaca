@@ -2,6 +2,7 @@ import yfinance as yf
 import numpy as np
 from llama3 import LLaMA
 import alpaca_trade_api as tradeapi
+import os
 
 # Configure Alpaca API
 API_KEY_ID = os.getenv('APCA_API_KEY_ID')
@@ -26,9 +27,9 @@ etf_funds_list = ['AGQ', 'UGL']
 buy_decisions = []
 sell_decisions = []
 
-for etf in etf_funds_list:
+for symbol in etf_funds_list:
     # Get historical prices for the ETF fund
-    etf_data = yf.download(etf.symbol, period=f'{trading_period}d', interval='1d')
+    etf_data = yf.download(tickers=symbol, period=f'{trading_period}d', interval='1d')
     prices = etf_data['Close'].values
 
     # Calculate returns and drawdowns
@@ -41,9 +42,9 @@ for etf in etf_funds_list:
 
     # Make trading decisions based on predictions
     if prediction > 0:
-        buy_decisions.append((etf.symbol, prediction))
+        buy_decisions.append((symbol, prediction))
     elif prediction < 0:
-        sell_decisions.append((etf.symbol, -prediction))
+        sell_decisions.append((symbol, -prediction))
 
 # Filter and rank ETF funds by profit margin
 buy_ranks = []
