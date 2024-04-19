@@ -6,6 +6,10 @@ import ollama
 import alpaca_trade_api as tradeapi
 import os
 
+
+# ******** No, this is not fully working just yet. More code being worked on. ********
+
+
 # Configure Alpaca API
 API_KEY_ID = os.getenv('APCA_API_KEY_ID')
 API_SECRET_KEY = os.getenv('APCA_API_SECRET_KEY')
@@ -15,7 +19,7 @@ API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 api = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
 # Initialize LLaMA model (assuming there's a specific initialization for llama3)
-llama_model = ollama.llama3()
+# place llama initialization code here
 
 # Set trading parameters
 trading_period = 14  # days
@@ -40,7 +44,7 @@ for symbol in etf_funds_list:
 
     # Use LLaMA to predict ETF fund performance
     llama_input = {'returns': returns, 'drawdowns': drawdowns}
-    prediction = llama_model.predict(llama_input)
+    prediction = llama_model
 
     # Make trading decisions based on predictions
     if prediction > 0:
