@@ -19,7 +19,9 @@ API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 api = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
 # Initialize LLaMA model (assuming there's a specific initialization for llama3)
-# place llama initialization code here
+prompt = "search yfinance for stock price of SPY"
+output = ollama.generate(model="llama3", prompt=prompt)
+print(output)
 
 # Set trading parameters
 trading_period = 14  # days
@@ -43,8 +45,16 @@ for symbol in etf_funds_list:
     drawdowns = (prices - np.max(prices)) / (np.max(prices) - np.min(prices))
 
     # Use LLaMA to predict ETF fund performance
+    prompt = "search yfinance for stock price of SPY"
+
     llama_input = {'returns': returns, 'drawdowns': drawdowns}
-    prediction = llama_model
+    prediction = llama_input
+
+    input = ollama.generate(model="llama3", prompt=llama_input)
+    print(output)
+
+
+
 
     # Make trading decisions based on predictions
     if prediction > 0:
@@ -74,3 +84,8 @@ for symbol, _ in buy_ranks[:5]:
 print("\nTop Selling Opportunities:")
 for symbol, _ in sell_ranks[:5]:
     print(symbol)
+
+# Additional code provided
+prompt = "search yfinance for stock price of SPY"
+output = ollama.generate(model="llama3", prompt=prompt)
+print(output)
