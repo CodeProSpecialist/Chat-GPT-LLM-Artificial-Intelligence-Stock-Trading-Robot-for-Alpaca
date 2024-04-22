@@ -1,11 +1,13 @@
-import yfinance as yf
-import numpy as np
-import transformers as tf
 
-import ollama
 import alpaca_trade_api as tradeapi
 import os
-
+import numpy as np
+import yfinance as yf
+import talib
+from llama import Llama
+import pytz
+from datetime import datetime
+import time
 
 # ******** No, this is not fully working just yet. More code being worked on. ********
 
@@ -18,75 +20,109 @@ API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 # Initialize Alpaca API
 api = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
-# Initialize LLaMA model (assuming there's a specific initialization for llama3)
-prompt = "search yfinance for stock price of SPY"
-output = ollama.chat(model="llama3")
-print(output)
+# Set up Llama API credentials
+llama_api = Llama(os.environ['LLAMA_API_KEY'], os.environ['LLAMA_API_SECRET'])
 
-# Set trading parameters
-trading_period = 14  # days
-min_profit_margin = 0.05  # minimum profit margin (5%)
-max_drawdown = 0.1  # maximum drawdown (10%)
+# Define the stock symbol and time frame
+stock_symbol = 'AAPL'
+time_frame = '1y'
 
-# Get ETF funds list from Alpaca
-etf_funds_list = ['AGQ', 'UGL']
+# Fetch historical data for the past year
+hist_data = yf.download(stock_symbol, period=time_frame, interval='1d')
 
-# Initialize data structures for trading decisions
-buy_decisions = []
-sell_decisions = []
+# Calculate technical indicators
+hist_data['MA_50'] = talib.SMA(hist_data['Close'], 50)
+hist_data['MA_200'] = talib.SMA(hist_data['Close'], 200)
+hist_data['RSI'] = talib.RSI(hist_data['Close'], 14)
 
-for symbol in etf_funds_list:
-    # Get historical prices for the ETF fund
-    etf_data = yf.download(tickers=symbol, period=f'{trading_period}d', interval='1d')
-    prices = etf_data['Close'].values
+# Define the market sentiment indicators
+def calculate_sentiment(data):
+    if data['MA_50'] > data['MA_200']:
+        return 1  # Bullish
+    elif data['MA_50'] < data['MA_200']:
+        return -1  # Bearish
+    else:
+        return 0  # Neutral
 
-    # Calculate returns and drawdowns
-    returns = np.diff(np.log(prices)) / np.diff(prices).mean()
-    drawdowns = (prices - np.max(prices)) / (np.max(prices) - np.min(prices))
+hist_data['Sentiment'] = hist_data.apply(calculate_sentiment, axis=1)
 
-    # Use LLaMA to predict ETF fund performance
-    llama_input = {'returns': returns, 'drawdowns': drawdowns}
-    prediction = ollama.chat(model="llama3", input=llama_input)
+# Define the AI-powered sentiment analysis using Llama
+def llama_sentiment(data):
+    news_data = llama_api.get_news(stock_symbol, '1d')
+    sentiment_score = llama_api.sentiment_analysis(news_data)
+    return sentiment_score
 
-    # Extract numerical prediction from the dictionary
-    prediction_value = prediction['prediction']
+hist_data['Llama Sentiment'] = hist_data.apply(llama_sentiment, axis=1)
 
-    # Make trading decisions based on predictions
-    if prediction_value > 0:
-        buy_decisions.append((symbol, prediction_value))
-    elif prediction_value < 0:
-        sell_decisions.append((symbol, -prediction_value))
 
-    # Make trading decisions based on predictions
-    if prediction > 0:
-        buy_decisions.append((symbol, prediction))
-    elif prediction < 0:
-        sell_decisions.append((symbol, -prediction))
+# Define the maximum profit strategy
+def calculate_max_profit(data):
+    if data['Sentiment'] == 1 and data['Llama Sentiment'] > 0.5:  # Bullish and positive sentiment
+        buy_price = data['Close'] * 0.98
+        sell_price = data['Close'] * 1.02
+    elif data['Sentiment'] == -1 and data['Llama Sentiment'] < 0.5:  # Bearish and negative sentiment
+        buy_price = data['Close'] * 0.95
+        sell_price = data['Close'] * 1.05
+    else:  # Neutral or conflicting sentiment
+        buy_price = data['Close'] * 0.99
+        sell_price = data['Close'] * 1.01
+    return buy_price, sell_price
 
-# Filter and rank ETF funds by profit margin
-buy_ranks = []
-sell_ranks = []
+hist_data['Buy Price'], hist_data['Sell Price'] = zip(*hist_data.apply(calculate_max_profit, axis=1))
 
-for decision in buy_decisions + sell_decisions:
-    symbol, profit_margin = decision
-    if profit_margin > min_profit_margin:
-        buy_ranks.append((symbol, profit_margin))
-    elif profit_margin < -min_profit_margin:
-        sell_ranks.append((symbol, -profit_margin))
+# Backtest the strategy
+def backtest_strategy(data):
+    profits = []
+    for i in range(len(data) - 1):
+        if data['Buy Price'].iloc[i] < data['Close'].iloc[i] and data['Sell Price'].iloc[i] > data['Close'].iloc[i+1]:
+            profit = (data['Sell Price'].iloc[i] - data['Buy Price'].iloc[i]) / data['Buy Price'].iloc[i]
+            profits.append(profit)
+    return np.mean(profits)
 
-buy_ranks.sort(key=lambda x: x[1], reverse=True)
-sell_ranks.sort(key=lambda x: x[1], reverse=True)
+backtest_profit = backtest_strategy(hist_data)
+print(f'Backtest profit: {backtest_profit:.2f}%')
 
-# Print the top-ranked ETF funds for buying and selling
-print("Top Buying Opportunities:")
-for symbol, _ in buy_ranks[:5]:
-    print(symbol)
+# Define the AI-powered research function
+def research_market_conditions():
+    # Use Llama AI agents to research market conditions
+    news_data = llama_api.get_news(stock_symbol, '1d')
+    sentiment_score = llama_api.sentiment_analysis(news_data)
+    technical_indicators = llama_api.technical_analysis(hist_data)
 
-print("\nTop Selling Opportunities:")
-for symbol, _ in sell_ranks[:5]:
-    print(symbol)
+    # Determine market conditions
+    if sentiment_score < 0.5 and technical_indicators['MA_50'] < technical_indicators['MA_200']:
+        market_condition = 'Bearish'
+    elif sentiment_score > 0.5 and technical_indicators['MA_50'] > technical_indicators['MA_200']:
+        market_condition = 'Bullish'
+    else:
+        market_condition = 'Neutral'
 
-# Additional code provided
-prompt = "search yfinance for stock price of SPY"
-output = ollama.generate(model="llama3", prompt=prompt)
-print(output)
+    return market_condition
+
+
+# Maintenance loop
+while True:
+    eastern_time = pytz.timezone('US/Eastern')
+    current_time = datetime.now(eastern_time)
+    print(f'Current time: {current_time.strftime("%Y-%m-%d %H:%M:%S")}')
+
+    # Research market conditions every 30 minutes
+    if current_time.minute % 30 == 0:
+        market_condition = research_market_conditions()
+        print(f'Market condition: {market_condition}')
+
+        # Adjust buying/selling strategies accordingly
+        if market_condition == 'Bearish':
+            buy_price = hist_data['Close'].rolling(window=14).mean().iloc[-1]
+        elif market_condition == 'Bullish':
+            buy_price = hist_data['Open'].iloc[-1] * 0.9915
+        else:
+            buy_price = hist_data['Close'].iloc[-1] * 0.99
+
+        sell_price = buy_price * 1.02
+
+    # Run the trading bot
+    trading_bot(stock_symbol, buy_price, sell_price)
+
+    # Sleep for 1 minute
+    time.sleep(60)
