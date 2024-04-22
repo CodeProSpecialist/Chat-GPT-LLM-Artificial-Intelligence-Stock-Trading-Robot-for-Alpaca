@@ -99,6 +99,16 @@ def research_market_conditions():
 
     return market_condition
 
+# Set up the trading bot
+def trading_bot(symbol, buy_price, sell_price):
+    position = api.get_position(symbol)
+    if position is None:
+        api.submit_order(symbol, 1, 'buy', 'market', 'day')
+        print(f'Bought {symbol} at {buy_price:.2f}')
+    elif position.side == 'long' and position.market_value > sell_price and api.get_day_trade_count() < 3:
+        api.submit_order(symbol, 1, 'sell', 'market', 'day')
+        print(f'Sold {symbol} at {sell_price:.2f}')
+
 
 # Maintenance loop
 while True:
