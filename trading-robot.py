@@ -9,7 +9,8 @@ import pytz
 from datetime import datetime
 import time
 
-# ******** No, this is not fully working just yet. More code being worked on. ********
+# ******** This code is not tested to be fully working. 
+# It might work or it might not work. ********
 
 
 # Configure Alpaca API
