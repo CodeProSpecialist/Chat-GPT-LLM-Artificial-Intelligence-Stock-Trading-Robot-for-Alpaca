@@ -1,17 +1,19 @@
-
-import alpaca_trade_api as tradeapi
 import os
+import pickle
+import time
 import numpy as np
 import yfinance as yf
 import talib
-from llama import Llama
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+import torch
+from torch import nn
+import alpaca_trade_api as tradeapi
+import logging
+from datetime import datetime, timedelta, date
+from datetime import time as time2
 import pytz
-from datetime import datetime
-import time
-
-# ******** This code is not tested to be fully working. 
-# It might work or it might not work. ********
-
+import llama
 
 # Configure Alpaca API
 API_KEY_ID = os.getenv('APCA_API_KEY_ID')
@@ -21,124 +23,111 @@ API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 # Initialize Alpaca API
 api = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
-# Set up Llama API credentials
-llama_api = Llama(os.environ['LLAMA_API_KEY'], os.environ['LLAMA_API_SECRET'])
+# Load LLaMA 3.8B model
+llama_model = llama.LLaMAForSequenceClassification.from_pretrained('llama-3.8b')
 
-# Define the stock symbol and time frame
-stock_symbol = 'AAPL'
-time_frame = '1y'
+# Load stock symbols from file
+with open('list-of-stocks-to-buy.txt', 'r') as f:
+    stock_symbols = [line.strip() for line in f.readlines()]
 
-# Fetch historical data for the past year
-hist_data = yf.download(stock_symbol, period=time_frame, interval='1d')
+# Define trading parameters
+trading_fee = 0.005  # 0.5% trading fee
+min_account_balance = 1000  # minimum account balance
+max_position_size = 0.1  # maximum position size as a fraction of account balance
 
-# Calculate technical indicators
-hist_data['MA_50'] = talib.SMA(hist_data['Close'], 50)
-hist_data['MA_200'] = talib.SMA(hist_data['Close'], 200)
-hist_data['RSI'] = talib.RSI(hist_data['Close'], 14)
+# Define technical indicators
+def calculate_indicators(data):
+    # Calculate simple moving averages
+    data['sma_50'] = talib.SMA(data['Close'], timeperiod=50)
+    data['sma_200'] = talib.SMA(data['Close'], timeperiod=200)
+    
+    # Calculate relative strength index
+    data['rsi'] = talib.RSI(data['Close'], timeperiod=14)
+    
+    return data
 
-# Define the market sentiment indicators
-def calculate_sentiment(data):
-    if data['MA_50'] > data['MA_200']:
-        return 1  # Bullish
-    elif data['MA_50'] < data['MA_200']:
-        return -1  # Bearish
+# Define trading logic
+def analyze_market(data):
+    # Calculate technical indicators
+    data = calculate_indicators(data)
+    
+    # Get LLaMA's prediction
+    input_text = f"Analyze stock market data for the past 14 days: {data}"
+    output = llama_model(input_text)
+    prediction = output['label']
+    
+    # Make trading decision based on LLaMA's prediction
+    if prediction == 'bullish':
+        return 'buy'
+    elif prediction == 'bearish':
+        return 'sell'
     else:
-        return 0  # Neutral
+        return 'hold'
 
-hist_data['Sentiment'] = hist_data.apply(calculate_sentiment, axis=1)
+# Define trading function
+def trade(symbol):
+    # Get historical data for the past 14 days
+    data = yf.download(symbol, start=date.today() - timedelta(days=14), end=date.today())
+    
+    # Analyze market and make trading decision
+    decision = analyze_market(data)
+    
+    # Print current market conditions
+    print(f"Analyzing {symbol}...")
+    print(f"Current market conditions: {data.iloc[-1]['Close']}")
+    print(f"LLaMA's prediction: {decision}")
+    
+    # Execute trade
+    if decision == 'buy':
+        # Calculate position size
+        account_balance = api.get_account().cash
+        position_size = min(max_position_size, account_balance * 0.1)
+        
+        # Place buy order
+        api.submit_order(symbol, position_size, 'buy', 'market', 'day')
+    elif decision == 'sell':
+        # Check day trade count
+        account_info = api.get_account()
+        day_trade_count = account_info.daytrade_count
+        
+        if day_trade_count < 3:
+            current_price = get_current_price(symbol)
+            position = api.get_position(symbol)
+            bought_price = float(position.avg_entry_price)
+            
+            # Check if there is an open sell order for the symbol
+            open_orders = api.list_orders(status='open', symbol=symbol)
+            if open_orders:
+                print(f"There is an open sell order for {symbol}. Skipping sell order.")
+                return  # Skip to the next iteration if there's an open sell order
+            
+            # Sell stocks if the current price is more than 0.5% higher than the purchase price.
+            if current_price >= bought_price * 1.005:
+                qty = api.get_position(symbol).qty
+                api.submit_order(symbol=symbol, qty=qty, side='sell', type='market', time_in_force='day')
 
-# Define the AI-powered sentiment analysis using Llama
-def llama_sentiment(data):
-    news_data = llama_api.get_news(stock_symbol, '1d')
-    sentiment_score = llama_api.sentiment_analysis(news_data)
-    return sentiment_score
+# Define function to get current price
+def get_current_price(symbol):
+    data = yf.download(symbol, start=date.today(), end=date.today())
+    return data.iloc[-1]['Close']
 
-hist_data['Llama Sentiment'] = hist_data.apply(llama_sentiment, axis=1)
-
-
-# Define the maximum profit strategy
-def calculate_max_profit(data):
-    if data['Sentiment'] == 1 and data['Llama Sentiment'] > 0.5:  # Bullish and positive sentiment
-        buy_price = data['Close'] * 0.98
-        sell_price = data['Close'] * 1.02
-    elif data['Sentiment'] == -1 and data['Llama Sentiment'] < 0.5:  # Bearish and negative sentiment
-        buy_price = data['Close'] * 0.95
-        sell_price = data['Close'] * 1.05
-    else:  # Neutral or conflicting sentiment
-        buy_price = data['Close'] * 0.99
-        sell_price = data['Close'] * 1.01
-    return buy_price, sell_price
-
-hist_data['Buy Price'], hist_data['Sell Price'] = zip(*hist_data.apply(calculate_max_profit, axis=1))
-
-# Backtest the strategy
-def backtest_strategy(data):
-    profits = []
-    for i in range(len(data) - 1):
-        if data['Buy Price'].iloc[i] < data['Close'].iloc[i] and data['Sell Price'].iloc[i] > data['Close'].iloc[i+1]:
-            profit = (data['Sell Price'].iloc[i] - data['Buy Price'].iloc[i]) / data['Buy Price'].iloc[i]
-            profits.append(profit)
-    return np.mean(profits)
-
-backtest_profit = backtest_strategy(hist_data)
-print(f'Backtest profit: {backtest_profit:.2f}%')
-
-# Define the AI-powered research function
-def research_market_conditions():
-    # Use Llama AI agents to research market conditions
-    news_data = llama_api.get_news(stock_symbol, '1d')
-    sentiment_score = llama_api.sentiment_analysis(news_data)
-    technical_indicators = llama_api.technical_analysis(hist_data)
-
-    # Determine market conditions
-    if sentiment_score < 0.5 and technical_indicators['MA_50'] < technical_indicators['MA_200']:
-        market_condition = 'Bearish'
-    elif sentiment_score > 0.5 and technical_indicators['MA_50'] > technical_indicators['MA_200']:
-        market_condition = 'Bullish'
-    else:
-        market_condition = 'Neutral'
-
-    return market_condition
-
-
-# Set up the trading bot
-def trading_bot(symbol, buy_price, sell_price):
-    account = api.get_account()
-    position = api.get_position(symbol)
-    day_trade_count = api.get_day_trade_count()
-
-    if position is None:
-        if account.cash > buy_price * 1:  # Ensure we have enough cash to buy
-            api.submit_order(symbol, 1, 'buy', 'market', 'day')
-            print(f'Bought {symbol} at {buy_price:.2f}')
-    elif position.side == 'long' and position.market_value > sell_price and day_trade_count < 3 and sell_price > position.avg_entry_price * 1.005:  # Ensure we have not exceeded day trade limit and sell price is 0.5% higher than avg entry price
-        api.submit_order(symbol, 1, 'sell', 'market', 'day')
-        print(f'Sold {symbol} at {sell_price:.2f}')
-
-
-# Maintenance loop
+# Main trading loop
 while True:
-    eastern_time = pytz.timezone('US/Eastern')
-    current_time = datetime.now(eastern_time)
-    print(f'Current time: {current_time.strftime("%Y-%m-%d %H:%M:%S")}')
-
-    # Research market conditions every 30 minutes
-    if current_time.minute % 30 == 0:
-        market_condition = research_market_conditions()
-        print(f'Market condition: {market_condition}')
-
-        # Adjust buying/selling strategies accordingly
-        if market_condition == 'Bearish':
-            buy_price = hist_data['Close'].rolling(window=14).mean().iloc[-1]
-        elif market_condition == 'Bullish':
-            buy_price = hist_data['Open'].iloc[-1] * 0.9915
-        else:
-            buy_price = hist_data['Close'].iloc[-1] * 0.99
-
-        sell_price = buy_price * 1.02
-
-    # Run the trading bot
-    trading_bot(stock_symbol, buy_price, sell_price)
-
-    # Sleep for 1 minute
+    now = datetime.now(pytz.timezone('US/Eastern'))
+    current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
+    
+    cash_balance = round(float(api.get_account().cash), 2)
+    print(f"  {current_time_str} Cash Balance: ${cash_balance}")
+    
+    day_trade_count = api.get_account().daytrade_count
+    print(f"\nCurrent day trade number: {day_trade_count} out of 3 in 5 business days")
+    print("\n")
+    print("\n")
+    print("------------------------------------------------------------------------------------")
+    print("\n")
+    
+    for symbol in stock_symbols:
+        trade(symbol)
+    
+    # Wait for 1 minute before checking again
     time.sleep(60)
