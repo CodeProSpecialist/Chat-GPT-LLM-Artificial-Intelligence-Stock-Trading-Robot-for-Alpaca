@@ -13,7 +13,8 @@ import logging
 from datetime import datetime, timedelta, date
 from datetime import time as time2
 import pytz
-import llama
+import torch
+from transformers import LLaMAForSequenceClassification, LLaMATokenizer
 
 # Configure Alpaca API
 API_KEY_ID = os.getenv('APCA_API_KEY_ID')
@@ -24,7 +25,9 @@ API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 api = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
 # Load LLaMA 3.8B model
-llama_model = llama.LLaMAForSequenceClassification.from_pretrained('llama-3.8b')
+model_name = "llama-3.8b"
+llama_tokenizer = LLaMATokenizer.from_pretrained(model_name)
+llama_model = LLaMAForSequenceClassification.from_pretrained(model_name)
 
 # Load stock symbols from file
 with open('list-of-stocks-to-buy.txt', 'r') as f:
@@ -53,13 +56,14 @@ def analyze_market(data):
     
     # Get LLaMA's prediction
     input_text = f"Analyze stock market data for the past 14 days: {data}"
-    output = llama_model(input_text)
-    prediction = output['label']
+    inputs = llama_tokenizer(input_text, return_tensors="pt")
+    output = llama_model(**inputs)
+    prediction = torch.argmax(output.logits)  # Get the predicted label
     
     # Make trading decision based on LLaMA's prediction
-    if prediction == 'bullish':
+    if prediction == 0:  # bullish
         return 'buy'
-    elif prediction == 'bearish':
+    elif prediction == 1:  # bearish
         return 'sell'
     else:
         return 'hold'
