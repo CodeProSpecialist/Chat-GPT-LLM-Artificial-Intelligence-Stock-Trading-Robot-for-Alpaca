@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, date
 from datetime import time as time2
 import pytz
 import torch
-from transformers import LLaMAForSequenceClassification, LLaMATokenizer
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 # Configure Alpaca API
 API_KEY_ID = os.getenv('APCA_API_KEY_ID')
