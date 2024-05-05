@@ -8,22 +8,22 @@ import logging
 import time
 import huggingface_hub
 
-# You need to first request permission to download the following LLM Model named Llama-3-8B
+# You need to first request permission from meta llama on Huggingface to download the following LLM Model named Llama-2-7B
 # You need about 70 Gigabytes of RAM memory to run this python script. 
 
 # Configure logging
 logging.basicConfig(filename='important-program-messages.txt', level=logging.INFO)
 
 # Set the model directory
-model_dir = "meta-llama-3-8b"
+model_dir = "meta-llama-Llama-2-7b"
 
 # Check if the model exists locally
 if not os.path.exists(model_dir):
     logging.info("Model does not exist locally, downloading...")
     # below is a token that you create on huggingface to use instead of your password. 
     huggingface_hub.login("XXXXXXXXXX-SECRET-TOKEN-THAT-YOU-GENERATED-ON-HUGGINGFACE-TO-LOGIN-WITHOUT-A-PASSWORD-GOES-HERE")
-    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B")
-    model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B")
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b")
+    model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b")
     tokenizer.save_pretrained(model_dir)
     model.save_pretrained(model_dir)
     logging.info("Model downloaded and saved to", model_dir)
