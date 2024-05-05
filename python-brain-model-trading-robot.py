@@ -8,6 +8,9 @@ import logging
 import time
 import huggingface_hub
 
+# You need to first request permission to download the following LLM Model named Llama-3-8B
+# You need about 70 Gigabytes of RAM memory to run this python script. 
+
 # Configure logging
 logging.basicConfig(filename='important-program-messages.txt', level=logging.INFO)
 
