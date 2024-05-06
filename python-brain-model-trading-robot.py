@@ -6,6 +6,9 @@ from ollama import chat
 import alpaca_trade_api as tradeapi
 import logging
 import time
+import subprocess
+
+subprocess.run(["ollama-server", "start"])
 
 # Configure logging
 logging.basicConfig(filename='important-program-messages.txt', level=logging.INFO)
