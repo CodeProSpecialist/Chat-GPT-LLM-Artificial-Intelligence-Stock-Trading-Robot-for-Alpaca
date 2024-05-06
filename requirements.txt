@@ -1,11 +1,7 @@
-markdown
 numpy
-scikit-learn
-pandas
 yfinance
 ta-lib
-torch
 alpaca-trade-api
-transformers
+ollama
 pytz
 logging
