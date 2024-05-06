@@ -214,7 +214,7 @@ def main():
                     quantity = int(cash_balance / current_price)
                     if quantity < 1:
                         quantity = 0
-                    if quantity > 1:
+                    if quantity >= 1:
                         quantity = 1
                     execute_trade(symbol, signal, quantity)
                     print(f"Symbol: {symbol}")
