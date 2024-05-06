@@ -8,7 +8,7 @@ import logging
 import time
 import subprocess
 
-subprocess.run(["ollama-server", "start"])
+subprocess.run(["ollama", "serve"])
 
 # Configure logging
 logging.basicConfig(filename='important-program-messages.txt', level=logging.INFO)
