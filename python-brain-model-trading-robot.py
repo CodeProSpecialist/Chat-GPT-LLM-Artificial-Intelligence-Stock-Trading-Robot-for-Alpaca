@@ -3,7 +3,6 @@ import pytz
 from datetime import datetime
 import yfinance as yf
 from ollama import chat
-from ollama import OllamaAPI
 import alpaca_trade_api as tradeapi
 import logging
 import time
@@ -17,7 +16,7 @@ API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 # Initialize Alpaca API
 api2 = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
-api = OllamaAPI()  # Initialize the Ollama API instance
+#api = OllamaAPI()  # Initialize the Ollama API instance
 
 subprocess.run(["ollama", "serve"])
 
