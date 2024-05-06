@@ -1,6 +1,7 @@
 import os
 import pytz
-from datetime import datetime
+from datetime import datetime, timedelta, date
+from datetime import time as time2
 import yfinance as yf
 from ollama import chat
 import alpaca_trade_api as tradeapi
@@ -84,12 +85,12 @@ def trading_robot(symbol, X, Y):
         return f"hold {symbol}"
 
 
-def submit_buy_order(symbol, quantity, target_buy_price):
+def submit_buy_order(symbol, quantity):
     account_info = api2.get_account()
     cash_available = float(account_info.cash)
     current_price = get_current_price(symbol)
 
-    if current_price <= target_buy_price and cash_available >= current_price:
+    if cash_available >= current_price:
         # Convert symbol from BRK-B to BRK.B if necessary
         symbol = symbol.replace('-', '.')
 
@@ -103,14 +104,14 @@ def submit_buy_order(symbol, quantity, target_buy_price):
         logging.info(f"Bought {quantity} shares of {symbol} at ${current_price:.2f}")
 
 
-def submit_sell_order(symbol, quantity, target_sell_price):
+def submit_sell_order(symbol, quantity):
     account_info = api2.get_account()
     day_trade_count = account_info.daytrade_count
 
     current_price = get_current_price(symbol)
 
     try:
-        position = api.get_position(symbol)
+        position = api2.get_position(symbol)
     except Exception as e:
         logging.error(f"Error getting position: {e}")
         return
@@ -118,7 +119,7 @@ def submit_sell_order(symbol, quantity, target_sell_price):
     if position.qty != '0':
         bought_price = float(position.avg_entry_price)
 
-        if current_price >= target_sell_price and day_trade_count < 3 and current_price >= bought_price * 1.005:
+        if day_trade_count < 3 and current_price >= bought_price * 1.005:
             api2.submit_order(
                 symbol=symbol,
                 qty=quantity,
@@ -139,6 +140,44 @@ def execute_trade(symbol, signal, quantity, target_buy_price, target_sell_price)
     else:
         logging.info(f"Holding {symbol}")
 
+def stop_if_stock_market_is_closed():
+    # Check if the current time is within the stock market hours
+    # Set the stock market open and close times
+    market_open_time = time2(9, 27)
+    market_close_time = time2(16, 0)
+
+    while True:
+        # Get the current time in Eastern Time
+        eastern = pytz.timezone('US/Eastern')
+        now = datetime.now(eastern)
+        current_time = now.time()
+
+        # Check if the current time is within market hours
+        if now.weekday() <= 4 and market_open_time <= current_time <= market_close_time:
+            break
+
+        print("\n")
+        print('''
+
+            2024 Edition of the Artificial Intelligence Stock Trading Robot 
+           _____   __                   __             ____            __            __ 
+          / ___/  / /_  ____   _____   / /__          / __ \  ____    / /_   ____   / /_
+          \__ \  / __/ / __ \ / ___/  / //_/         / /_/ / / __ \  / __ \ / __ \ / __/
+         ___/ / / /_  / /_/ // /__   / ,<           / _, _/ / /_/ / / /_/ // /_/ // /_  
+        /____/  \__/  \____/ \___/  /_/|_|         /_/ |_|  \____/ /_.___/ \____/ \__/  
+
+                                                  https://github.com/CodeProSpecialist
+
+                       Featuring Artificial Intelligence LLM Decision Making   
+
+         ''')
+        print(f'Current date & time (Eastern Time): {now.strftime("%A, %B %d, %Y, %I:%M:%S %p")}')
+        print("Stockbot only works Monday through Friday: 9:30 am - 4:00 pm Eastern Time.")
+        print("Stockbot begins watching stock prices early at 9:27 am Eastern Time.")
+        print("Waiting until Stock Market Hours to begin the Stockbot Trading Program.")
+        print("\n")
+        print("\n")
+        time.sleep(60)  # Sleep for 1 minute and check again. Keep this under the p in print.
 
 def main():
     symbols = get_stocks_to_trade()
@@ -147,21 +186,35 @@ def main():
 
     while True:
         try:
-            eastern = pytz.timezone('US/Eastern')
-            print("\n\n======================================")
-            print(f"Today's Date and Time (Eastern Time): {datetime.now(eastern)}")
-            print("======================================\n")
+            stop_if_stock_market_is_closed()  # comment this line to debug the Python code
+            now = datetime.now(pytz.timezone('US/Eastern'))
+            current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
+
+            cash_balance = round(float(api2.get_account().cash), 2)
+
+            print("------------------------------------------------------------------------------------")
+            print(" 2024 Edition of the Artificial Intelligence Stock Trading Robot ")
+            print("by https://github.com/CodeProSpecialist")
+            print("------------------------------------------------------------------------------------")
+            print(f"  {current_time_str} Cash Balance: ${cash_balance}")
+            day_trade_count = api2.get_account().daytrade_count
+            print("\n")
+            print(f"Current day trade number: {day_trade_count} out of 3 in 5 business days")
+            print("\n")
 
             for symbol in symbols:
                 try:
                     previous_price = get_14_days_price(symbol)
                     current_price = get_current_price(symbol)
+                    debug_print_14_days_prices = get_14_days_price(symbol)
                     X = calculate_percentage_change(current_price, previous_price)
                     Y = 14
                     signal = trading_robot(symbol, X, Y)
                     execute_trade(symbol, signal, 10, 400, 420)
                     print(f"Symbol: {symbol}")
                     print(f"Current Price: {current_price}")
+                    # debug print 14 days prices
+                    #print(f"Debug printing 14 days Prices: {debug_print_14_days_prices}")
                     print(f"Decision: {signal}")
                     print("\n")
                     logging.info(f"Signal: {signal}")
@@ -170,8 +223,7 @@ def main():
                 except Exception as e:     # this is under the t in try
                     logging.error(f"Error: {e}")
                     time.sleep(5)
-                    break  # Restart the main loop after 5 seconds
-
+                    
             print("\n")
             print("Waiting 30 seconds ")
             print("\n")
