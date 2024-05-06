@@ -16,16 +16,15 @@ API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 # Initialize Alpaca API
 api2 = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
-# reboot or logout and login if OLLAMA server has not started
+# run the OLLAMA server process if it did not start automatically
+# in a seperate command terminal run:
+# ollama serve
 
-# start the OLLAMA server
-subprocess.run(["ollama", "serve"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-# Wait for 1 second to allow the server to start
-time.sleep(1)
+#subprocess.run(["ollama", "serve"])
 
 # Configure logging
 logging.basicConfig(filename='important-program-messages.txt', level=logging.INFO)
+
 
 def get_stocks_to_trade():
     try:
@@ -34,11 +33,16 @@ def get_stocks_to_trade():
 
         if not symbols:
             print("\n")
-            print("********************************************************************************************************")
-            print("*   Error: The file list-of-stocks-to-buy.txt doesn't contain any stock symbols.                       *")
-            print("*   This Robot does not work until you place stock symbols in the file named:                          *")
-            print("*                     list-of-stocks-to-buy.txt                                                        *")
-            print("********************************************************************************************************")
+            print(
+                "********************************************************************************************************")
+            print(
+                "*   Error: The file list-of-stocks-to-buy.txt doesn't contain any stock symbols.                       *")
+            print(
+                "*   This Robot does not work until you place stock symbols in the file named:                          *")
+            print(
+                "*                     list-of-stocks-to-buy.txt                                                        *")
+            print(
+                "********************************************************************************************************")
             print("\n")
 
         return symbols
@@ -46,18 +50,22 @@ def get_stocks_to_trade():
         logging.error(f"Error reading stock symbols: {e}")
         return []
 
+
 def get_14_days_price(symbol):
     symbol = symbol.replace('.', '-')  # Replace '.' with '-'
     stock_data = yf.Ticker(symbol)
     return round(stock_data.history(period='14d')['Close'].iloc[0], 4)
+
 
 def get_current_price(symbol):
     symbol = symbol.replace('.', '-')  # Replace '.' with '-'
     stock_data = yf.Ticker(symbol)
     return round(stock_data.history(period='1d')['Close'].iloc[0], 4)
 
+
 def calculate_percentage_change(current_price, previous_price):
     return ((current_price - previous_price) / previous_price) * 100
+
 
 def trading_robot(symbol, X, Y):
     messages = [
@@ -74,6 +82,7 @@ def trading_robot(symbol, X, Y):
         return f"sell {symbol}"
     else:
         return f"hold {symbol}"
+
 
 def submit_buy_order(symbol, quantity, target_buy_price):
     account_info = api2.get_account()
@@ -93,12 +102,13 @@ def submit_buy_order(symbol, quantity, target_buy_price):
         )
         logging.info(f"Bought {quantity} shares of {symbol} at ${current_price:.2f}")
 
+
 def submit_sell_order(symbol, quantity, target_sell_price):
     account_info = api2.get_account()
     day_trade_count = account_info.daytrade_count
 
     current_price = get_current_price(symbol)
-    
+
     try:
         position = api.get_position(symbol)
     except Exception as e:
@@ -120,6 +130,7 @@ def submit_sell_order(symbol, quantity, target_sell_price):
     else:
         logging.info(f"You don't own any shares of {symbol}, so no sell order was submitted.")
 
+
 def execute_trade(symbol, signal, quantity, target_buy_price, target_sell_price):
     if signal.startswith("buy"):
         submit_buy_order(symbol, quantity, target_buy_price)
@@ -127,6 +138,7 @@ def execute_trade(symbol, signal, quantity, target_buy_price, target_sell_price)
         submit_sell_order(symbol, quantity, target_sell_price)
     else:
         logging.info(f"Holding {symbol}")
+
 
 def main():
     symbols = get_stocks_to_trade()
@@ -151,15 +163,23 @@ def main():
                     print(f"Symbol: {symbol}")
                     print(f"Current Price: {current_price}")
                     print(f"Decision: {signal}")
+                    print("\n")
                     logging.info(f"Signal: {signal}")
                     time.sleep(1)  # Add a 1-second delay
-                except Exception as e:
+
+                except Exception as e:     # this is under the t in try
                     logging.error(f"Error: {e}")
                     time.sleep(5)
                     break  # Restart the main loop after 5 seconds
-        except Exception as e:
+
+            print("\n")
+            print("Waiting 30 seconds ")
+            print("\n")
+            time.sleep(30)  # keep this under the "f" in for symbol
+        except Exception as e:     # this is under the t in try
             logging.error(f"Error in main loop: {e}")
             time.sleep(5)
+
 
 if __name__ == "__main__":
     while True:
