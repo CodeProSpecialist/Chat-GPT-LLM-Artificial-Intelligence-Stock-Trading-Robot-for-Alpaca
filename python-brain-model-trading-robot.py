@@ -16,13 +16,9 @@ API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 # Initialize Alpaca API
 api2 = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
-# Kill the OLLAMA server process
-subprocess.run(["sudo", "pkill", "ollama"])
+# reboot or logout and login if OLLAMA server has not started
 
-# Wait for 1 second to allow the process to terminate
-time.sleep(1)
-
-# Restart the OLLAMA server
+# start the OLLAMA server
 subprocess.run(["ollama", "serve"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 # Wait for 1 second to allow the server to start
