@@ -2,35 +2,13 @@ import os
 import pytz
 from datetime import datetime
 import yfinance as yf
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from ollama import chat
 import alpaca_trade_api as tradeapi
 import logging
 import time
-import huggingface_hub
-
-# You need to first request permission from meta llama on Huggingface to download the following LLM Model named Llama-2-7B
-# You need about 70 Gigabytes of RAM memory to run this python script. 
 
 # Configure logging
 logging.basicConfig(filename='important-program-messages.txt', level=logging.INFO)
-
-# Set the model directory
-model_dir = "meta-llama-Llama-2-7b"
-
-# Check if the model exists locally
-if not os.path.exists(model_dir):
-    logging.info("Model does not exist locally, downloading...")
-    # below is a token that you create on huggingface to use instead of your password. 
-    huggingface_hub.login("XXXXXXXXXX-SECRET-TOKEN-THAT-YOU-GENERATED-ON-HUGGINGFACE-TO-LOGIN-WITHOUT-A-PASSWORD-GOES-HERE")
-    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b")
-    model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b")
-    tokenizer.save_pretrained(model_dir)
-    model.save_pretrained(model_dir)
-    logging.info("Model downloaded and saved to", model_dir)
-else:
-    logging.info("Model already exists locally, loading...")
-    tokenizer = AutoTokenizer.from_pretrained(model_dir)
-    model = AutoModelForCausalLM.from_pretrained(model_dir)
 
 def get_stocks_to_trade():
     try:
@@ -65,11 +43,14 @@ def calculate_percentage_change(current_price, previous_price):
     return ((current_price - previous_price) / previous_price) * 100
 
 def trading_robot(symbol, X, Y):
-    prompt = f"{symbol} price changed by {X}% in the past {Y} days. Should I buy or sell {symbol}? Instructions: Buy at low price and if X <=0, Sell at high price and only if X >= 0, Hold if X did not change more than 1% or -1%. Where X is the percentage change and Y is the number of days. Answer only with buy {symbol}, sell {symbol}, or hold {symbol}."
-    inputs = tokenizer(prompt, return_tensors="pt")
-    outputs = model(**inputs)
-    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    response = response.strip().lower()
+    messages = [
+        {
+            'role': 'user',
+            'content': f"{symbol} price changed by {X}% in the past {Y} days. Should I buy or sell {symbol}? Instructions: Buy at low price and if X <=0, Sell at high price and only if X >= 0, Hold if X did not change more than 1% or -1%. Where X is the percentage change and Y is the number of days. Answer only with buy {symbol}, sell {symbol}, or hold {symbol}.",
+        },
+    ]
+    response = chat('llama3:8b', messages=messages)
+    response = response['message']['content'].strip().lower()
     if "buy" in response:
         return f"buy {symbol}"
     elif "sell" in response:
