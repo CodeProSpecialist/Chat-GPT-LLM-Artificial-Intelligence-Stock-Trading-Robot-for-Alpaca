@@ -1,7 +1,5 @@
-numpy
-yfinance
-ta-lib
-alpaca-trade-api
 ollama
+yfinance
+alpaca-trade-api
+transformers
 pytz
-logging
