@@ -16,8 +16,6 @@ API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 # Initialize Alpaca API
 api2 = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
-#api = OllamaAPI()  # Initialize the Ollama API instance
-
 subprocess.run(["ollama", "serve"])
 
 # Configure logging
@@ -85,7 +83,7 @@ def submit_buy_order(symbol, quantity, target_buy_price):
             qty=quantity,
             side='buy',
             type='market',
-            time_in_force='gtc'
+            time_in_force='day'
         )
         logging.info(f"Bought {quantity} shares of {symbol} at ${current_price:.2f}")
 
@@ -96,7 +94,7 @@ def submit_sell_order(symbol, quantity, target_sell_price):
     current_price = get_current_price(symbol)
     
     try:
-        position = api2.get_position(symbol)
+        position = api.get_position(symbol)
     except Exception as e:
         logging.error(f"Error getting position: {e}")
         return
@@ -110,7 +108,7 @@ def submit_sell_order(symbol, quantity, target_sell_price):
                 qty=quantity,
                 side='sell',
                 type='market',
-                time_in_force='gtc'
+                time_in_force='day'
             )
             logging.info(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
     else:
@@ -128,7 +126,7 @@ def main():
     symbols = get_stocks_to_trade()
     if not symbols:
         return
-    
+
     while True:
         try:
             eastern = pytz.timezone('US/Eastern')
