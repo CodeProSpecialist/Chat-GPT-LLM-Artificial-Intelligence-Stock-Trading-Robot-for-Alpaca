@@ -3,7 +3,7 @@ import pytz
 from datetime import datetime
 import yfinance as yf
 from ollama import chat
-import ollama
+from ollama import OllamaAPI
 import alpaca_trade_api as tradeapi
 import logging
 import time
@@ -15,7 +15,9 @@ API_SECRET_KEY = os.getenv('APCA_API_SECRET_KEY')
 API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 
 # Initialize Alpaca API
-api = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
+api2 = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
+
+api = OllamaAPI()  # Initialize the Ollama API instance
 
 subprocess.run(["ollama", "serve"])
 
@@ -71,7 +73,7 @@ def trading_robot(symbol, X, Y):
         return f"hold {symbol}"
 
 def submit_buy_order(symbol, quantity, target_buy_price):
-    account_info = api.get_account()
+    account_info = api2.get_account()
     cash_available = float(account_info.cash)
     current_price = get_current_price(symbol)
 
@@ -79,7 +81,7 @@ def submit_buy_order(symbol, quantity, target_buy_price):
         # Convert symbol from BRK-B to BRK.B if necessary
         symbol = symbol.replace('-', '.')
 
-        api.submit_order(
+        api2.submit_order(
             symbol=symbol,
             qty=quantity,
             side='buy',
@@ -89,13 +91,13 @@ def submit_buy_order(symbol, quantity, target_buy_price):
         logging.info(f"Bought {quantity} shares of {symbol} at ${current_price:.2f}")
 
 def submit_sell_order(symbol, quantity, target_sell_price):
-    account_info = api.get_account()
+    account_info = api2.get_account()
     day_trade_count = account_info.daytrade_count
 
     current_price = get_current_price(symbol)
     
     try:
-        position = api.get_position(symbol)
+        position = api2.get_position(symbol)
     except Exception as e:
         logging.error(f"Error getting position: {e}")
         return
@@ -104,7 +106,7 @@ def submit_sell_order(symbol, quantity, target_sell_price):
         bought_price = float(position.avg_entry_price)
 
         if current_price >= target_sell_price and day_trade_count < 3 and current_price >= bought_price * 1.005:
-            api.submit_order(
+            api2.submit_order(
                 symbol=symbol,
                 qty=quantity,
                 side='sell',
