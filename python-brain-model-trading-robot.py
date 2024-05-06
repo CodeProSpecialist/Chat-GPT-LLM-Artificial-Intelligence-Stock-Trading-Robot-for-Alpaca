@@ -132,11 +132,11 @@ def submit_sell_order(symbol, quantity):
         logging.info(f"You don't own any shares of {symbol}, so no sell order was submitted.")
 
 
-def execute_trade(symbol, signal, quantity, target_buy_price, target_sell_price):
+def execute_trade(symbol, signal, quantity):
     if signal.startswith("buy"):
-        submit_buy_order(symbol, quantity, target_buy_price)
+        submit_buy_order(symbol, quantity)
     elif signal.startswith("sell"):
-        submit_sell_order(symbol, quantity, target_sell_price)
+        submit_sell_order(symbol, quantity)
     else:
         logging.info(f"Holding {symbol}")
 
@@ -210,7 +210,13 @@ def main():
                     X = calculate_percentage_change(current_price, previous_price)
                     Y = 14
                     signal = trading_robot(symbol, X, Y)
-                    execute_trade(symbol, signal, 10, 400, 420)
+                    cash_balance = float(api2.get_account().cash)
+                    quantity = int(cash_balance / current_price)
+                    if quantity < 1:
+                        quantity = 0
+                    if quantity > 1:
+                        quantity = 1
+                    execute_trade(symbol, signal, quantity)
                     print(f"Symbol: {symbol}")
                     print(f"Current Price: {current_price}")
                     # debug print 14 days prices
