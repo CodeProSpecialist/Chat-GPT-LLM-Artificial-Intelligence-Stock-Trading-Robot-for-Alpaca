@@ -7,6 +7,9 @@ Just run the following commands:
 
 sh install.sh
 
+# Run the command for Ollama to download the llama3 chat GPT model
+ollama run llama3:8b-instruct-q8_0
+
 python3 python-brain-model-trading-robot.py
 
 ----------------------------------------------------
