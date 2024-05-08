@@ -21,11 +21,9 @@ api2 = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 # in a seperate command terminal run:
 # ollama serve
 
-# Define the command as a list of strings
-start_ollama_server_command = ["sudo", "systemctl", "stop", "ollama", "&&", "sleep", "2", "&&", "sudo", "systemctl", "start", "ollama", "&&", "ollama", "serve"]
+subprocess.run(["sudo", "systemctl", "stop", "ollama"])
 
-# Execute the command
-subprocess.run(start_ollama_server_command, shell=True)
+subprocess.run(["gnome-terminal", "--", "ollama", "serve"])
 
 # Configure logging
 logging.basicConfig(filename='important-program-messages.txt', level=logging.INFO)
