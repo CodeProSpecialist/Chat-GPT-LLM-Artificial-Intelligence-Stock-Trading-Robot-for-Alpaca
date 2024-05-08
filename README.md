@@ -13,6 +13,9 @@ ollama run llama3:8b-instruct-q8_0
 
 python3 python-brain-model-trading-robot.py
 
+
+note: the raspberry pi can work with: 
+tinyllama:1.1b-chat-v1-q4_0
 ----------------------------------------------------
 
 Disclaimer:
