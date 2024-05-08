@@ -77,7 +77,7 @@ def trading_robot(symbol, X, Y):
             'content': f"{symbol} price changed by {X}% in the past {Y} days. Should I buy or sell {symbol}? Instructions: Buy at low price and if X <=0, Sell at high price and only if X >= 0, Hold if X did not change more than 1% or -1%. Where X is the percentage change and Y is the number of days. Answer only with buy {symbol}, sell {symbol}, or hold {symbol}.",
         },
     ]
-    response = chat('llama3:8b', messages=messages)
+    response = chat('llama3:8b-instruct-q8_0', messages=messages)
     response = response['message']['content'].strip().lower()
     if "buy" in response:
         return f"buy {symbol}"
