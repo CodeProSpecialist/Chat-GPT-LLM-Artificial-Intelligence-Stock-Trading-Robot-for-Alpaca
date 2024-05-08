@@ -15,7 +15,7 @@ python3 python-brain-model-trading-robot.py
 
 
 note: the raspberry pi can work with: 
-tinyllama:1.1b-chat-v1-q4_0
+tinyllama:1.1b-chat-v1-q2_K
 ----------------------------------------------------
 
 Disclaimer:
