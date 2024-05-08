@@ -1,4 +1,5 @@
 
+![Screenshot from 2024-05-07 19-48-09](https://github.com/CodeProSpecialist/Chat-GPT-LLM-Artificial-Intelligence-Stock-Trading-Robot-for-Alpaca/assets/111866070/bc455ce0-0e1f-4717-ab38-989fb44a57cb)
 
 
 
