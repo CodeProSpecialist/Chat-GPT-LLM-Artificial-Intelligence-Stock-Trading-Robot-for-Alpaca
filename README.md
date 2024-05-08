@@ -18,6 +18,8 @@ note: the raspberry pi can work with:
 tinyllama:1.1b-chat-v1-q2_K
 
 ollama run tinyllama:1.1b-chat-v1-q2_K
+
+
 ----------------------------------------------------
 
 Disclaimer:
