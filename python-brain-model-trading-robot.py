@@ -6,6 +6,7 @@ import yfinance as yf
 from ollama import chat
 import alpaca_trade_api as tradeapi
 import logging
+import schedule
 import time
 import subprocess
 
@@ -20,6 +21,8 @@ api2 = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 # run the OLLAMA server process if it did not start automatically
 # in a seperate command terminal run:
 # ollama serve
+
+purchased_today = {}
 
 subprocess.run(["sudo", "systemctl", "stop", "ollama"])
 
@@ -137,7 +140,6 @@ def sell_yesterdays_purchases():
     """
     Sell all owned positions that were purchased before today if the purchased price is less than the current price + 0.10 cents.
     """
-    global last_trade_date
     account = api2.get_account()
     positions = api2.list_positions()
 
@@ -147,21 +149,24 @@ def sell_yesterdays_purchases():
         current_price = get_current_price(symbol)
         bought_price = float(position.avg_entry_price)
 
-        # Get the activities for the account
-        activities = api2.get_activities()
+        # Check if the symbol is not in the purchased_today dictionary
+        if symbol not in purchased_today:
+            # Check if the last trade date is not today
+            if current_price >= bought_price + 0.01:
+                quantity = int(position.qty)
+                submit_sell_order(symbol, quantity)
+                logging.info(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
 
-        for activity in activities:
-            raw_data = activity._raw
-            print(raw_data)
+def purchase_stock(symbol, quantity):
+    # Purchase the stock
+    api2.place_order(symbol, quantity)
 
-        # Convert the last trade date to a date object
-        last_trade_date_updated_date = last_trade_date
+    # Add the symbol to the purchased_today dictionary
+    purchased_today[symbol] = True
 
-        # Check if the last trade date is not today
-        if last_trade_date_updated_date < today and current_price >= bought_price + 0.01:
-            quantity = int(position.qty)
-            submit_sell_order(symbol, quantity)
-            logging.info(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
+def clear_purchased_today():
+    global purchased_today
+    purchased_today = {}
 
 def execute_trade(symbol, signal, quantity):
     if signal.startswith("buy"):
@@ -233,7 +238,10 @@ def main():
             print(f"Current day trade number: {day_trade_count} out of 3 in 5 business days")
             print("\n")
 
-            #sell_yesterdays_purchases()
+            # Clear the purchased_today dictionary at the start of each day
+            schedule.every().day.at("09:30").do(clear_purchased_today)  # Run at 09:30am every day
+
+            sell_yesterdays_purchases()
 
             #if day_trade_count < 3:
                 #sell_yesterdays_purchases()  # Only run this function if day trade count is less than 3
