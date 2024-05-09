@@ -107,6 +107,8 @@ def submit_buy_order(symbol, quantity):
             time_in_force='day'
         )
         logging.info(f"Bought {quantity} shares of {symbol} at ${current_price:.2f}")
+        # Add the symbol to the purchased_today dictionary
+        purchased_today[symbol] = True
 
 
 def submit_sell_order(symbol, quantity):
@@ -156,13 +158,6 @@ def sell_yesterdays_purchases():
                 quantity = int(position.qty)
                 submit_sell_order(symbol, quantity)
                 logging.info(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
-
-def purchase_stock(symbol, quantity):
-    # Purchase the stock
-    api2.place_order(symbol, quantity)
-
-    # Add the symbol to the purchased_today dictionary
-    purchased_today[symbol] = True
 
 def clear_purchased_today():
     global purchased_today
@@ -239,7 +234,7 @@ def main():
             print("\n")
 
             # Clear the purchased_today dictionary at the start of each day
-            schedule.every().day.at("09:30").do(clear_purchased_today)  # Run at 09:30am every day
+            schedule.every().day.at("09:27").do(clear_purchased_today)  # Run at 09:30am every day
 
             sell_yesterdays_purchases()
 
