@@ -218,6 +218,9 @@ def main():
             print(f"Current day trade number: {day_trade_count} out of 3 in 5 business days")
             print("\n")
 
+            if day_trade_count < 3:
+                sell_yesterdays_purchases()  # Only run this function if day trade count is less than 3
+
             for symbol in symbols:
                 try:
                     previous_price = get_14_days_price(symbol)
