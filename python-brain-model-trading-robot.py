@@ -91,25 +91,37 @@ def trading_robot(symbol, X, Y):
 
 
 def submit_buy_order(symbol, quantity):
-    account_info = api2.get_account()
-    cash_available = float(account_info.cash)
-    current_price = get_current_price(symbol)
+    # Get the current time in Eastern Time
+    eastern = pytz.timezone('US/Eastern')
+    now = datetime.now(eastern)
+    current_time = now.time()
 
-    if cash_available >= current_price:
-        # Convert symbol from BRK-B to BRK.B if necessary
-        symbol = symbol.replace('-', '.')
+    # Define the time range for trading (10:02 to 16:00)
+    trading_start = time2(9, 45)
+    trading_end = time2(16, 0)
 
-        api2.submit_order(
-            symbol=symbol,
-            qty=quantity,
-            side='buy',
-            type='market',
-            time_in_force='day'
-        )
-        logging.info(f"Bought {quantity} shares of {symbol} at ${current_price:.2f}")
-        # Add the symbol to the purchased_today dictionary
-        purchased_today[symbol] = True
+    # Check if the current time is within the trading hours
+    if current_time >= trading_start and current_time <= trading_end:
+        account_info = api2.get_account()
+        cash_available = float(account_info.cash)
+        current_price = get_current_price(symbol)
 
+        if cash_available >= current_price:
+            # Convert symbol from BRK-B to BRK.B if necessary
+            symbol = symbol.replace('-', '.')
+
+            api2.submit_order(
+                symbol=symbol,
+                qty=quantity,
+                side='buy',
+                type='market',
+                time_in_force='day'
+            )
+            logging.info(f"Bought {quantity} shares of {symbol} at ${current_price:.2f}")
+            # Add the symbol to the purchased_today dictionary
+            purchased_today[symbol] = True
+    else:
+        logging.info("Trading outside profit trading strategy hours, buy order not submitted.")
 
 def submit_sell_order(symbol, quantity):
     account_info = api2.get_account()
