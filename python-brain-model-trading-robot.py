@@ -133,6 +133,20 @@ def submit_sell_order(symbol, quantity):
     else:
         logging.info(f"You don't own any shares of {symbol}, so no sell order was submitted.")
 
+def sell_yesterdays_purchases():
+    """
+    Sell all owned positions that were purchased yesterday if the purchased price is less than the current price + 0.10 cents.
+    """
+    account = api2.get_account()
+    positions = api2.list_positions()
+    for position in positions:
+        symbol = position.symbol
+        purchased_price = float(position.avg_entry_price)
+        current_price = get_current_price(symbol)
+        if current_price >= purchased_price + 0.10:
+            quantity = int(position.qty)
+            submit_sell_order(symbol, quantity)
+            logging.info(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
 
 def execute_trade(symbol, signal, quantity):
     if signal.startswith("buy"):
