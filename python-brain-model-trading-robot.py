@@ -152,9 +152,7 @@ def sell_yesterdays_purchases():
 
         for activity in activities:
             raw_data = activity._raw
-            transaction_time = raw_data['transaction_time']
-            # Convert the transaction time to a datetime object
-            last_trade_date = datetime.strptime(transaction_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+            print(raw_data)
 
         # Convert the last trade date to a date object
         last_trade_date_updated_date = last_trade_date
@@ -235,7 +233,7 @@ def main():
             print(f"Current day trade number: {day_trade_count} out of 3 in 5 business days")
             print("\n")
 
-            sell_yesterdays_purchases()
+            #sell_yesterdays_purchases()
 
             #if day_trade_count < 3:
                 #sell_yesterdays_purchases()  # Only run this function if day trade count is less than 3
