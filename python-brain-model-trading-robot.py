@@ -135,19 +135,32 @@ def submit_sell_order(symbol, quantity):
 
 def sell_yesterdays_purchases():
     """
-    Sell all owned positions that were purchased yesterday if the purchased price is less than the current price + 0.10 cents.
+    Sell all owned positions that were purchased before today if the purchased price is less than the current price + 0.10 cents.
     """
+    global last_trade_date
     account = api2.get_account()
     positions = api2.list_positions()
 
-    yesterday = datetime.now(pytz.timezone('US/Eastern')) - timedelta(days=1)
+    today = datetime.now(pytz.timezone('US/Eastern')).date()
     for position in positions:
         symbol = position.symbol
         current_price = get_current_price(symbol)
         bought_price = float(position.avg_entry_price)
 
-        purchased_date = datetime.strptime(position.created_at, "%Y-%m-%d %H:%M:%S")
-        if purchased_date.date() == yesterday.date() and current_price >= bought_price + 0.01:
+        # Get the activities for the account
+        activities = api2.get_activities()
+
+        for activity in activities:
+            raw_data = activity._raw
+            transaction_time = raw_data['transaction_time']
+            # Convert the transaction time to a datetime object
+            last_trade_date = datetime.strptime(transaction_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+        # Convert the last trade date to a date object
+        last_trade_date_updated_date = last_trade_date
+
+        # Check if the last trade date is not today
+        if last_trade_date_updated_date < today and current_price >= bought_price + 0.01:
             quantity = int(position.qty)
             submit_sell_order(symbol, quantity)
             logging.info(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
