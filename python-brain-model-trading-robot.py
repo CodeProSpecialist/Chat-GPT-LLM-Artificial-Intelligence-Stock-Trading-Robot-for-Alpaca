@@ -139,11 +139,15 @@ def sell_yesterdays_purchases():
     """
     account = api2.get_account()
     positions = api2.list_positions()
+
     yesterday = datetime.now(pytz.timezone('US/Eastern')) - timedelta(days=1)
     for position in positions:
         symbol = position.symbol
+        current_price = get_current_price(symbol)
+        bought_price = float(position.avg_entry_price)
+
         purchased_date = datetime.strptime(position.created_at, "%Y-%m-%d %H:%M:%S")
-        if purchased_date.date() == yesterday.date() and current_price >= purchased_price + 0.01:
+        if purchased_date.date() == yesterday.date() and current_price >= bought_price + 0.01:
             quantity = int(position.qty)
             submit_sell_order(symbol, quantity)
             logging.info(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
