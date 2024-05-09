@@ -1,4 +1,3 @@
-transformers
 pytz
 yfinance
 ollama
