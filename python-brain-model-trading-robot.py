@@ -96,8 +96,8 @@ def submit_buy_order(symbol, quantity):
     now = datetime.now(eastern)
     current_time = now.time()
 
-    # Define the time range for trading (10:02 to 16:00)
-    trading_start = time2(9, 45)
+    # Define the time range for trading (10:15 to 16:00)
+    trading_start = time2(10, 15)
     trading_end = time2(16, 0)
 
     # Check if the current time is within the trading hours
