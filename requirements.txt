@@ -1,5 +1,5 @@
-ollama
-yfinance
-alpaca-trade-api
-transformers
 pytz
+yfinance
+ollama
+alpaca-trade-api
+schedule
