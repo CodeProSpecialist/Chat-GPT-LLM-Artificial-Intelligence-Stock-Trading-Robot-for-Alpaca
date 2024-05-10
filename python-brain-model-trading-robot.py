@@ -9,6 +9,8 @@ import logging
 import schedule
 import time
 import subprocess
+import talib
+import numpy as np
 
 # Configure Alpaca API
 API_KEY_ID = os.getenv('APCA_API_KEY_ID')
@@ -23,6 +25,8 @@ api2 = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 # ollama serve
 
 purchased_today = {}
+
+global close_prices, time_period
 
 subprocess.run(["sudo", "systemctl", "stop", "ollama"])
 
@@ -72,12 +76,35 @@ def get_current_price(symbol):
 def calculate_percentage_change(current_price, previous_price):
     return ((current_price - previous_price) / previous_price) * 100
 
+def calculate_rsi(close_prices, time_period=14):
+    rsi = talib.RSI(np.array(close_prices), timeperiod=time_period)
+    return rsi[-1]
+
+def calculate_moving_averages(close_prices, short_window=50, long_window=200):
+    short_ma = talib.SMA(np.array(close_prices), timeperiod=short_window)
+    long_ma = talib.SMA(np.array(close_prices), timeperiod=long_window)
+    return short_ma[-1], long_ma[-1]
 
 def trading_robot(symbol, X, Y):
+    symbol = symbol.replace('.', '-')  # Replace '.' with '-'
+    stock_data = yf.Ticker(symbol)
+
+    close_prices = stock_data.history(period=f'{Y + 14}d')['Close']
+
+    rsi = calculate_rsi(close_prices)
+
+    short_ma, long_ma = calculate_moving_averages(close_prices)
+
+    fourteen_days_ago_price = get_14_days_price(symbol)
+
+    current_price = get_current_price(symbol)
+
+    fourteen_days_change = calculate_percentage_change(current_price, fourteen_days_ago_price)
+
     messages = [
         {
             'role': 'user',
-            'content': f"{symbol} price changed by {X}% in the past {Y} days. Should I buy or sell {symbol}? Instructions: Buy at low price and if X <=0, Sell at high price and only if X >= 0, Hold if X did not change more than 1% or -1%. Where X is the percentage change and Y is the number of days. Answer only with buy {symbol}, sell {symbol}, or hold {symbol}.",
+            'content': f"{symbol} price changed by {X}% in the past {Y} days. The RSI is {rsi:.2f} and the 50-day MA is {short_ma:.2f} and the 200-day MA is {long_ma:.2f}. The price has changed by {fourteen_days_change:.2f}% in the past 14 days. Should I buy or sell {symbol}? Instructions: Buy if RSI < 30 and 50-day MA > 200-day MA and the price has increased in the past 14 days, Sell if RSI > 70 and 50-day MA < 200-day MA, Hold otherwise. Answer only with buy {symbol}, sell {symbol}, or hold {symbol}.",
         },
     ]
     response = chat('llama3:8b-instruct-q8_0', messages=messages)
