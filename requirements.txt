@@ -2,7 +2,6 @@ pytz
 yfinance
 ollama
 alpaca-trade-api
-logging
 schedule
 numpy
-talib
+ta-lib
