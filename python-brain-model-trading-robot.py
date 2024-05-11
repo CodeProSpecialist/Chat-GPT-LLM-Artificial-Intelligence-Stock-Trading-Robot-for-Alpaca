@@ -107,7 +107,7 @@ def trading_robot(symbol, X, Y):
             'content': f"{symbol} price changed by {X}% in the past {Y} days. The RSI is {rsi:.2f} and the 50-day MA is {short_ma:.2f} and the 200-day MA is {long_ma:.2f}. The price has changed by {fourteen_days_change:.2f}% in the past 14 days. Should I buy or sell {symbol}? Instructions: Buy if RSI < 30 and 50-day MA > 200-day MA and the price has increased in the past 14 days, Sell if RSI > 70 and 50-day MA < 200-day MA, Hold otherwise. Answer only with buy {symbol}, sell {symbol}, or hold {symbol}.",
         },
     ]
-    response = chat('llama3:8b-instruct-q8_0', messages=messages)
+    response = chat('gemma:2b-Instruct', messages=messages)
     response = response['message']['content'].strip().lower()
     if "buy" in response:
         return f"buy {symbol}"
