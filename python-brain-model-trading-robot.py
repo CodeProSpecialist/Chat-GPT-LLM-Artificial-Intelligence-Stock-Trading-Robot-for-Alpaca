@@ -94,10 +94,10 @@ def calculate_moving_averages(close_prices, short_window=50, long_window=200):
 def trading_robot(symbol, X, Y):
     symbol = symbol.replace('.', '-')  # Replace '.' with '-'
     stock_data = yf.Ticker(symbol)
-    close_prices = stock_data.history(period=f'{Y}d')['Close']
-    high_prices = stock_data.history(period=f'{Y}d')['High']
-    low_prices = stock_data.history(period=f'{Y}d')['Low']
-    volume = stock_data.history(period=f'{Y}d')['Volume']
+    close_prices = stock_data.history(period='180d')['Close']
+    high_prices = stock_data.history(period='180d')['High']
+    low_prices = stock_data.history(period='180d')['Low']
+    volume = stock_data.history(period='180d')['Volume']
     rsi = calculate_rsi(close_prices)
     short_ma, long_ma = calculate_moving_averages(close_prices)
     fourteen_days_ago_price = get_14_days_price(symbol)
