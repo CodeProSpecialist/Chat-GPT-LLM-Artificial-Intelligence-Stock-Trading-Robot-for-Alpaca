@@ -97,7 +97,7 @@ def calculate_rsi(close_prices, time_period=14):
     rsi = talib.RSI(np.array(close_prices), timeperiod=time_period)
     return rsi[-1]
 
-def calculate_moving_averages(close_prices, short_window=50, long_window=200):
+def calculate_moving_averages(close_prices, short_window=50, long_window=180):
     short_ma = talib.SMA(np.array(close_prices), timeperiod=short_window)
     long_ma = talib.SMA(np.array(close_prices), timeperiod=long_window)
     return short_ma[-1], long_ma[-1]
@@ -119,15 +119,19 @@ def trading_robot(symbol, X, Y):
     atr = talib.ATR(np.array(high_prices), np.array(low_prices), np.array(close_prices), timeperiod=14)
     avg_volume = np.mean(volume)
     # Calculate Bollinger Bands
-    bbands = talib.BBANDS(np.array(close_prices), timeperiod=20, nbdevup=2, nbdevdn=2)
-    if bbands is not None and len(bbands) == 3:
-        upper_band, middle_band, lower_band = bbands
-        upper_band_value = upper_band[-1]
-        middle_band_value = middle_band[-1]
-        lower_band_value = lower_band[-1]
-    else:
-        # Set default values if Bollinger Bands calculation fails
-        upper_band_value, middle_band_value, lower_band_value = np.nan, np.nan, np.nan
+    bbands = talib.BBANDS(np.array(close_prices), timeperiod=14, nbdevup=2, nbdevdn=2)
+    upper_band, middle_band, lower_band = bbands
+    upper_band_value = upper_band[-1]
+    middle_band_value = middle_band[-1]
+    lower_band_value = lower_band[-1]
+    # debug print the ATR and the bbands below
+    print("\n")
+    print(f"{symbol}")
+    print(f"Bollinger Bands: {upper_band_value:.2f}, {middle_band_value:.2f}, {lower_band_value:.2f}")
+    print(f"ATR: {atr[-1]:.2f}")
+    # Also, atr is an array, so you need to access its last element
+    print(f"Average Volume: {avg_volume:.2f}")
+    print("\n")
     # Get yesterday's closing price, today's opening price, and today's current price
     yesterday_close = close_prices.iloc[-2]
     today_open = history_data.iloc[-1]['Open']
