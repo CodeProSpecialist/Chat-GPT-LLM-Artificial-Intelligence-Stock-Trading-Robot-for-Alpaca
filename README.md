@@ -1,5 +1,5 @@
 
-![Screenshot from 2024-05-07 19-48-09](https://github.com/CodeProSpecialist/Chat-GPT-LLM-Artificial-Intelligence-Stock-Trading-Robot-for-Alpaca/assets/111866070/bc455ce0-0e1f-4717-ab38-989fb44a57cb)
+![Screenshot from 2024-05-12 16-34-47.png](..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202024-05-12%2016-34-47.png)
 
 It is recommended to first install Anaconda3 to setup a Python 3 virtual environment. 
 
