@@ -94,10 +94,11 @@ def calculate_moving_averages(close_prices, short_window=50, long_window=200):
 def trading_robot(symbol, X, Y):
     symbol = symbol.replace('.', '-')  # Replace '.' with '-'
     stock_data = yf.Ticker(symbol)
-    close_prices = stock_data.history(period='180d')['Close']
-    high_prices = stock_data.history(period='180d')['High']
-    low_prices = stock_data.history(period='180d')['Low']
-    volume = stock_data.history(period='180d')['Volume']
+    history_data = stock_data.history(period='180d')
+    close_prices = history_data['Close']
+    high_prices = history_data['High']
+    low_prices = history_data['Low']
+    volume = history_data['Volume']
     rsi = calculate_rsi(close_prices)
     short_ma, long_ma = calculate_moving_averages(close_prices)
     fourteen_days_ago_price = get_14_days_price(symbol)
@@ -118,7 +119,7 @@ def trading_robot(symbol, X, Y):
         upper_band_value, middle_band_value, lower_band_value = np.nan, np.nan, np.nan
     # Get yesterday's closing price, today's opening price, and today's current price
     yesterday_close = close_prices.iloc[-2]
-    today_open = stock_data.history(period='1d')['Open'].iloc[0]
+    today_open = history_data.iloc[-1]['Open']
     today_current = current_price
     # Check for bear or bull market
     if fourteen_days_change > 0:
