@@ -97,10 +97,17 @@ def calculate_rsi(close_prices, time_period=14):
     rsi = talib.RSI(np.array(close_prices), timeperiod=time_period)
     return rsi[-1]
 
-def calculate_moving_averages(close_prices, short_window=50, long_window=180):
+def calculate_moving_averages(close_prices, short_window=50, long_window=100):
     short_ma = talib.SMA(np.array(close_prices), timeperiod=short_window)
     long_ma = talib.SMA(np.array(close_prices), timeperiod=long_window)
     return short_ma[-1], long_ma[-1]
+
+def get_average_true_range(symbol):
+    symbol = symbol.replace('.', '-')  # Replace '.' with '-'
+    ticker = yf.Ticker(symbol)
+    data = ticker.history(period='30d')
+    atr = talib.ATR(data['High'].values, data['Low'].values, data['Close'].values, timeperiod=22)
+    return atr[-1]
 
 def trading_robot(symbol, X, Y):
     symbol = symbol.replace('.', '-')  # Replace '.' with '-'
@@ -116,7 +123,7 @@ def trading_robot(symbol, X, Y):
     current_price = get_current_price(symbol)
     fourteen_days_change = calculate_percentage_change(current_price, fourteen_days_ago_price)
     # Calculate additional technical indicators
-    atr = talib.ATR(np.array(high_prices), np.array(low_prices), np.array(close_prices), timeperiod=14)
+    atr = get_average_true_range(symbol)
     avg_volume = np.mean(volume)
     # Calculate Bollinger Bands
     bbands = talib.BBANDS(np.array(close_prices), timeperiod=14, nbdevup=2, nbdevdn=2)
@@ -126,7 +133,7 @@ def trading_robot(symbol, X, Y):
     lower_band_value = lower_band[-1]
     # debug print the ATR and the bbands below
     print("\n")
-    print(f"{symbol}")
+    print(f"Making a decision for: {symbol}")
     print(f"Bollinger Bands: {upper_band_value:.2f}, {middle_band_value:.2f}, {lower_band_value:.2f}")
     print(f"ATR: {atr[-1]:.2f}")
     # Also, atr is an array, so you need to access its last element
