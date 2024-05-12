@@ -8,7 +8,7 @@ Just run the following commands:
 sh install.sh
 
 For this version of Ollama to work best, 
-do not install ollama with docker or with snap. 
+do not install Ollama with docker or with snap. 
 
 Install Ollama using the install download link on 
 the official Ollama website. 
