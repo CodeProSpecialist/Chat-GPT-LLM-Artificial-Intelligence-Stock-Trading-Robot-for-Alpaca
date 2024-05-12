@@ -166,7 +166,7 @@ def trading_robot(symbol, X, Y):
         f"Hold otherwise. Answer only with buy {symbol}, sell {symbol}, or hold {symbol}."
     )
     messages = [{'role': 'user', 'content': content}]
-    response = chat('gemma:2b-instruct', messages=messages)
+    response = chat('llama3:8b', messages=messages)
     response = response['message']['content'].strip().lower()
     if "buy" in response:
         return f"buy {symbol}"
