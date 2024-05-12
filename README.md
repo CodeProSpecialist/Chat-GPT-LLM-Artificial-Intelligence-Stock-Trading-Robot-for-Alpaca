@@ -7,6 +7,12 @@ Just run the following commands:
 
 sh install.sh
 
+For this version of Ollama to work best, 
+do not install ollama with docker or with snap. 
+
+Install Ollama using the install download link on 
+the official Ollama website. 
+
 Run the following command for Ollama to download the llama3:8b-instruct-q4_0 GPT model: 
 
 ollama run llama3:8b-instruct-q4_0
