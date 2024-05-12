@@ -149,12 +149,12 @@ def trading_robot(symbol, X, Y):
     # debug print the ATR, Volume, and the bbands below
     print("\n")
     print(f"Making a decision for: {symbol}")
-    print(f"Bollinger Bands: {upper_band_value:.2f}, {middle_band_value:.2f}, {lower_band_value:.2f}")
-    print(f"ATR low price: {atr_low_price:.2f}")
-    print(f"ATR high price: {atr_high_price:.2f}")
+    #print(f"Bollinger Bands: {upper_band_value:.2f}, {middle_band_value:.2f}, {lower_band_value:.2f}")
+    #print(f"ATR low price: {atr_low_price:.2f}")
+    #print(f"ATR high price: {atr_high_price:.2f}")
     # Also, atr is an array, so you need to access its last element
-    print(f"Current Volume: {today_new_volume:2f}")
-    print(f"Average Volume: {avg_volume:.2f}")
+    #print(f"Current Volume: {today_new_volume:2f}")
+    #print(f"Average Volume: {avg_volume:.2f}")
     print("\n")
     # Get yesterday's closing price, today's opening price, and today's current price
     yesterday_close = close_prices.iloc[-2]
@@ -167,36 +167,38 @@ def trading_robot(symbol, X, Y):
         market_trend = 'bear'
     # Create a message to send to the chatbot
     content = (
-        f"Yes, you can help me with this important decision."
-        f"Yes, you are a helpful market trading assistant."
-        f"{symbol} price changed by {X}% in the past {Y} days. "
+        f"Yes, you can help me with this important decision. "
+        f"Yes, you are a helpful market trading assistant. "
+        f"I need you to help me decide on the following market data. "
+        f"The stock market symbol {symbol} price changed by {X}% in the past {Y} days. "
         f"The RSI is {rsi:.2f} and the 50-day MA is {short_ma:.2f} "
-        f"and the 200-day MA is {long_ma:.2f}. "
+        f"and the 100-day MA is {long_ma:.2f}. "
+        f"The market trend is a {market_trend} market. "
+        f"We buy during a bull market trend and we stop buying to hold during a bear market trend. "
         f"The price has changed by {fourteen_days_change:.2f}% in the past 14 days. "
+        f"The Current Volume is {today_new_volume:2f}. "
+        f"The Average Volume is {avg_volume:.2f}. "
+        f"It is a better idea to buy when Volume is lower or equal to the Average Volume. "
+        f"It is a better idea to sell when Volume and RSI are both increased, "
+        f"and when Volume is equal to or greater than average volume. "
+        f"Should I buy or sell {symbol}? "
+        f"Instructions: Buy if RSI < 30 and 50-day MA > 200-day MA and the price has increased in the past 14 days. "
+        f"Sell if RSI > 70 and 50-day MA < 200-day MA and the price has decreased in the past 14 days. "
+        f"Today's Bollinger Band prices are: upper band price:{upper_band_value:.2f}, middle band price:{middle_band_value:.2f}, lower band price:{lower_band_value:.2f}. "
+        f"We buy equal to or below the Bollinger Band lower band price, and we sell equal to or above the upper band price: or else we hold. "
         f"Yesterday's closing price was {yesterday_close:.2f}, today's opening price was {today_open:.2f}, "
         f"and today's current price is {today_current:.2f}. "
         f"The Average True Range (ATR) low price is {atr_low_price:.2f}. "
         f"It is a better idea to buy near the Average True Range low price. "
         f"The Average True Range (ATR) high price is {atr_high_price:.2f}. "
         f"It is a better idea to sell near the Average True Range high price. "
-        f"The Current Volume is {today_new_volume:2f}. "
-        f"The Average Volume is {avg_volume:.2f}. "
-        f"It is a better idea to buy when Volume is lower or equal to the Average Volume."
-        f"It is a better idea to sell when Volume and RSI are both increased, "
-        f"and when Volume is equal to or greater than average volume. "
-        f"Today's Bollinger Band prices are: upper band price:{upper_band_value:.2f}, middle band price:{middle_band_value:.2f}, lower band price:{lower_band_value:.2f}"
-        f"We buy equal to or below the Bollinger Band lower band price, and we sell equal to or above the upper band price. "
-        f"The market trend is {market_trend}. "
-        f"We buy during a bull market trend and we stop buying to hold during a bear market trend. "
-        f"Should I buy or sell {symbol}? "
-        f"Instructions: Buy if RSI < 30 and 50-day MA > 200-day MA and the price has increased in the past 14 days "
-        f"Sell if RSI > 70 and 50-day MA < 200-day MA and the price has decreased in the past 14 days "
-        f"We buy equal to or below the Bollinger Band lower band price, and we sell equal to or above the upper band price: or else we hold. "
-        f"Hold otherwise. Answer only with buy {symbol}, sell {symbol}, or hold {symbol}."
+        f"Hold otherwise. Answer only with buy {symbol}, sell {symbol}, or hold {symbol}. "
     )
     messages = [{'role': 'user', 'content': content}]
     response = chat('llama3:8b-instruct-q4_0', messages=messages)
     response = response['message']['content'].strip().lower()
+    #AI chat debug code to print the variable 'content'
+    #print(content)
     if "buy" in response:
         return f"buy {symbol}"
     elif "sell" in response:
