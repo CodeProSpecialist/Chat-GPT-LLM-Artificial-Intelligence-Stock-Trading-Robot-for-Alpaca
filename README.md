@@ -1,4 +1,6 @@
-
+  Introducing 
+The Chat GPT LLM Artificial Intelligence Stock Trading Robot 
+-----------------------------------------
 I recommend downloading the newest version of this Python Robot. 
 New Updates and more features were added on May 12, 2024. 
 
