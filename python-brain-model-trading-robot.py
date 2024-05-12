@@ -344,7 +344,7 @@ def main():
 
     while True:
         try:
-            #stop_if_stock_market_is_closed()  # comment this line to debug the Python code
+            stop_if_stock_market_is_closed()  # comment this line to debug the Python code
             now = datetime.now(pytz.timezone('US/Eastern'))
             current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
