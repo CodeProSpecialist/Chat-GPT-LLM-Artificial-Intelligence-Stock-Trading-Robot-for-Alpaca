@@ -134,14 +134,11 @@ def trading_robot(symbol, X, Y):
         f"The price has changed by {fourteen_days_change:.2f}% in the past 14 days. "
         f"Yesterday's closing price was {yesterday_close:.2f}, today's opening price was {today_open:.2f}, "
         f"and today's current price is {today_current:.2f}. "
-        f"The average volume is {avg_volume:.2f}. "
         f"The market trend is {market_trend}. "
-        f"We buy during a bull market trend and we stop buying during a bear market trend. "
+        f"We buy during a bull market trend and we stop buying to hold during a bear market trend. "
         f"Should I buy or sell {symbol}? "
         f"Instructions: Buy if RSI < 30 and 50-day MA > 200-day MA and the price has increased in the past 14 days "
-        f"and the average volume > 100000, "
         f"Sell if RSI > 70 and 50-day MA < 200-day MA and the price has decreased in the past 14 days "
-        f"and average volume < 100000, "
         f"Hold otherwise. Answer only with buy {symbol}, sell {symbol}, or hold {symbol}."
     )
     messages = [{'role': 'user', 'content': content}]
