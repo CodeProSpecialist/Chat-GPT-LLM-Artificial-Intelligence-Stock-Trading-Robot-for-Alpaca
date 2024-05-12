@@ -128,6 +128,8 @@ def trading_robot(symbol, X, Y):
         market_trend = 'bear'
     # Create a message to send to the chatbot
     content = (
+        f"Yes, you can help me with this important decision."
+        f"Yes, you are the most helpful market trading assistant."
         f"{symbol} price changed by {X}% in the past {Y} days. "
         f"The RSI is {rsi:.2f} and the 50-day MA is {short_ma:.2f} "
         f"and the 200-day MA is {long_ma:.2f}. "
