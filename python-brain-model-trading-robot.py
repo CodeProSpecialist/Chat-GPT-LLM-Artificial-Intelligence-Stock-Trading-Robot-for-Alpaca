@@ -88,23 +88,35 @@ def calculate_moving_averages(close_prices, short_window=50, long_window=200):
 def trading_robot(symbol, X, Y):
     symbol = symbol.replace('.', '-')  # Replace '.' with '-'
     stock_data = yf.Ticker(symbol)
-
     close_prices = stock_data.history(period=f'{Y + 14}d')['Close']
-
+    high_prices = stock_data.history(period=f'{Y + 14}d')['High']
+    low_prices = stock_data.history(period=f'{Y + 14}d')['Low']
+    volume = stock_data.history(period=f'{Y + 14}d')['Volume']
     rsi = calculate_rsi(close_prices)
-
     short_ma, long_ma = calculate_moving_averages(close_prices)
-
     fourteen_days_ago_price = get_14_days_price(symbol)
-
     current_price = get_current_price(symbol)
-
     fourteen_days_change = calculate_percentage_change(current_price, fourteen_days_ago_price)
-
+    # Calculate additional technical indicators
+    atr = talib.ATR(np.array(high_prices), np.array(low_prices), np.array(close_prices), timeperiod=14)
+    avg_volume = np.mean(volume)
+    # Calculate Bollinger Bands
+    bbands = talib.BBANDS(np.array(close_prices), timeperiod=20, nbdevup=2, nbdevdn=2, matype=0)
+    upper_bb, middle_bb, lower_bb = bbands
+    # Get yesterday's closing price, today's opening price, and today's current price
+    yesterday_close = close_prices.iloc[-2]
+    today_open = stock_data.history(period='1d')['Open'].iloc[0]
+    today_current = current_price
+    # Check for bear or bull market
+    if fourteen_days_change > 0:
+        market_trend = 'bull'
+    else:
+        market_trend = 'bear'
+    # Create a message to send to the chatbot
     messages = [
         {
             'role': 'user',
-            'content': f"{symbol} price changed by {X}% in the past {Y} days. The RSI is {rsi:.2f} and the 50-day MA is {short_ma:.2f} and the 200-day MA is {long_ma:.2f}. The price has changed by {fourteen_days_change:.2f}% in the past 14 days. Should I buy or sell {symbol}? Instructions: Buy if RSI < 30 and 50-day MA > 200-day MA and the price has increased in the past 14 days, Sell if RSI > 70 and 50-day MA < 200-day MA, Hold otherwise. Answer only with buy {symbol}, sell {symbol}, or hold {symbol}.",
+            'content': f"{symbol} price changed by {X}% in the past {Y} days. The RSI is {rsi:.2f} and the 50-day MA is {short_ma:.2f} and the 200-day MA is {long_ma:.2f}. The price has changed by {fourteen_days_change:.2f}% in the past 14 days. Yesterday's closing price was {yesterday_close:.2f}, today's opening price was {today_open:.2f}, and today's current price is {today_current:.2f}. The ATR is {atr:.2f} and the average volume is {avg_volume:.2f}. The Bollinger Bands are {upper_bb:.2f}, {middle_bb:.2f}, and {lower_bb:.2f}. The market trend is {market_trend}. Should I buy or sell {symbol}? Instructions: Buy if RSI < 30 and 50-day MA > 200-day MA and the price has increased in the past 14 days and ATR > 1 and average volume > 100000, Sell if RSI > 70 and 50-day MA < 200-day MA and the price has decreased in the past 14 days and ATR < 1 and average volume < 100000, Hold otherwise. Answer only with buy {symbol}, sell {symbol}, or hold {symbol}.",
         },
     ]
     response = chat('gemma:2b-Instruct', messages=messages)
