@@ -9,7 +9,7 @@ sh install.sh
 
 Run the following command for Ollama to download the Gemma 2b instruct chat GPT model: 
 
-ollama run gemma:2b-Instruct
+ollama run gemma:2b-instruct
 
 python3 python-brain-model-trading-robot.py
 
