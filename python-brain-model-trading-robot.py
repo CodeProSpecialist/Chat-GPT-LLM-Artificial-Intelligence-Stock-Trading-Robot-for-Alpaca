@@ -109,6 +109,16 @@ def get_average_true_range(symbol):
     atr = talib.ATR(data['High'].values, data['Low'].values, data['Close'].values, timeperiod=22)
     return atr[-1]
 
+def get_atr_low_price(symbol):
+    atr_value = get_average_true_range(symbol)
+    current_price = get_current_price(symbol)
+    return round(current_price - 0.10 * atr_value, 4)
+
+def get_atr_high_price(symbol):
+    atr_value = get_average_true_range(symbol)
+    current_price = get_current_price(symbol)
+    return round(current_price + 0.40 * atr_value, 4)
+
 def trading_robot(symbol, X, Y):
     symbol = symbol.replace('.', '-')  # Replace '.' with '-'
     stock_data = yf.Ticker(symbol)
@@ -131,11 +141,16 @@ def trading_robot(symbol, X, Y):
     upper_band_value = upper_band[-1]
     middle_band_value = middle_band[-1]
     lower_band_value = lower_band[-1]
+
+    atr_low_price = get_atr_low_price(symbol)
+    atr_high_price = get_atr_high_price(symbol)
+
     # debug print the ATR and the bbands below
     print("\n")
     print(f"Making a decision for: {symbol}")
     print(f"Bollinger Bands: {upper_band_value:.2f}, {middle_band_value:.2f}, {lower_band_value:.2f}")
-    print(f"ATR: {atr[-1]:.2f}")
+    print(f"ATR low price: {atr_low_price:.2f}")
+    print(f"ATR high price: {atr_high_price:.2f}")
     # Also, atr is an array, so you need to access its last element
     print(f"Average Volume: {avg_volume:.2f}")
     print("\n")
