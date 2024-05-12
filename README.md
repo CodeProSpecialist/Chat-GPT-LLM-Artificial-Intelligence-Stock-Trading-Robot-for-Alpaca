@@ -1,6 +1,9 @@
 
 ![Screenshot from 2024-05-12 16-34-47.png](..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202024-05-12%2016-34-47.png)
 
+I recommend downloading the newest version of this Python Robot. 
+New Updates and more features were added on May 12, 2024. 
+
 It is recommended to first install Anaconda3 to setup a Python 3 virtual environment. 
 
 Just run the following commands: 
