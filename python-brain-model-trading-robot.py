@@ -30,7 +30,13 @@ global close_prices, time_period
 
 subprocess.run(["sudo", "systemctl", "stop", "ollama"])
 
+subprocess.run(["sudo", "pkill", "ollama"])
+
+time.sleep(2)
+
 subprocess.run(["gnome-terminal", "--", "ollama", "serve"])
+
+time.sleep(1)
 
 # Configure logging
 logging.basicConfig(filename='important-program-messages.txt', level=logging.INFO)
@@ -268,7 +274,7 @@ def main():
 
     while True:
         try:
-            stop_if_stock_market_is_closed()  # comment this line to debug the Python code
+            #stop_if_stock_market_is_closed()  # comment this line to debug the Python code
             now = datetime.now(pytz.timezone('US/Eastern'))
             current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
