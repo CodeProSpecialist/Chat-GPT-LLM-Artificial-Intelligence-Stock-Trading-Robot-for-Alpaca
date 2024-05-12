@@ -28,7 +28,18 @@ purchased_today = {}
 
 global close_prices, time_period
 
-subprocess.run(["sudo", "systemctl", "stop", "ollama"])
+# Function to check if OLLAMA server service is running
+def is_ollama_running():
+    try:
+        subprocess.run(["systemctl", "is-active", "--quiet", "ollama"], check=True)
+        return True  # OLLAMA server service is running
+    except subprocess.CalledProcessError:
+        return False  # OLLAMA server service is not running
+
+# Check if OLLAMA server service is running
+if is_ollama_running():
+    # If OLLAMA server service is running, stop it
+    subprocess.run(["sudo", "systemctl", "stop", "ollama"])
 
 subprocess.run(["sudo", "pkill", "ollama"])
 
