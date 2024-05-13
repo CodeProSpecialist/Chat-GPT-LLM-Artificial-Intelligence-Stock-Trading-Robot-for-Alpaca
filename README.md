@@ -29,6 +29,9 @@ python3 python-brain-model-trading-robot.py
 note: the raspberry pi can work with: 
 tinyllama:1.1b-chat-v1-q2_K
 
+Note: you will need to edit the python code to 
+change the name of the LLM model. 
+
 ollama run tinyllama:1.1b-chat-v1-q2_K
 
 
