@@ -10,7 +10,7 @@ New Updates and more features were added on May 12, 2024.
 ![image](https://github.com/CodeProSpecialist/Chat-GPT-LLM-Artificial-Intelligence-Stock-Trading-Robot-for-Alpaca/assets/111866070/8a2d014b-fefe-4742-bda2-04172882dd38)
 
 
-The AI robot is designed to automate stock trading decisions by leveraging various technical indicators and market data. Here's how it works under the hood:
+This AI robot is designed to automate stock trading decisions by leveraging various technical indicators and market data. Here's how it works under the hood:
 
 Data Collection: The robot collects real-time market data to retrieve stock prices, volume, and other relevant information.
 
