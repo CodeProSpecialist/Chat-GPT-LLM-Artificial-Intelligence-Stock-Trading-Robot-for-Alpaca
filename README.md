@@ -4,7 +4,7 @@ The Chat GPT LLM Artificial Intelligence Stock Trading Robot
 I recommend downloading the newest version of this Python Robot. 
 New Updates and more features were added on May 12, 2024. 
 
-![Screenshot from 2024-05-12 16-34-47](https://github.com/CodeProSpecialist/Chat-GPT-LLM-Artificial-Intelligence-Stock-Trading-Robot-for-Alpaca/assets/111866070/2a652409-fc80-4148-a296-cf5b62e712ec)
+![image](https://github.com/CodeProSpecialist/Chat-GPT-LLM-Artificial-Intelligence-Stock-Trading-Robot-for-Alpaca/assets/111866070/8a2d014b-fefe-4742-bda2-04172882dd38)
 
 
 It is recommended to first install Anaconda3 to setup a Python 3 virtual environment. 
