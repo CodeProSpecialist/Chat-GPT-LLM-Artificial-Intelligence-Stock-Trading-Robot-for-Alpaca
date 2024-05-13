@@ -48,12 +48,12 @@ python3 python-brain-model-trading-robot.py
 
 
 note: the raspberry pi can work with: 
-tinyllama:1.1b-chat-v1-q2_K
+tinydolphin:1.1b-v2.8-q4_0
 
 Note: you will need to edit the python code to 
 change the name of the LLM model. 
 
-ollama run tinyllama:1.1b-chat-v1-q2_K
+ollama run tinydolphin:1.1b-v2.8-q4_0
 
 
 ----------------------------------------------------
