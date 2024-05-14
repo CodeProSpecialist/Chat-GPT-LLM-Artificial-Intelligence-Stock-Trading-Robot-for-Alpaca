@@ -57,7 +57,8 @@ it seems to work great with slower desktop computers:
 ollama run gemma:2b-instruct-q4_0
 
 Note: you will need to edit the python code to 
-change the name of the LLM model. 
+change the name of the LLM model in the python 
+function named "trading_robot." 
 
 ollama run tinydolphin:1.1b-v2.8-q4_0
 
