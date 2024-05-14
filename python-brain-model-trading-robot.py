@@ -284,7 +284,7 @@ def sell_yesterdays_purchases():
         if symbol not in purchased_today:
             # Check if the last trade date is not today
             if current_price >= bought_price + 0.01:
-                quantity = int(position.qty)
+                quantity = float(position.qty)
                 submit_sell_order(symbol, quantity)
                 logging.info(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
 
