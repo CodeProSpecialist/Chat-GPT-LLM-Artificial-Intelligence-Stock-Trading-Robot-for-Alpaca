@@ -50,6 +50,12 @@ python3 python-brain-model-trading-robot.py
 note: the raspberry pi can work with: 
 tinydolphin:1.1b-v2.8-q4_0
 
+I also noticed that if you have a slower 
+desktop computer, you can give gemma a try because 
+it seems to work great with slower desktop computers: 
+
+ollama run gemma:2b-instruct-q4_0
+
 Note: you will need to edit the python code to 
 change the name of the LLM model. 
 
