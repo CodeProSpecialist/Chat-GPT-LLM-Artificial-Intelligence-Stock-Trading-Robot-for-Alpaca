@@ -363,7 +363,7 @@ def main():
             print("\n")
 
             # Clear the purchased_today dictionary at the start of each day
-            schedule.every().day.at("09:27").do(clear_purchased_today)  # Run at 09:30am every day
+            schedule.every().day.at("09:28").do(clear_purchased_today)  # Run at 09:28am every day
 
             sell_yesterdays_purchases()
 
