@@ -252,6 +252,8 @@ def submit_sell_order(symbol, quantity):
         logging.error(f"Error getting position: {e}")
         return
 
+    quantity = float(position.qty)
+
     if position.qty != '0':
         bought_price = float(position.avg_entry_price)
         # sell quickly when the market quickly changes for at least 1 penny more than the purchased price. 
