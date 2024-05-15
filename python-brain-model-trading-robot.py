@@ -271,7 +271,7 @@ def submit_sell_order(symbol, quantity):
 
 def sell_yesterdays_purchases():
     """
-    Sell all owned positions that were purchased before today if the purchased price is less than the current price + 0.10 cents.
+    Sell all owned positions that were purchased before today if the purchased price is less than the current price + 0.01 cents.
     """
     account = api2.get_account()
     positions = api2.list_positions()
