@@ -202,7 +202,17 @@ def trading_robot(symbol, X, Y):
     response = chat('llama3:8b-instruct-q4_0', messages=messages)
     response = response['message']['content'].strip().lower()
     #AI chat debug code to print the variable 'content'
+    #print("\n")
     #print(content)
+    #print("\n")
+    # AI chat debug code to print the variable 'messages'
+    #print("\n")
+    #print(messages)
+    #print("\n")
+    # AI chat debug code to print the variable 'response'
+    print("\n")
+    print(response)
+    print("\n")
     if "buy" in response:
         return f"buy {symbol}"
     elif "sell" in response:
