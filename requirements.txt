@@ -3,5 +3,6 @@ yfinance
 ollama
 alpaca-trade-api
 schedule
-numpy
 ta-lib
+numpy
+tabulate
