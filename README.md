@@ -13,9 +13,9 @@ to changing market conditions.
 
 The following screen pictures were with llama3:8b-instruct-q4_0
 
-![Screenshot from 2024-05-16 11-38-56](https://github.com/CodeProSpecialist/Chat-GPT-LLM-Artificial-Intelligence-Stock-Trading-Robot-for-Alpaca/assets/111866070/392b9895-6d42-49be-bd84-0d67b9a4c49c)
+![Screenshot from 2024-05-16 16-37-09](https://github.com/CodeProSpecialist/Chat-GPT-LLM-Artificial-Intelligence-Stock-Trading-Robot-for-Alpaca/assets/111866070/aaf91c92-8588-4588-956a-abcf259ce3f6)
 
-![Screenshot from 2024-05-16 11-41-40](https://github.com/CodeProSpecialist/Chat-GPT-LLM-Artificial-Intelligence-Stock-Trading-Robot-for-Alpaca/assets/111866070/3b8c5d13-8503-45e1-84ba-794ea234d10b)
+![Screenshot from 2024-05-16 16-38-53](https://github.com/CodeProSpecialist/Chat-GPT-LLM-Artificial-Intelligence-Stock-Trading-Robot-for-Alpaca/assets/111866070/ed2c760b-e27f-4e64-91e5-8d34fee7d3dd)
 
 
 Are you tired of making emotional trading decisions? Do you want to take your trading to the next level with the power of artificial intelligence? Look no further! Our Chat GPT LLM Artificial Intelligence Stock Trading Robot is here to transform your trading experience.
