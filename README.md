@@ -5,9 +5,19 @@ The Chat GPT LLM Artificial Intelligence Stock Trading Robot
 Maximize Your Returns with Advanced Strategies and Real-time Insights!
 -----------------------------------------
 I recommend downloading the newest version of this Python Robot. 
-New Updates and more features were added on May 12, 2024. 
+New Updates and more features were added on May 16, 2024. 
 
-![image](https://github.com/CodeProSpecialist/Chat-GPT-LLM-Artificial-Intelligence-Stock-Trading-Robot-for-Alpaca/assets/111866070/8a2d014b-fefe-4742-bda2-04172882dd38)
+The best results have been with the AI model named: 
+  llama3:8b-instruct-q4_0
+Llama 3 has expert stock market trading knowledge, knows what the technical analysis indicators mean, 
+and Llama 3 knows the correct trade to make in response 
+to changing market conditions. 
+
+The following screen pictures were with llama3:8b-instruct-q4_0
+
+![Screenshot from 2024-05-16 11-38-56](https://github.com/CodeProSpecialist/Chat-GPT-LLM-Artificial-Intelligence-Stock-Trading-Robot-for-Alpaca/assets/111866070/392b9895-6d42-49be-bd84-0d67b9a4c49c)
+
+![Screenshot from 2024-05-16 11-41-40](https://github.com/CodeProSpecialist/Chat-GPT-LLM-Artificial-Intelligence-Stock-Trading-Robot-for-Alpaca/assets/111866070/3b8c5d13-8503-45e1-84ba-794ea234d10b)
 
 
 This AI robot is designed to automate stock trading decisions by leveraging various technical indicators and market data. Here's how it works under the hood:
