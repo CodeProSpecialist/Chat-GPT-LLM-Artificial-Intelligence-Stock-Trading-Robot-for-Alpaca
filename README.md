@@ -72,7 +72,7 @@ ollama run gemma:2b-instruct-q4_0
 
 Note: you will need to edit the python code to 
 change the name of the LLM model in the python 
-function named "trading_robot." 
+function named "organized_response"
 
 ollama run gemma:2b-instruct-q4_0
 
