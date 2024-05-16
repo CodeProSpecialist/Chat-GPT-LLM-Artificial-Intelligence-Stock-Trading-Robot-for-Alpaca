@@ -12,6 +12,7 @@ import subprocess
 import talib
 import re
 import numpy as np
+from tabulate import tabulate
 
 # Configure Alpaca API
 API_KEY_ID = os.getenv('APCA_API_KEY_ID')
@@ -225,6 +226,43 @@ def organized_response(content, symbol):
     else:
         return f"hold {symbol}"
 
+
+def print_positions(api2, show_price_percentage_change=False):
+    positions = api2.list_positions()
+
+    table_data = []
+    headers = ["Symbol", "Quantity", "Avg Entry Price"]
+    if show_price_percentage_change:
+        headers.append("Price Change (%)")
+
+    for position in positions:
+        symbol = position.symbol
+        quantity = position.qty
+        avg_entry_price = float(position.avg_entry_price)
+
+        row = [symbol, quantity, f"{avg_entry_price:.2f}"]
+
+        if show_price_percentage_change:
+            current_price = get_current_price(symbol)  # Replace with your actual method to get current price
+            percentage_change = ((current_price - avg_entry_price) / avg_entry_price) * 100
+            row.append(f"{percentage_change:.2f}%")
+
+        table_data.append(row)
+
+    table_str = tabulate(table_data, headers=headers, tablefmt="grid")
+    title = "Currently Owned Positions to Sell for a Profit:"
+    full_output = f"{title}\n\n{table_str}"
+    print(full_output)
+    return full_output
+
+def print_and_share_positions(api2, show_price_percentage_change=False):
+    table_str = print_positions(api2, show_price_percentage_change)
+    content = (f"Here are the current stock market positions that I own and that I need your help with to try to sell for a profit:\n{table_str}. "
+               f"Just remember these owned stock market positions in your memory and no questions are asked about "
+               f"these owned positions at this time. If there are no positions here, then we do not"
+               f"currently own any positions.")
+    organized_response(content, "positions")
+
 def submit_buy_order(symbol, quantity):
     # Get the current time in Eastern Time
     eastern = pytz.timezone('US/Eastern')
@@ -387,6 +425,8 @@ def main():
             schedule.every().day.at("09:28").do(clear_purchased_today)  # Run at 09:28am every day
 
             sell_yesterdays_purchases()
+
+            print_and_share_positions(api2, show_price_percentage_change=True)
 
             #if day_trade_count < 3:
                 #sell_yesterdays_purchases()  # Only run this function if day trade count is less than 3
