@@ -10,6 +10,7 @@ import schedule
 import time
 import subprocess
 import talib
+import re
 import numpy as np
 
 # Configure Alpaca API
@@ -51,7 +52,6 @@ time.sleep(1)
 
 # Configure logging
 logging.basicConfig(filename='important-program-messages.txt', level=logging.INFO)
-
 
 def get_stocks_to_trade():
     try:
@@ -198,30 +198,32 @@ def trading_robot(symbol, X, Y):
         f"It is a better idea to sell near the Average True Range high price. "
         f"Hold otherwise. Answer only with: **buy {symbol}**, **sell {symbol}**, or **hold {symbol}**. "
     )
+    # Use parse_response function to get the decision
+    decision = organized_response(content, symbol)
+    return decision
+
+def organized_response(content, symbol):
     messages = [{'role': 'user', 'content': content}]
     response = chat('llama3:8b-instruct-q4_0', messages=messages)
-    response = response['message']['content'].strip().lower()
-    #AI chat debug code to print the variable 'content'
-    #print("\n")
-    #print(content)
-    #print("\n")
-    # AI chat debug code to print the variable 'messages'
-    #print("\n")
-    #print(messages)
-    #print("\n")
-    # AI chat debug code to print the variable 'response'
-    print("\n")
-    print(response)
-    print("\n")
-    if f"**buy {symbol}**" in response:
+    response_content = response['message']['content'].strip().lower()
+
+    # Debug prints
+    #print("\nContent:\n", content, "\n")
+    #print("\nMessages:\n", messages, "\n")
+    print("\n", response_content, "\n")
+
+    buy_pattern = re.compile(rf"\*\*buy {symbol}\*\*", re.IGNORECASE)
+    sell_pattern = re.compile(rf"\*\*sell {symbol}\*\*", re.IGNORECASE)
+    hold_pattern = re.compile(rf"\*\*hold {symbol}\*\*", re.IGNORECASE)
+
+    if buy_pattern.search(response_content):
         return f"buy {symbol}"
-    elif f"**sell {symbol}**" in response:
+    elif sell_pattern.search(response_content):
         return f"sell {symbol}"
-    elif f"**hold {symbol}**" in response:
+    elif hold_pattern.search(response_content):
         return f"hold {symbol}"
     else:
         return f"hold {symbol}"
-
 
 def submit_buy_order(symbol, quantity):
     # Get the current time in Eastern Time
