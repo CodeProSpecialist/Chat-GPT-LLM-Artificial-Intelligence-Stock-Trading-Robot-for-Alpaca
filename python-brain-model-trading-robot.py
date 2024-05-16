@@ -260,8 +260,9 @@ def submit_sell_order(symbol, quantity):
 
     if position.qty != '0':
         bought_price = float(position.avg_entry_price)
-        # sell quickly when the market quickly changes for at least 1 penny more than the purchased price. 
-        if day_trade_count < 3 and current_price >= bought_price + 0.01:
+        # sell when the market quickly changes for +1% more than the purchased price.
+        #  current_price >= bought_price * 1.01:
+        if day_trade_count < 3 and current_price >= bought_price * 1.01:
             api2.submit_order(
                 symbol=symbol,
                 qty=quantity,
