@@ -62,19 +62,19 @@ python3 python-brain-model-trading-robot.py
 
 
 note: the raspberry pi can work with:  
-gemma:2b-instruct-q4_0
+llama2:7b-instruct
 
 I also noticed that if you have a slower 
-desktop computer, you can also give gemma a try because 
+desktop computer, you can also give llama2 a try because 
 it seems to work great with slower desktop computers: 
 
-ollama run gemma:2b-instruct-q4_0
+ollama run llama2:7b-instruct
 
 Note: you will need to edit the python code to 
 change the name of the LLM model in the python 
 function named "organized_response"
 
-ollama run gemma:2b-instruct-q4_0
+ollama run llama2:7b-instruct
 
 
 ----------------------------------------------------
