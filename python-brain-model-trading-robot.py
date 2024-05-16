@@ -149,7 +149,7 @@ def trading_robot(symbol, X, Y):
     # debug print the ATR, Volume, and the bbands below
     print("\n")
     now = datetime.now(pytz.timezone('US/Eastern'))
-    compact_current_time_str = now.strftime("Eastern Time | %I:%M:%S %p ")
+    compact_current_time_str = now.strftime("EST %I:%M:%S %p ")
     print(compact_current_time_str)
     print("\n")
     print(f"Making a decision for: {symbol}")
@@ -398,8 +398,9 @@ def main():
                     print(f"Decision: {signal}")
                     print("\n")
                     now = datetime.now(pytz.timezone('US/Eastern'))
-                    compact_current_time_str = now.strftime("Eastern Time | %I:%M:%S %p ")
+                    compact_current_time_str = now.strftime("EST %I:%M:%S %p ")
                     print(compact_current_time_str)
+                    print("--------------------------")
                     print("\n")
                     logging.info(f"Signal: {signal}")
                     time.sleep(1)  # Add a 1-second delay
