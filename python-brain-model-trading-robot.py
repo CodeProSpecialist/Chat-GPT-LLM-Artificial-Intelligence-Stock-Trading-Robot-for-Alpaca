@@ -148,6 +148,10 @@ def trading_robot(symbol, X, Y):
 
     # debug print the ATR, Volume, and the bbands below
     print("\n")
+    now = datetime.now(pytz.timezone('US/Eastern'))
+    compact_current_time_str = now.strftime("Eastern Time | %I:%M:%S %p ")
+    print(compact_current_time_str)
+    print("\n")
     print(f"Making a decision for: {symbol}")
     #print(f"Bollinger Bands: {upper_band_value:.2f}, {middle_band_value:.2f}, {lower_band_value:.2f}")
     #print(f"ATR low price: {atr_low_price:.2f}")
@@ -392,6 +396,10 @@ def main():
                     # debug print 14 days prices
                     #print(f"Debug printing 14 days Prices: {debug_print_14_days_prices}")
                     print(f"Decision: {signal}")
+                    print("\n")
+                    now = datetime.now(pytz.timezone('US/Eastern'))
+                    compact_current_time_str = now.strftime("Eastern Time | %I:%M:%S %p ")
+                    print(compact_current_time_str)
                     print("\n")
                     logging.info(f"Signal: {signal}")
                     time.sleep(1)  # Add a 1-second delay
