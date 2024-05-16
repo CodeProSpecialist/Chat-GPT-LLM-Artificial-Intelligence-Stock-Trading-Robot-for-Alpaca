@@ -196,7 +196,7 @@ def trading_robot(symbol, X, Y):
         f"It is a better idea to buy near the Average True Range low price. "
         f"The Average True Range (ATR) high price is {atr_high_price:.2f}. "
         f"It is a better idea to sell near the Average True Range high price. "
-        f"Hold otherwise. Answer only with buy {symbol}, sell {symbol}, or hold {symbol}. "
+        f"Hold otherwise. Answer only with: **buy {symbol}**, **sell {symbol}**, or **hold {symbol}**. "
     )
     messages = [{'role': 'user', 'content': content}]
     response = chat('llama3:8b-instruct-q4_0', messages=messages)
@@ -213,10 +213,12 @@ def trading_robot(symbol, X, Y):
     print("\n")
     print(response)
     print("\n")
-    if "buy" in response:
+    if f"**buy {symbol}**" in response:
         return f"buy {symbol}"
-    elif "sell" in response:
+    elif f"**sell {symbol}**" in response:
         return f"sell {symbol}"
+    elif f"**hold {symbol}**" in response:
+        return f"hold {symbol}"
     else:
         return f"hold {symbol}"
 
