@@ -84,54 +84,88 @@ def get_14_days_price(symbol):
     stock_data = yf.Ticker(symbol)
     return round(stock_data.history(period='14d')['Close'].iloc[0], 4)
 
-
 def get_current_price(symbol):
     # Replace '.' with '-'
     symbol = symbol.replace('.', '-')
-    
+
     # Define Eastern Time Zone
     eastern = pytz.timezone('US/Eastern')
     now = datetime.now(eastern)
-    
+
     # Define trading hours
     pre_market_start = time2(4, 0)
     pre_market_end = time2(9, 30)
-    
+
     market_start = time2(9, 30)
     market_end = time2(16, 0)
-    
+
     post_market_start = time2(16, 0)
     post_market_end = time2(20, 0)
 
-    # initialize variable for stock_data
-    stock_data = None
     # Fetch stock data
     stock_data = yf.Ticker(symbol)
-    
-    if pre_market_start <= now.time() < pre_market_end:
-        # Fetch pre-market data
-        data = stock_data.history(start=now.strftime('%Y-%m-%d'), interval='1m')
-        pre_market_data = data.between_time(pre_market_start, pre_market_end)
-        current_price = pre_market_data['Close'][-1] if not pre_market_data.empty else None
-    
-    elif market_start <= now.time() < market_end:
-        # Fetch regular market data
-        data = stock_data.history(period='1d', interval='1m')
-        current_price = data['Close'][-1] if not data.empty else None
-    
-    elif post_market_start <= now.time() < post_market_end:
-        # Fetch post-market data
-        data = stock_data.history(start=now.strftime('%Y-%m-%d'), interval='1m')
-        post_market_data = data.between_time(post_market_start, post_market_end)
-        current_price = post_market_data['Close'][-1] if not post_market_data.empty else None
-    
-    else:
-        # Outside of trading hours, get the last close price
-        last_close = round(stock_data.history(period='1d')['Close'].iloc[0], 4)
-        current_price = last_close
-    
-    return round(current_price, 4) if current_price else None
 
+    try:
+        if pre_market_start <= now.time() < market_start:
+            # Fetch pre-market data
+            data = stock_data.history(start=now.strftime('%Y-%m-%d'), interval='1m')
+            if not data.empty:
+                data.index = data.index.tz_convert(eastern)
+                pre_market_data = data.between_time(pre_market_start, pre_market_end)
+                current_price = pre_market_data['Close'][-1] if not pre_market_data.empty else None
+                if current_price is None:
+                    logging.error("Pre-market: Current Price not found error.")
+                    print("Pre-market: Current Price not found error.")
+            else:
+                current_price = None
+                logging.error("Pre-market: Current Price not found error.")
+                print("Pre-market: Current Price not found error.")
+
+        elif market_start <= now.time() < market_end:
+            # Fetch regular market data
+            data = stock_data.history(period='1d', interval='1m')
+            if not data.empty:
+                data.index = data.index.tz_convert(eastern)
+                current_price = data['Close'][-1] if not data.empty else None
+                if current_price is None:
+                    logging.error("Market hours: Current Price not found error.")
+                    print("Market hours: Current Price not found error.")
+            else:
+                current_price = None
+                logging.error("Market hours: Current Price not found error.")
+                print("Market hours: Current Price not found error.")
+
+        elif market_end <= now.time() < post_market_end:
+            # Fetch post-market data
+            data = stock_data.history(start=now.strftime('%Y-%m-%d'), interval='1m')
+            if not data.empty:
+                data.index = data.index.tz_convert(eastern)
+                post_market_data = data.between_time(post_market_start, post_market_end)
+                current_price = post_market_data['Close'][-1] if not post_market_data.empty else None
+                if current_price is None:
+                    logging.error("Post-market: Current Price not found error.")
+                    print("Post-market: Current Price not found error.")
+            else:
+                current_price = None
+                logging.error("Post-market: Current Price not found error.")
+                print("Post-market: Current Price not found error.")
+
+        else:
+            # Outside of trading hours, get the last close price
+            last_close = stock_data.history(period='1d')['Close'].iloc[-1]
+            current_price = last_close
+
+    except Exception as e:
+        logging.error(f"Error fetching current price for {symbol}: {e}")
+        print(f"Error fetching current price for {symbol}: {e}")
+        current_price = None
+
+    if current_price is None:
+        error_message = f"Failed to retrieve current price for {symbol}."
+        logging.error(error_message)
+        print(error_message)
+
+    return round(current_price, 4) if current_price else None
 
 def calculate_percentage_change(current_price, previous_price):
     return ((current_price - previous_price) / previous_price) * 100
@@ -338,6 +372,7 @@ def submit_buy_order(symbol, quantity):
     else:
         logging.info("Trading outside profit trading strategy hours, buy order not submitted.")
 
+
 def submit_sell_order(symbol, quantity):
     account_info = api2.get_account()
     day_trade_count = account_info.daytrade_count
@@ -352,7 +387,7 @@ def submit_sell_order(symbol, quantity):
 
     if position.qty != '0':
         bought_price = float(position.avg_entry_price)
-        
+
         # Check if the market is open or if it is pre/post market
         eastern = pytz.timezone('US/Eastern')
         now = datetime.now(eastern)
@@ -390,14 +425,13 @@ def submit_sell_order(symbol, quantity):
             logging.info(f"The market is currently closed. No sell order was submitted for {symbol}.")
             return
 
-        if day_trade_count < 3 and current_price >= bought_price + 0.01:
+        if day_trade_count < 3 and current_price and current_price >= bought_price + 0.01:
             api2.submit_order(**order)
             logging.info(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
         else:
             logging.info(f"No order was submitted due to day trading limit or insufficient price increase.")
     else:
         logging.info(f"You don't own any shares of {symbol}, so no sell order was submitted.")
-
 
 def sell_yesterdays_purchases():
     """
