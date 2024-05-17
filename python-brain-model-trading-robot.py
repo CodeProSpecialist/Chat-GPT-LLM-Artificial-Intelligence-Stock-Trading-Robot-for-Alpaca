@@ -208,6 +208,7 @@ def trading_robot(symbol, X, Y):
     short_ma, long_ma = calculate_moving_averages(close_prices)
     fourteen_days_ago_price = get_14_days_price(symbol)
     current_price = get_current_price(symbol)
+
     fourteen_days_change = calculate_percentage_change(current_price, fourteen_days_ago_price)
     # Calculate additional technical indicators
     avg_volume = np.mean(volume)
@@ -379,10 +380,15 @@ def submit_sell_order(symbol, quantity):
 
     current_price = get_current_price(symbol)
 
+    if current_price is None:
+        # Skip order submission if current price is not found
+        return
+
     try:
         position = api2.get_position(symbol)
     except Exception as e:
         logging.error(f"Error getting position: {e}")
+        print(f"Error getting position: {e}")
         return
 
     if position.qty != '0':
@@ -423,15 +429,19 @@ def submit_sell_order(symbol, quantity):
             }
         else:
             logging.info(f"The market is currently closed. No sell order was submitted for {symbol}.")
+            print(f"The market is currently closed. No sell order was submitted for {symbol}.")
             return
 
         if day_trade_count < 3 and current_price and current_price >= bought_price + 0.01:
             api2.submit_order(**order)
             logging.info(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
+            print(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
         else:
             logging.info(f"No order was submitted due to day trading limit or insufficient price increase.")
+            print(f"No order was submitted due to day trading limit or insufficient price increase.")
     else:
         logging.info(f"You don't own any shares of {symbol}, so no sell order was submitted.")
+        print(f"You don't own any shares of {symbol}, so no sell order was submitted.")
 
 def sell_yesterdays_purchases():
     """
@@ -542,6 +552,8 @@ def main():
                 try:
                     previous_price = get_14_days_price(symbol)
                     current_price = get_current_price(symbol)
+                    if current_price is None:  # Skip to next symbol if current price is None
+                        continue
                     debug_print_14_days_prices = get_14_days_price(symbol)
                     X = calculate_percentage_change(current_price, previous_price)
                     Y = 14
