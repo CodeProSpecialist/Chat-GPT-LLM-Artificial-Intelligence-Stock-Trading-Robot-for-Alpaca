@@ -48,6 +48,14 @@ Don't miss out on this opportunity to take your trading to the next level. Try o
 
 It is recommended to first install Anaconda3 to setup a Python 3 virtual environment. 
 
+Place the stock symbols that you would like to trade into the 
+text file named list-of-stocks-to-buy.txt 
+One stock symbol per line. 
+If a stock symbol has a hyphen ( BRK-B ), then 
+replace the hyphen with a ( . ) dot. 
+So, the stock symbol in the list would be 
+correctly typed as BRK.B
+
 Just run the following commands: 
 
 sh install.sh
