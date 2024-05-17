@@ -277,7 +277,7 @@ def trading_robot(symbol, X, Y):
         f"It is a better idea to sell near the Average True Range high price. "
         f"Hold otherwise. Answer only with: **buy {symbol}**, **sell {symbol}**, or **hold {symbol}**. "
     )
-    # Use parse_response function to get the decision
+    # Use organized_response function to get the decision
     decision = organized_response(content, symbol)
     return decision
 
@@ -588,7 +588,7 @@ def main():
             print("\n")
 
             # Clear the purchased_today dictionary at the start of each day
-            schedule.every().day.at("09:28").do(clear_purchased_today)  # Run at 09:28am every day
+            schedule.every().day.at("04:01").do(clear_purchased_today)  # Run at 04:01am every day
 
             sell_yesterdays_purchases()
 
