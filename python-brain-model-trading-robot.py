@@ -355,6 +355,9 @@ def submit_buy_order(symbol, quantity):
         account_info = api2.get_account()
         cash_available = float(account_info.cash)
         current_price = get_current_price(symbol)
+        if current_price is None:
+            # Skip order submission if current price is not found
+            return
 
         if cash_available >= current_price:
             # Convert symbol from BRK-B to BRK.B if necessary
@@ -454,6 +457,8 @@ def sell_yesterdays_purchases():
     for position in positions:
         symbol = position.symbol
         current_price = get_current_price(symbol)
+        if current_price is None:  # Skip to next symbol if current price is None
+            continue
         bought_price = float(position.avg_entry_price)
 
         # Check if the symbol is not in the purchased_today dictionary
