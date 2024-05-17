@@ -3,7 +3,7 @@
 **Maximize Your Returns with Advanced Strategies and Real-time Insights!**
 
 I recommend downloading the newest version of this Python Robot. 
-New Updates and more features were added on May 16, 2024. 
+New Updates and more features were added on May 17, 2024. 
 
 The best results have been with the AI model named: 
   llama3:8b-instruct-q4_0
