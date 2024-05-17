@@ -87,32 +87,26 @@ def get_14_days_price(symbol):
 def get_current_price(symbol):
     # Replace '.' with '-'
     symbol = symbol.replace('.', '-')
-
     # Define Eastern Time Zone
     eastern = pytz.timezone('US/Eastern')
     now = datetime.now(eastern)
-
     # Define trading hours
     pre_market_start = time2(4, 0)
     pre_market_end = time2(9, 30)
-
     market_start = time2(9, 30)
     market_end = time2(16, 0)
-
     post_market_start = time2(16, 0)
     post_market_end = time2(20, 0)
-
     # Fetch stock data
     stock_data = yf.Ticker(symbol)
-
     try:
         if pre_market_start <= now.time() < market_start:
             # Fetch pre-market data
-            data = stock_data.history(start=now.strftime('%Y-%m-%d'), interval='1m', actions=True)
+            data = stock_data.history(start=now.strftime('%Y-%m-%d'), interval='1m', prepost=True)
             if not data.empty:
                 data.index = data.index.tz_convert(eastern)
                 pre_market_data = data.between_time(pre_market_start, pre_market_end)
-                current_price = pre_market_data['Close'][-1] if not pre_market_data.empty else None
+                current_price = pre_market_data['Close'].iloc[-1] if not pre_market_data.empty else None
                 if current_price is None:
                     logging.error("Pre-market: Current Price not found error.")
                     print("Pre-market: Current Price not found error.")
@@ -120,13 +114,12 @@ def get_current_price(symbol):
                 current_price = None
                 logging.error("Pre-market: Current Price not found error.")
                 print("Pre-market: Current Price not found error.")
-
         elif market_start <= now.time() < market_end:
             # Fetch regular daytime 9:30 - 16:00 market data
             data = stock_data.history(period='1d', interval='1m')
             if not data.empty:
                 data.index = data.index.tz_convert(eastern)
-                current_price = data['Close'][-1] if not data.empty else None
+                current_price = data['Close'].iloc[-1] if not data.empty else None
                 if current_price is None:
                     logging.error("Market hours: Current Price not found error.")
                     print("Market hours: Current Price not found error.")
@@ -134,14 +127,13 @@ def get_current_price(symbol):
                 current_price = None
                 logging.error("Market hours: Current Price not found error.")
                 print("Market hours: Current Price not found error.")
-
         elif market_end <= now.time() < post_market_end:
             # Fetch post-market data
-            data = stock_data.history(start=now.strftime('%Y-%m-%d'), interval='1m', actions=True)
+            data = stock_data.history(start=now.strftime('%Y-%m-%d'), interval='1m', prepost=True)
             if not data.empty:
                 data.index = data.index.tz_convert(eastern)
                 post_market_data = data.between_time(post_market_start, post_market_end)
-                current_price = post_market_data['Close'][-1] if not post_market_data.empty else None
+                current_price = post_market_data['Close'].iloc[-1] if not post_market_data.empty else None
                 if current_price is None:
                     logging.error("Post-market: Current Price not found error.")
                     print("Post-market: Current Price not found error.")
@@ -154,7 +146,6 @@ def get_current_price(symbol):
             # Outside of trading hours, get the last close price
             last_close = stock_data.history(period='1d')['Close'].iloc[-1]
             current_price = last_close
-
     except Exception as e:
         logging.error(f"Error fetching current price for {symbol}: {e}")
         print(f"Error fetching current price for {symbol}: {e}")
