@@ -308,23 +308,54 @@ def submit_sell_order(symbol, quantity):
         logging.error(f"Error getting position: {e}")
         return
 
-    quantity = float(position.qty)
-
     if position.qty != '0':
         bought_price = float(position.avg_entry_price)
-        # sell when the market quickly changes for + $0.01 cent more than the purchased price.
-        #  current_price >= bought_price + 0.01:
+        
+        # Check if the market is open or if it is pre/post market
+        eastern = pytz.timezone('US/Eastern')
+        now = datetime.now(eastern)
+
+        pre_market_start = time(4, 0)
+        pre_market_end = time(9, 30)
+
+        market_start = time(9, 30)
+        market_end = time(16, 0)
+
+        post_market_start = time(16, 0)
+        post_market_end = time(20, 0)
+
+        if pre_market_start <= now.time() < market_start or market_end <= now.time() < post_market_end:
+            # Extended hours: Pre-market or Post-market
+            order = {
+                'symbol': symbol,
+                'qty': quantity,
+                'side': 'sell',
+                'type': 'limit',
+                'time_in_force': 'day',
+                'limit_price': current_price,  # Set the limit price as the current price
+                'extended_hours': True  # Set to true for extended hours trading
+            }
+        elif market_start <= now.time() < market_end:
+            # Regular market hours
+            order = {
+                'symbol': symbol,
+                'qty': quantity,
+                'side': 'sell',
+                'type': 'market',
+                'time_in_force': 'day'
+            }
+        else:
+            logging.info(f"The market is currently closed. No sell order was submitted for {symbol}.")
+            return
+
         if day_trade_count < 3 and current_price >= bought_price + 0.01:
-            api2.submit_order(
-                symbol=symbol,
-                qty=quantity,
-                side='sell',
-                type='market',
-                time_in_force='day'
-            )
+            api2.submit_order(**order)
             logging.info(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
+        else:
+            logging.info(f"No order was submitted due to day trading limit or insufficient price increase.")
     else:
         logging.info(f"You don't own any shares of {symbol}, so no sell order was submitted.")
+
 
 def sell_yesterdays_purchases():
     """
