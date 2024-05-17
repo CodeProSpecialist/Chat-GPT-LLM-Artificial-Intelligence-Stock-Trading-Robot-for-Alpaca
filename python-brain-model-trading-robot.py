@@ -459,6 +459,8 @@ def sell_yesterdays_purchases():
         # Check if the symbol is not in the purchased_today dictionary
         if symbol not in purchased_today:
             # Check if the last trade date is not today
+            if current_price is None:  # Skip to next symbol if current price is None
+                continue
             if current_price >= bought_price + 0.01:
                 quantity = float(position.qty)
                 submit_sell_order(symbol, quantity)
