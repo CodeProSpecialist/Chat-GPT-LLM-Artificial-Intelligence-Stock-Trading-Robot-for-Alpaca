@@ -321,6 +321,8 @@ def print_positions(api2, show_price_percentage_change=False):
 
         if show_price_percentage_change:
             current_price = get_current_price(symbol)  # Replace with your actual method to get current price
+            if current_price is None:  # Skip to next symbol if current price is None
+                continue
             percentage_change = ((current_price - avg_entry_price) / avg_entry_price) * 100
             row.append(f"{percentage_change:.2f}%")
 
