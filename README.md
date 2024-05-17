@@ -9,6 +9,15 @@ in profits.
 I recommend downloading the newest version of this Python Robot. 
 New Updates and more features were added on May 17, 2024. 
 
+------------------------------------
+This robot has a maximum profit strategy for buying and selling 
+at the perfect times. It only buys and sells at certain strategic times 
+for being able to generate the best 
+results. 
+The recommended time to start this 
+AI Robot is 4:00 AM Eastern time. 
+------------------------------------
+
 The best results have been with the AI model named: 
   llama3:8b-instruct-q4_0
 Llama 3 has expert stock market trading knowledge, knows what the technical analysis indicators mean, 
@@ -55,6 +64,13 @@ If a stock symbol has a hyphen ( BRK-B ), then
 replace the hyphen with a ( . ) dot. 
 So, the stock symbol in the list would be 
 correctly typed as BRK.B
+
+This robot has a maximum profit strategy for buying and selling 
+at the perfect times. It only buys and sells at certain strategic times 
+for being able to generate the best 
+results. 
+The recommended time to start this 
+AI Robot is 4:00 AM Eastern time. 
 
 Just run the following commands: 
 
