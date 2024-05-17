@@ -86,9 +86,49 @@ def get_14_days_price(symbol):
 
 
 def get_current_price(symbol):
-    symbol = symbol.replace('.', '-')  # Replace '.' with '-'
+    # Replace '.' with '-'
+    symbol = symbol.replace('.', '-')
+    
+    # Define Eastern Time Zone
+    eastern = pytz.timezone('US/Eastern')
+    now = datetime.now(eastern)
+    
+    # Define trading hours
+    pre_market_start = time(4, 0)
+    pre_market_end = time(9, 30)
+    
+    market_start = time(9, 30)
+    market_end = time(16, 0)
+    
+    post_market_start = time(16, 0)
+    post_market_end = time(20, 0)
+    
+    # Fetch stock data
     stock_data = yf.Ticker(symbol)
-    return round(stock_data.history(period='1d')['Close'].iloc[0], 4)
+    
+    if pre_market_start <= now.time() < pre_market_end:
+        # Fetch pre-market data
+        data = stock_data.history(start=now.strftime('%Y-%m-%d'), interval='1m')
+        pre_market_data = data.between_time(pre_market_start, pre_market_end)
+        current_price = pre_market_data['Close'][-1] if not pre_market_data.empty else None
+    
+    elif market_start <= now.time() < market_end:
+        # Fetch regular market data
+        data = stock_data.history(period='1d', interval='1m')
+        current_price = data['Close'][-1] if not data.empty else None
+    
+    elif post_market_start <= now.time() < post_market_end:
+        # Fetch post-market data
+        data = stock_data.history(start=now.strftime('%Y-%m-%d'), interval='1m')
+        post_market_data = data.between_time(post_market_start, post_market_end)
+        current_price = post_market_data['Close'][-1] if not post_market_data.empty else None
+    
+    else:
+        # Outside of trading hours, get the last close price
+        last_close = stock_data.history(period='1d')['Close'][-1]
+        current_price = last_close
+    
+    return round(current_price, 4) if current_price else None
 
 
 def calculate_percentage_change(current_price, previous_price):
