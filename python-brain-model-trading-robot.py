@@ -220,6 +220,8 @@ def trading_robot(symbol, X, Y):
     now = datetime.now(pytz.timezone('US/Eastern'))
     compact_current_time_str = now.strftime("EST %I:%M:%S %p ")
     print(compact_current_time_str)
+    # share the extra_compact_current_time_str with the robot brain model.
+    extra_compact_current_time_str = now.strftime("%I:%M:%S %p ")
     print("\n")
     print(f"Making a decision for: {symbol}")
     #print(f"Bollinger Bands: {upper_band_value:.2f}, {middle_band_value:.2f}, {lower_band_value:.2f}")
@@ -238,11 +240,17 @@ def trading_robot(symbol, X, Y):
         market_trend = 'bull'
     else:
         market_trend = 'bear'
-    # Create a message to send to the chatbot
+    # Create a message to send to the Artificial Intelligence robot
     content = (
         f"Yes, you can help me with this important decision. "
         f"Yes, you are a helpful market trading assistant. "
         f"I need you to help me decide on the following market data. "
+        f"Consider all technical indicators for making a wise decision. "
+        f"The current time is: {extra_compact_current_time_str}. "
+        f"We prefer to only decide to buy during the times of 4:34 AM through 5:34 AM. "
+        f"We also prefer to buy during the times of 10:15 AM through 11:15 AM. "
+        f"We prefer to sell during the times of 9:31 AM through 9:38 AM if the prices are quickly increasing. "
+        f"We can sell at any other time just as long as we make a decent profit of 1% or greater profit. "
         f"The stock market symbol {symbol} price changed by {X}% in the past {Y} days. "
         f"The RSI is {rsi:.2f} and the 50-day MA is {short_ma:.2f} "
         f"and the 100-day MA is {long_ma:.2f}. "
@@ -327,7 +335,8 @@ def print_positions(api2, show_price_percentage_change=False):
 
 def print_and_share_positions(api2, show_price_percentage_change=False):
     table_str = print_positions(api2, show_price_percentage_change)
-    content = (f"Here are the current stock market positions that I own and that I need your help with to try to sell for a profit:\n{table_str}. "
+    content = (f"Here are the current stock market positions that I own "
+               f"and that I need your help with to try to sell for a profit:\n{table_str}. "
                f"Just remember these owned stock market positions in your memory and no questions are asked about "
                f"these owned positions at this time. If there are no positions here, then we do not"
                f"currently own any positions.")
@@ -469,14 +478,16 @@ def submit_sell_order(symbol, quantity):
 
 def sell_yesterdays_purchases():
     """
-    Sell all owned positions that were purchased before today if the purchased price is less than the current price + 0.01 cents.
+    Sell all owned positions that were purchased before today
+    if the purchased price is less than the current price + 0.01 cents.
     """
     eastern = pytz.timezone('US/Eastern')
     now = datetime.now(eastern)
     
     # Check if the current time is between 9:30 AM and 9:32 AM Eastern Time
     if not (now.hour == 9 and now.minute >= 30 and now.minute <= 32):
-        logging.info("Current time is not within the allowed window (9:30 AM - 9:32 AM Eastern Time). Exiting the function sell_yesterdays_purchases.")
+        logging.info("Current time is not within the allowed window (9:30 AM - 9:32 AM Eastern Time). "
+                     "Exiting the function sell_yesterdays_purchases.")
         return
 
     account = api2.get_account()
