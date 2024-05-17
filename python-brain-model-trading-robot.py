@@ -439,9 +439,6 @@ def submit_sell_order(symbol, quantity):
         logging.info(f"You don't own any shares of {symbol}, so no sell order was submitted.")
         print(f"You don't own any shares of {symbol}, so no sell order was submitted.")
 
-from datetime import datetime
-import pytz
-import logging
 
 def sell_yesterdays_purchases():
     """
