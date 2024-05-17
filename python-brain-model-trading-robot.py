@@ -108,7 +108,7 @@ def get_current_price(symbol):
     try:
         if pre_market_start <= now.time() < market_start:
             # Fetch pre-market data
-            data = stock_data.history(start=now.strftime('%Y-%m-%d'), interval='1m')
+            data = stock_data.history(start=now.strftime('%Y-%m-%d'), interval='1m', actions=True)
             if not data.empty:
                 data.index = data.index.tz_convert(eastern)
                 pre_market_data = data.between_time(pre_market_start, pre_market_end)
@@ -122,7 +122,7 @@ def get_current_price(symbol):
                 print("Pre-market: Current Price not found error.")
 
         elif market_start <= now.time() < market_end:
-            # Fetch regular market data
+            # Fetch regular daytime 9:30 - 16:00 market data
             data = stock_data.history(period='1d', interval='1m')
             if not data.empty:
                 data.index = data.index.tz_convert(eastern)
@@ -137,7 +137,7 @@ def get_current_price(symbol):
 
         elif market_end <= now.time() < post_market_end:
             # Fetch post-market data
-            data = stock_data.history(start=now.strftime('%Y-%m-%d'), interval='1m')
+            data = stock_data.history(start=now.strftime('%Y-%m-%d'), interval='1m', actions=True)
             if not data.empty:
                 data.index = data.index.tz_convert(eastern)
                 post_market_data = data.between_time(post_market_start, post_market_end)
