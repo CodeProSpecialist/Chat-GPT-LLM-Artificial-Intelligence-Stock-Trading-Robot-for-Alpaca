@@ -221,7 +221,8 @@ def trading_robot(symbol, X, Y):
     compact_current_time_str = now.strftime("EST %I:%M:%S %p ")
     print(compact_current_time_str)
     # share the extra_compact_current_time_str with the robot brain model.
-    extra_compact_current_time_str = now.strftime("%I:%M:%S %p ")
+    # the below time is military time because the AI model prefers military time
+    extra_compact_current_time_str = now.strftime("%H:%M:%S")
     print("\n")
     print(f"Making a decision for: {symbol}")
     #print(f"Bollinger Bands: {upper_band_value:.2f}, {middle_band_value:.2f}, {lower_band_value:.2f}")
@@ -241,15 +242,16 @@ def trading_robot(symbol, X, Y):
     else:
         market_trend = 'bear'
     # Create a message to send to the Artificial Intelligence robot
+    # list all times im military time
     content = (
         f"Yes, you can help me with this important decision. "
         f"Yes, you are a helpful market trading assistant. "
         f"I need you to help me decide on the following market data. "
         f"Consider all technical indicators for making a wise decision. "
         f"The current time is: {extra_compact_current_time_str}. "
-        f"We prefer to only decide to buy during the times of 4:34 AM through 5:34 AM. "
-        f"We also prefer to buy during the times of 10:15 AM through 11:15 AM. "
-        f"We prefer to sell during the times of 9:31 AM through 9:38 AM if the prices are quickly increasing. "
+        f"We prefer to only decide to buy during the times of 4:34 through 5:34. "
+        f"We also prefer to buy during the times of 10:15 through 11:15. "
+        f"We prefer to sell during the times of 9:31 through 9:38 if the prices are quickly increasing. "
         f"We can sell at any other time just as long as we make a decent profit of 1% or greater profit. "
         f"The stock market symbol {symbol} price changed by {X}% in the past {Y} days. "
         f"The RSI is {rsi:.2f} and the 50-day MA is {short_ma:.2f} "
