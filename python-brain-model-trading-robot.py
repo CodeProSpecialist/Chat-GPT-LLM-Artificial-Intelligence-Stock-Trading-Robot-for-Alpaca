@@ -340,8 +340,8 @@ def submit_buy_order(symbol, quantity):
     current_time = now.time()
 
     # Define the time range for trading (10:15 to 16:00)
-    trading_start = time2(10, 15)
-    trading_end = time2(16, 0)
+    trading_start = time2(4, 34)
+    trading_end = time2(5, 34)
 
     # Check if the current time is within the trading hours
     if current_time >= trading_start and current_time <= trading_end:
