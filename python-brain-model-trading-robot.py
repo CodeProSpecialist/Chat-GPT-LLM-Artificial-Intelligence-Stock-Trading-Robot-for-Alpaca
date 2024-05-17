@@ -94,14 +94,14 @@ def get_current_price(symbol):
     now = datetime.now(eastern)
     
     # Define trading hours
-    pre_market_start = time(4, 0)
-    pre_market_end = time(9, 30)
+    pre_market_start = time2(4, 0)
+    pre_market_end = time2(9, 30)
     
-    market_start = time(9, 30)
-    market_end = time(16, 0)
+    market_start = time2(9, 30)
+    market_end = time2(16, 0)
     
-    post_market_start = time(16, 0)
-    post_market_end = time(20, 0)
+    post_market_start = time2(16, 0)
+    post_market_end = time2(20, 0)
     
     # Fetch stock data
     stock_data = yf.Ticker(symbol)
@@ -355,14 +355,14 @@ def submit_sell_order(symbol, quantity):
         eastern = pytz.timezone('US/Eastern')
         now = datetime.now(eastern)
 
-        pre_market_start = time(4, 0)
-        pre_market_end = time(9, 30)
+        pre_market_start = time2(4, 0)
+        pre_market_end = time2(9, 30)
 
-        market_start = time(9, 30)
-        market_end = time(16, 0)
+        market_start = time2(9, 30)
+        market_end = time2(16, 0)
 
-        post_market_start = time(16, 0)
-        post_market_end = time(20, 0)
+        post_market_start = time2(16, 0)
+        post_market_end = time2(20, 0)
 
         if pre_market_start <= now.time() < market_start or market_end <= now.time() < post_market_end:
             # Extended hours: Pre-market or Post-market
