@@ -339,12 +339,14 @@ def submit_buy_order(symbol, quantity):
     now = datetime.now(eastern)
     current_time = now.time()
 
-    # Define the time range for trading (10:15 to 16:00)
-    trading_start = time2(4, 34)
-    trading_end = time2(5, 34)
+    # Define the allowed time ranges for the function to operate
+    trading_start1 = time2(4, 34)
+    trading_end1 = time2(5, 34)
+    trading_start2 = time2(10, 15)
+    trading_end2 = time2(11, 15)
 
-    # Check if the current time is within the trading hours
-    if current_time >= trading_start and current_time <= trading_end:
+    # Check if the current time is within the allowed trading hours
+    if (trading_start1 <= current_time <= trading_end1) or (trading_start2 <= current_time <= trading_end2):
         account_info = api2.get_account()
         cash_available = float(account_info.cash)
         current_price = get_current_price(symbol)
@@ -352,20 +354,45 @@ def submit_buy_order(symbol, quantity):
             # Skip order submission if current price is not found
             return
 
-        if cash_available >= current_price:
-            # Convert symbol from BRK-B to BRK.B if necessary
-            symbol = symbol.replace('-', '.')
+        # Define the market hours
+        pre_market_start = time2(4, 0)
+        pre_market_end = time2(9, 30)
+        market_start = time2(9, 30)
+        market_end = time2(16, 0)
+        post_market_start = time2(16, 0)
+        post_market_end = time2(20, 0)
 
-            api2.submit_order(
-                symbol=symbol,
-                qty=quantity,
-                side='buy',
-                type='market',
-                time_in_force='day'
-            )
-            logging.info(f"Bought {quantity} shares of {symbol} at ${current_price:.2f}")
-            # Add the symbol to the purchased_today dictionary
-            purchased_today[symbol] = True
+        # Check if the market is open or if it is pre/post market
+        if pre_market_start <= current_time < market_start or market_end <= current_time < post_market_end:
+            # Extended hours: Pre-market or Post-market
+            order = {
+                'symbol': symbol,
+                'qty': quantity,
+                'side': 'buy',
+                'type': 'limit',
+                'time_in_force': 'day',
+                'limit_price': current_price,  # Set the limit price as the current price
+                'extended_hours': True  # Set to true for extended hours trading
+            }
+        elif market_start <= current_time < market_end:
+            # Regular market hours
+            order = {
+                'symbol': symbol,
+                'qty': quantity,
+                'side': 'buy',
+                'type': 'market',
+                'time_in_force': 'day'
+            }
+        else:
+            logging.info(f"The market is currently closed. No buy order was submitted for {symbol}.")
+            print(f"The market is currently closed. No buy order was submitted for {symbol}.")
+            return
+
+        # Submit the order
+        api2.submit_order(**order)
+        logging.info(f"Bought {quantity} shares of {symbol} at ${current_price:.2f}")
+        # Add the symbol to the purchased_today dictionary
+        purchased_today[symbol] = True
     else:
         logging.info("Trading outside profit trading strategy hours, buy order not submitted.")
 
