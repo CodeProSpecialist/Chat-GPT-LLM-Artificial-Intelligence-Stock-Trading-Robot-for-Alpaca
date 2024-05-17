@@ -433,8 +433,8 @@ def execute_trade(symbol, signal, quantity):
 def stop_if_stock_market_is_closed():
     # Check if the current time is within the stock market hours
     # Set the stock market open and close times
-    market_open_time = time2(9, 27)
-    market_close_time = time2(16, 0)
+    market_open_time = time2(4, 0)
+    market_close_time = time2(20, 0)
 
     while True:
         # Get the current time in Eastern Time
