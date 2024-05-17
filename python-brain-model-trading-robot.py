@@ -462,8 +462,8 @@ def stop_if_stock_market_is_closed():
 
          ''')
         print(f'Current date & time (Eastern Time): {now.strftime("%A, %B %d, %Y, %I:%M:%S %p")}')
-        print("Stockbot only works Monday through Friday: 9:30 am - 4:00 pm Eastern Time.")
-        print("Stockbot begins watching stock prices early at 9:27 am Eastern Time.")
+        print("Stockbot only works Monday through Friday: 4:00 am - 8:00 pm Eastern Time.")
+        print("Stockbot begins watching stock prices early at 4:00 am Eastern Time.")
         print("Waiting until Stock Market Hours to begin the Stockbot Trading Program.")
         print("\n")
         print("\n")
