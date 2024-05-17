@@ -102,7 +102,9 @@ def get_current_price(symbol):
     
     post_market_start = time2(16, 0)
     post_market_end = time2(20, 0)
-    
+
+    # initialize variable for stock_data
+    stock_data = None
     # Fetch stock data
     stock_data = yf.Ticker(symbol)
     
@@ -125,7 +127,7 @@ def get_current_price(symbol):
     
     else:
         # Outside of trading hours, get the last close price
-        last_close = stock_data.history(period='1d')['Close'][-1]
+        last_close = round(stock_data.history(period='1d')['Close'].iloc[0], 4)
         current_price = last_close
     
     return round(current_price, 4) if current_price else None
