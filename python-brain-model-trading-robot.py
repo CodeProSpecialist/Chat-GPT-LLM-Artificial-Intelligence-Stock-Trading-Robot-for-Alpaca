@@ -439,14 +439,26 @@ def submit_sell_order(symbol, quantity):
         logging.info(f"You don't own any shares of {symbol}, so no sell order was submitted.")
         print(f"You don't own any shares of {symbol}, so no sell order was submitted.")
 
+from datetime import datetime
+import pytz
+import logging
+
 def sell_yesterdays_purchases():
     """
     Sell all owned positions that were purchased before today if the purchased price is less than the current price + 0.01 cents.
     """
+    eastern = pytz.timezone('US/Eastern')
+    now = datetime.now(eastern)
+    
+    # Check if the current time is between 9:30 AM and 9:32 AM Eastern Time
+    if not (now.hour == 9 and now.minute >= 30 and now.minute <= 32):
+        logging.info("Current time is not within the allowed window (9:30 AM - 9:32 AM Eastern Time). Exiting the function sell_yesterdays_purchases.")
+        return
+
     account = api2.get_account()
     positions = api2.list_positions()
 
-    today = datetime.now(pytz.timezone('US/Eastern')).date()
+    today = now.date()
     for position in positions:
         symbol = position.symbol
         current_price = get_current_price(symbol)
