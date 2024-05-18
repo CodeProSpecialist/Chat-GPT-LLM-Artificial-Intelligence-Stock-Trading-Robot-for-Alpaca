@@ -263,8 +263,9 @@ def trading_robot(symbol, X, Y):
         f"The Current Volume is {today_new_volume:2f}. "
         f"The Average Volume is {avg_volume:.2f}. "
         f"It is a better idea to buy when Volume is lower or equal to the Average Volume. "
-        f"It is a better idea to sell when Volume and RSI are both increased, "
-        f"and when Volume is equal to or greater than average volume. "
+        f"It is a better idea to sell when RSI is > 70, "
+        f"and it is a better idea to sell when Volume is equal to, "
+        f"near Average Volume, or greater than Average Volume. "
         f"Should I buy or sell {symbol}? "
         f"Instructions: Buy if RSI < 30 and 50-day MA > 200-day MA and the price has increased in the past 14 days. "
         f"Sell if RSI > 70 and 50-day MA < 200-day MA and the price has decreased in the past 14 days. "
@@ -408,7 +409,7 @@ def submit_buy_order(symbol, quantity):
         # Add the symbol to the purchased_today dictionary
         purchased_today[symbol] = True
     else:
-        logging.info("Trading outside profit trading strategy hours, buy order not submitted.")
+        logging.info("The buy order was not sent. We are outside profit trading strategy hours.")
 
 
 def submit_sell_order(symbol, quantity):
@@ -424,8 +425,8 @@ def submit_sell_order(symbol, quantity):
     try:
         position = api2.get_position(symbol)
     except Exception as e:
-        logging.error(f"Error getting position: {e}")
-        print(f"Error getting position: {e}")
+        logging.error(f"No sell order was sent. We do not currently own this position: {e}")
+        print(f"No sell order was sent. We do not currently own this position: {e}")
         return
 
     if position.qty != '0':
