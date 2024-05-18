@@ -592,14 +592,11 @@ def main():
             print("\n")
 
             # Clear the purchased_today dictionary at the start of each day
-            schedule.every().day.at("04:01").do(clear_purchased_today)  # Run at 04:01am every day
+            schedule.every().day.at("04:00").do(clear_purchased_today)  # Run at 04:00am every day
 
             sell_yesterdays_purchases()
 
             print_and_share_positions(api2, show_price_percentage_change=True)
-
-            #if day_trade_count < 3:
-                #sell_yesterdays_purchases()  # Only run this function if day trade count is less than 3
 
             for symbol in symbols:
                 try:
