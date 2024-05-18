@@ -250,7 +250,7 @@ def trading_robot(symbol, X, Y):
         f"Consider all technical indicators for making a wise decision. "
         f"The current time is: {extra_compact_current_time_str}. "
         f"We prefer to only decide to buy during the times of 4:34-5:34 and 10:15-11:15. "
-        f"We prefer to sell during the times of 9:31-9:38 and 19:30-19:59. "
+        f"We prefer to sell during the times of 9:31-9:38, 15:30-15:59, and 19:30-19:59. "
         f"We can not buy or sell today after the time 19:59 or the market is closed for trading until the next market "
         f"business day."
         f"We can sell at any other time just as long as we make a decent profit of 1% or greater profit. "
@@ -404,6 +404,7 @@ def submit_buy_order(symbol, quantity):
             return
 
         # Submit the order
+        # (**order) is correct here
         api2.submit_order(**order)
         logging.info(f"Bought {quantity} shares of {symbol} at ${current_price:.2f}")
         # Add the symbol to the purchased_today dictionary
@@ -470,6 +471,8 @@ def submit_sell_order(symbol, quantity):
             print(f"The market is currently closed. No sell order was submitted for {symbol}.")
             return
 
+        # submit sell order
+        # (**order) is correct here
         if day_trade_count < 3 and current_price and current_price >= bought_price + 0.01:
             api2.submit_order(**order)
             logging.info(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
