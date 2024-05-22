@@ -300,7 +300,7 @@ def trading_robot(symbol, X, Y):
         f"middle:{middle_band_value:.2f}, lower:{lower_band_value:.2f}. "
         f"Buy <= lower band price, sell >= upper band price. "
         f"Yesterday's closing price: {yesterday_close:.2f}, "
-        f"today's opening: {today_open:.2f}, and current: {today_current:.2f}. "
+        f"today's opening price: {today_open:.2f}, and current price: {today_current:.2f}. "
         f"ATR low price: {atr_low_price:.2f}. "
         f"ATR high price: {atr_high_price:.2f}. "
         f"Buy near ATR low, sell near ATR high. "
@@ -310,7 +310,7 @@ def trading_robot(symbol, X, Y):
         f"Prices usually {market_trend_month} in {month}. "
         f"Account Balance: {account_balance:.2f}, "
         f"Available Cash: {available_cash:.2f}, "
-        f"Day Trades Remaining: {day_trades_remaining}"
+        f"Day Trades Remaining: {day_trades_remaining} "
         f"We can only day trade 3 times in 5 business days. "
         f"A day trade is to buy and sell the same stock in the same day. "
         f"Respond with: **buy {symbol}**, **sell {symbol}**, or **hold {symbol}**. "
@@ -327,8 +327,8 @@ def organized_response(content, symbol):
     response_content = response['message']['content'].strip().lower()
 
     # Debug prints
-    #print("\nContent:\n", content, "\n")
-    #print("\nMessages:\n", messages, "\n")
+    print("\nContent:\n", content, "\n")
+    # print("\nMessages:\n", messages, "\n")
     print("\n", response_content, "\n")
 
     buy_pattern = re.compile(rf"\*\*buy {symbol}\*\*", re.IGNORECASE)
