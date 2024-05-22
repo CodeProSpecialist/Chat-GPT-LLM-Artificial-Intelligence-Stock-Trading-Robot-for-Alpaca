@@ -259,8 +259,8 @@ def trading_robot(symbol, X, Y):
 
     # Retrieve account information
     account_info = api2.get_account()
-    account_balance = account_info.equity
-    available_cash = account_info.cash
+    account_balance = float(account_info.equity)
+    available_cash = float(account_info.cash)
     day_trades_remaining = account_info.daytrading_buying_power
 
     # Debug print the account information
