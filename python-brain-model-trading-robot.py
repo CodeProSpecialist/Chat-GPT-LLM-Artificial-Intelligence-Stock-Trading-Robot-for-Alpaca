@@ -187,6 +187,7 @@ def get_atr_high_price(symbol):
     current_price = get_current_price(symbol)
     return round(current_price + 0.40 * atr_value, 4)
 
+
 def trading_robot(symbol, X, Y):
     symbol = symbol.replace('.', '-')  # Replace '.' with '-'
     stock_data = yf.Ticker(symbol)
@@ -215,75 +216,91 @@ def trading_robot(symbol, X, Y):
     atr_low_price = get_atr_low_price(symbol)
     atr_high_price = get_atr_high_price(symbol)
 
+    now = datetime.now(pytz.timezone('US/Eastern'))
+    day_of_week = now.strftime("%A")  # Get the current day of the week
+    month = now.strftime("%B")  # Get the current month
+    
+    # Determine if today is a day when prices increase or decrease
+    if day_of_week in ["Thursday", "Friday"]:
+        # Prices increase on Thursday and Friday
+        price_trend = "increase"
+    elif day_of_week in ["Monday", "Tuesday", "Wednesday"]:
+        # Prices decrease on Monday, Tuesday, and Wednesday
+        price_trend = "decrease"
+    else:
+        # For other days, expect prices to not increase much
+        price_trend = "stagnant or decrease"
+    
+    # Determine if it's a bull or bear market based on the month
+    if month in ["May", "June", "July", "November", "December"]:
+        market_trend_month = "bull"
+    elif month == "February":
+        market_trend_month = "bull sometimes"
+    else:
+        market_trend_month = "bear or stagnant"
+
     # debug print the ATR, Volume, and the bbands below
     print("\n")
-    now = datetime.now(pytz.timezone('US/Eastern'))
     compact_current_time_str = now.strftime("EST %I:%M:%S %p ")
     print(compact_current_time_str)
-    # share the extra_compact_current_time_str with the robot brain model.
-    # the below time is military time because the AI model prefers military time
     extra_compact_current_time_str = now.strftime("%H:%M:%S")
     print("\n")
     print(f"Making a decision for: {symbol}")
-    #print(f"Bollinger Bands: {upper_band_value:.2f}, {middle_band_value:.2f}, {lower_band_value:.2f}")
-    #print(f"ATR low price: {atr_low_price:.2f}")
-    #print(f"ATR high price: {atr_high_price:.2f}")
-    # Also, atr is an array, so you need to access its last element
-    #print(f"Current Volume: {today_new_volume:2f}")
-    #print(f"Average Volume: {avg_volume:.2f}")
     print("\n")
-    # Get yesterday's closing price, today's opening price, and today's current price
+    
     yesterday_close = close_prices.iloc[-2]
     today_open = history_data.iloc[-1]['Open']
     today_current = current_price
-    # Check for bear or bull market
+    
     if fourteen_days_change > 0:
         market_trend = 'bull'
     else:
         market_trend = 'bear'
-    # Create a message to send to the Artificial Intelligence robot
-    # list all times im military time
+    
     content = (
-        f"Yes, you can help me with this important decision. "
-        f"Yes, you are a helpful market trading assistant. "
-        f"I need you to help me decide on the following market data. "
-        f"Consider all technical indicators for making a wise decision. "
+        f"Yes, you can assist me with this decision. "
+        f"Your role as a market trading assistant is crucial here. "
+        f"I need your help with analyzing market data. "
+        f"Consider all technical indicators to make an informed decision. "
         f"The current time is: {extra_compact_current_time_str}. "
-        f"We prefer to only decide to buy during the times of 4:34-5:34 and 10:15-11:15. "
-        f"We prefer to sell during the times of 9:31-9:38, 15:30-15:59, and 19:30-19:59. "
-        f"We can not buy or sell today after the time 19:59 or the market is closed for trading until the next market "
-        f"business day."
-        f"We can sell at any other time just as long as we make a decent profit of 1% or greater profit. "
-        f"The stock market symbol {symbol} price changed by {X}% in the past {Y} days. "
-        f"The RSI is {rsi:.2f} and the 50-day MA is {short_ma:.2f} "
-        f"and the 100-day MA is {long_ma:.2f}. "
-        f"The market trend is a {market_trend} market. "
-        f"We buy during a bull market trend and we stop buying to hold during a bear market trend. "
-        f"The price has changed by {fourteen_days_change:.2f}% in the past 14 days. "
-        f"The Current Volume is {today_new_volume:2f}. "
-        f"The Average Volume is {avg_volume:.2f}. "
-        f"It is a better idea to buy when Volume is lower or equal to the Average Volume. "
-        f"It is a better idea to sell when RSI is > 70, "
-        f"and it is a better idea to sell when Volume is equal to, "
-        f"near Average Volume, or greater than Average Volume. "
+        f"We prefer buying during 4:34-5:34 and 10:15-11:15, "
+        f"and selling during 9:31-9:38, 15:30-15:59, and 19:30-19:59. "
+        f"Buying early during 4:34-5:34 is mandatory as a default priority, "
+        f"especially during bear market trends. "
+        f"We cannot trade after 19:59 or when the market is closed. "
+        f"Selling for a profit of 1% or more is advisable at any time. "
+        f"The stock symbol {symbol} changed by {X}% in the past {Y} days. "
+        f"The RSI is {rsi:.2f}, 50-day MA is {short_ma:.2f}, "
+        f"and 100-day MA is {long_ma:.2f}. "
+        f"The market trend is {market_trend}. "
+        f"We buy during a bull market and hold during a bear market. "
+        f"Price changed by {fourteen_days_change:.2f}% in the past 14 days. "
+        f"Current Volume is {today_new_volume:2f}. "
+        f"Average Volume is {avg_volume:.2f}. "
+        f"Better to buy when Volume <= Average Volume. "
+        f"Better to sell when RSI > 70 or Volume >= Average Volume. "
         f"Should I buy or sell {symbol}? "
-        f"Instructions: Buy if RSI < 30 and 50-day MA > 200-day MA and the price has increased in the past 14 days. "
-        f"Sell if RSI > 70 and 50-day MA < 200-day MA and the price has decreased in the past 14 days. "
-        f"Today's Bollinger Band prices are: upper band price:{upper_band_value:.2f}, "
-        f"middle band price:{middle_band_value:.2f}, lower band price:{lower_band_value:.2f}. "
-        f"We buy equal to or below the Bollinger Band lower band price, and we sell equal to or above the upper band "
-        f"price: or else we hold."
-        f"Yesterday's closing price was {yesterday_close:.2f}, today's opening price was {today_open:.2f}, "
-        f"and today's current price is {today_current:.2f}. "
-        f"The Average True Range (ATR) low price is {atr_low_price:.2f}. "
-        f"It is a better idea to buy near the Average True Range low price. "
-        f"The Average True Range (ATR) high price is {atr_high_price:.2f}. "
-        f"It is a better idea to sell near the Average True Range high price. "
-        f"Hold otherwise. Answer only with: **buy {symbol}**, **sell {symbol}**, or **hold {symbol}**. "
+        f"Instructions: Buy if RSI < 30, 50-day MA > 200-day MA, "
+        f"and price increased in the past 14 days. "
+        f"Sell if RSI > 70, 50-day MA < 200-day MA, "
+        f"and price decreased in the past 14 days. "
+        f"Today's Bollinger Band prices: upper:{upper_band_value:.2f}, "
+        f"middle:{middle_band_value:.2f}, lower:{lower_band_value:.2f}. "
+        f"Buy <= lower band price, sell >= upper band price. "
+        f"Yesterday's closing price: {yesterday_close:.2f}, "
+        f"today's opening: {today_open:.2f}, and current: {today_current:.2f}. "
+        f"ATR low price: {atr_low_price:.2f}. "
+        f"Buy near ATR low, sell near ATR high. "
+        f"The current date is {now.strftime('%A, %B %d, %Y')}. "
+        f"Today is {day_of_week}. "
+        f"Prices usually {price_trend} on {day_of_week}s. "
+        f"Prices usually {market_trend_month} in {month}. "
+        f"Respond with: **buy {symbol}**, **sell {symbol}**, or **hold {symbol}**. "
     )
-    # Use organized_response function to get the decision
+
     decision = organized_response(content, symbol)
     return decision
+
 
 def organized_response(content, symbol):
     messages = [{'role': 'user', 'content': content}]
