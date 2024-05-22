@@ -313,6 +313,9 @@ def trading_robot(symbol, X, Y):
         f"Day Trades Remaining: {day_trades_remaining} "
         f"We can only day trade 3 times in 5 business days. "
         f"A day trade is to buy and sell the same stock in the same day. "
+        f"Our crucially urgent goal is to reach an account balance "
+        f"of $25,001.00 dollars as soon as possible to not be limited "
+        f"to the strict requirement of a tiny 3 daytrades in 5 business days. "
         f"Respond with: **buy {symbol}**, **sell {symbol}**, or **hold {symbol}**. "
 
     )
