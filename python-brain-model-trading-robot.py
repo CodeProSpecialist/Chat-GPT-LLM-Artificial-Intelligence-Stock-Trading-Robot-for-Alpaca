@@ -219,7 +219,7 @@ def trading_robot(symbol, X, Y):
     now = datetime.now(pytz.timezone('US/Eastern'))
     day_of_week = now.strftime("%A")  # Get the current day of the week
     month = now.strftime("%B")  # Get the current month
-    
+
     # Determine if today is a day when prices increase or decrease
     if day_of_week in ["Thursday", "Friday"]:
         # Prices increase on Thursday and Friday
@@ -230,7 +230,7 @@ def trading_robot(symbol, X, Y):
     else:
         # For other days, expect prices to not increase much
         price_trend = "stagnant or decrease"
-    
+
     # Determine if it's a bull or bear market based on the month
     if month in ["May", "June", "July", "November", "December"]:
         market_trend_month = "bull"
@@ -247,16 +247,16 @@ def trading_robot(symbol, X, Y):
     print("\n")
     print(f"Making a decision for: {symbol}")
     print("\n")
-    
+
     yesterday_close = close_prices.iloc[-2]
     today_open = history_data.iloc[-1]['Open']
     today_current = current_price
-    
+
     if fourteen_days_change > 0:
         market_trend = 'bull'
     else:
         market_trend = 'bear'
-    
+
     content = (
         f"Yes, you can assist me with this decision. "
         f"Your role as a market trading assistant is crucial here. "
@@ -290,6 +290,7 @@ def trading_robot(symbol, X, Y):
         f"Yesterday's closing price: {yesterday_close:.2f}, "
         f"today's opening: {today_open:.2f}, and current: {today_current:.2f}. "
         f"ATR low price: {atr_low_price:.2f}. "
+        f"ATR high price: {atr_high_price:.2f}. "
         f"Buy near ATR low, sell near ATR high. "
         f"The current date is {now.strftime('%A, %B %d, %Y')}. "
         f"Today is {day_of_week}. "
