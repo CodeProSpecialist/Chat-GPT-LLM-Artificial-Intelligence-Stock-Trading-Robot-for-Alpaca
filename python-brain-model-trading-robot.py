@@ -257,12 +257,24 @@ def trading_robot(symbol, X, Y):
     else:
         market_trend = 'bear'
 
+    # Retrieve account information
+    account_info = api2.get_account()
+    account_balance = account_info.equity
+    available_cash = account_info.cash
+    day_trades_remaining = account_info.daytrading_buying_power
+
+    # Debug print the account information
+    print(f"Account Balance: ${account_balance:.2f}")
+    print(f"Available Cash: ${available_cash:.2f}")
+    print("Day Trades Remaining:", day_trades_remaining)
+
+    # Update content message to include account information
     content = (
         f"Yes, you can assist me with this decision. "
-        f"Your role as a market trading assistant is crucial here. "
+        f"Your role as a stock market trading assistant is crucial here. "
         f"I need your help with analyzing market data. "
         f"Consider all technical indicators to make an informed decision. "
-        f"The current time is: {extra_compact_current_time_str}. "
+        f"The current time is: {now.strftime('%H:%M:%S')}. "
         f"We prefer buying during 4:34-5:34 and 10:15-11:15, "
         f"and selling during 9:31-9:38, 15:30-15:59, and 19:30-19:59. "
         f"Buying early during 4:34-5:34 is mandatory as a default priority, "
@@ -296,7 +308,13 @@ def trading_robot(symbol, X, Y):
         f"Today is {day_of_week}. "
         f"Prices usually {price_trend} on {day_of_week}s. "
         f"Prices usually {market_trend_month} in {month}. "
+        f"Account Balance: {account_balance:.2f}, "
+        f"Available Cash: {available_cash:.2f}, "
+        f"Day Trades Remaining: {day_trades_remaining}"
+        f"We can only day trade 3 times in 5 business days. "
+        f"A day trade is to buy and sell the same stock in the same day. "
         f"Respond with: **buy {symbol}**, **sell {symbol}**, or **hold {symbol}**. "
+
     )
 
     decision = organized_response(content, symbol)
