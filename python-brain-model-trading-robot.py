@@ -327,7 +327,7 @@ def organized_response(content, symbol):
     response_content = response['message']['content'].strip().lower()
 
     # Debug prints
-    print("\nContent:\n", content, "\n")
+    # print("\nContent:\n", content, "\n")
     # print("\nMessages:\n", messages, "\n")
     print("\n", response_content, "\n")
 
