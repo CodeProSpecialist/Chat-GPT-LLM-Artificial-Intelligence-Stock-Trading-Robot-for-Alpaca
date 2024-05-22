@@ -264,9 +264,9 @@ def trading_robot(symbol, X, Y):
     day_trades_remaining = account_info.daytrading_buying_power
 
     # Debug print the account information
-    print(f"Account Balance: ${account_balance:.2f}")
-    print(f"Available Cash: ${available_cash:.2f}")
-    print("Day Trades Remaining:", day_trades_remaining)
+    # print(f"Account Balance: ${account_balance:.2f}")
+    # print(f"Available Cash: ${available_cash:.2f}")
+    # print("Day Trades Remaining:", day_trades_remaining)
 
     # Update content message to include account information
     content = (
