@@ -261,7 +261,7 @@ def trading_robot(symbol, X, Y):
     account_info = api2.get_account()
     account_balance = float(account_info.equity)
     available_cash = float(account_info.cash)
-    day_trades_remaining = account_info.daytrading_buying_power
+    day_trade_count = api2.get_account().daytrade_count
 
     # Debug print the account information
     # print(f"Account Balance: ${account_balance:.2f}")
@@ -310,13 +310,15 @@ def trading_robot(symbol, X, Y):
         f"Prices usually {market_trend_month} in {month}. "
         f"Account Balance: {account_balance:.2f}, "
         f"Available Cash: {available_cash:.2f}, "
-        f"Day Trades Remaining: {day_trades_remaining} "
+        f"Current day trade number: {day_trade_count} out of 3 in 5 business days. "
         f"We can only day trade 3 times in 5 business days. "
         f"A day trade is to buy and sell the same stock in the same day. "
         f"Our crucially urgent goal is to reach an account balance "
         f"of $25,001.00 dollars as soon as possible to not be limited "
         f"to the strict requirement of a tiny 3 daytrades in 5 business days. "
-        f"Respond with: **buy {symbol}**, **sell {symbol}**, or **hold {symbol}**. "
+        f"The following must be worded exactly like it is shown because it triggers "
+        f"a computer command to buy, sell, or hold: "
+        f"Respond only with: **buy {symbol}**, **sell {symbol}**, or **hold {symbol}** "
 
     )
 
