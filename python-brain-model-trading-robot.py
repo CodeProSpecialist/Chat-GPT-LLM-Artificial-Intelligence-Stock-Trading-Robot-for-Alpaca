@@ -300,10 +300,11 @@ def trading_robot(symbol, X, Y):
         f"Be cautious when stocks experience sudden price movements, especially if they're moving strongly against "
         f"the broader market trend. "
         f"Should I buy or sell {symbol}? "
-        f"Instructions: Buy if RSI < 30, 50-day MA > 200-day MA, "
-        f"and price increased in the past 14 days. "
-        f"Sell if RSI > 70, 50-day MA < 200-day MA, "
-        f"and price decreased in the past 14 days. "
+        f"Instructions: Buy if RSI < 30, current volume is higher than previous volume, current price is above lower Bollinger Band, "
+        f"14-day price increase is above 10%, and market trend is bull. "
+        f"Sell if RSI > 70, current volume is lower than previous volume, current price is below upper Bollinger Band, "
+        f"14-day price decrease is below -10%, and market trend is bear. "
+        f"Otherwise, HOLD. "
         f"Today's Bollinger Band prices: upper:{upper_band_value:.2f}, "
         f"middle:{middle_band_value:.2f}, lower:{lower_band_value:.2f}. "
         f"Buy <= lower band price, sell >= upper band price. "
@@ -329,7 +330,6 @@ def trading_robot(symbol, X, Y):
         f"The following must be worded exactly like it is shown because it triggers "
         f"a computer command to buy, sell, or hold: "
         f"Respond only with: **buy {symbol}**, **sell {symbol}**, or **hold {symbol}** "
-
     )
 
     decision = organized_response(content, symbol)
@@ -629,7 +629,7 @@ def main():
 
     while True:
         try:
-            stop_if_stock_market_is_closed()  # comment this line to debug the Python code
+            #stop_if_stock_market_is_closed()  # comment this line to debug the Python code
             now = datetime.now(pytz.timezone('US/Eastern'))
             current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
@@ -681,7 +681,8 @@ def main():
                     print("--------------------------")
                     print("\n")
                     logging.info(f"Signal: {signal}")
-                    time.sleep(1)  # Add a 1-second delay
+                    print("Waiting 10 seconds ")
+                    time.sleep(15)  # Add a 1-second delay
 
                 except Exception as e:     # this is under the t in try
                     logging.error(f"Error: {e}")
