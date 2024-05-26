@@ -23,6 +23,8 @@ The best results have been with the AI model named:
 Llama 3 has expert stock market trading knowledge, knows what the technical analysis indicators mean, 
 and Llama 3 knows the correct trade to make in response 
 to changing market conditions. 
+It is recommended to have greater than or equal to 8 Gigabytes of VRAM on an Nvidia video card 
+when running this Artificial Intelligence Stock Market Trading Robot. 
 
 The following screen pictures were with llama3:8b-instruct-q4_0
 
