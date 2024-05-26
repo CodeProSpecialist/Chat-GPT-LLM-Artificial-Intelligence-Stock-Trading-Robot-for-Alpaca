@@ -279,7 +279,7 @@ def trading_robot(symbol, X, Y):
         f"We prefer buying during the times: 4:34-5:34 and 10:15-11:15, "
         f"and selling during the times: 9:31-9:38, 15:30-15:59, and 19:30-19:59. "
         f"Buying early during the times range of 4:34-5:34 is mandatory as a default priority, "
-        f"especially during bear market trends. "
+        f"especially during bear market trends and during bull market trends. "
         f"We cannot trade after 19:59 or when the market is closed. "
         f"Selling for a profit of 1% or more is advisable at any time. "
         f"The stock symbol {symbol} changed by {X}% in the past {Y} days. "
