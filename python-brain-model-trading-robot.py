@@ -647,6 +647,9 @@ def main():
             # Schedule to run the function at 9:31 am every day
             schedule.every().day.at("09:31").do(sell_yesterdays_purchases)
 
+            # Schedule to run the function at 3:53 pm every day
+            schedule.every().day.at("15:53").do(sell_yesterdays_purchases)
+
             print_and_share_positions(api2, show_price_percentage_change=True)
 
             for symbol in symbols:
