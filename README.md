@@ -33,6 +33,14 @@ The following screen pictures were with llama3:8b-instruct-q4_0
 ![Screenshot from 2024-05-16 16-38-53](https://github.com/CodeProSpecialist/Chat-GPT-LLM-Artificial-Intelligence-Stock-Trading-Robot-for-Alpaca/assets/111866070/ed2c760b-e27f-4e64-91e5-8d34fee7d3dd)
 
 
+Llama 3 prefers this Artificial Intelligence stock market trading robot exactly how it is designed right now. 
+
+Llama 3's advice on how to provide stock market data for decision making: 
+
+As a Large Language Model (LLM), I can process and analyze both numerical data and visual charts, but I'm more efficient and accurate when working with structured numerical data.In the case of price data, I would prefer to receive the data in a format that includes the following columns:* Date* Open* High* Low* Close* Volume* Bollinger Bands ( Upper, Middle, Lower)* RSI (Relative Strength Index)* Moving Averages (e.g., 50-day, 100-day, 200-day) Having this data in a tabular format allows me to quickly process and analyze it using various algorithms and techniques. I can then generate insights, identify patterns, and make predictions based on the data.While I can try to extract information from charts and graphs, it's not as efficient or accurate as working with structured numerical data. Charts and graphs are better suited for human visual analysis, whereas numerical data is more suitable for machine learning models like myself.
+
+----------------------------------------------------
+
 Are you tired of making emotional trading decisions? Do you want to take your trading to the next level with the power of artificial intelligence? Look no further! Our Chat GPT LLM Artificial Intelligence Stock Trading Robot is here to transform your trading experience.
 **What is the AI Stock Trading Robot?**
 Our AI Stock Trading Robot is a cutting-edge trading platform that utilizes advanced artificial intelligence and machine learning algorithms to analyze market data and make informed trading decisions. This robot is designed to help you maximize your profits and minimize your losses, all while reducing the emotional aspect of trading.
@@ -89,7 +97,6 @@ Run the following command for Ollama to download the llama3:8b-instruct-q4_0 GPT
 ollama run llama3:8b-instruct-q4_0
 
 python3 python-brain-model-trading-robot.py
-
 
 ----------------------------------------------------
 
