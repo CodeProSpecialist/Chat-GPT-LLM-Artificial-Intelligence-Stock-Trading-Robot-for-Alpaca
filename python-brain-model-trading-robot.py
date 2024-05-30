@@ -644,7 +644,8 @@ def main():
             # Clear the purchased_today dictionary at the start of each day
             schedule.every().day.at("04:00").do(clear_purchased_today)  # Run at 04:00am every day
 
-            sell_yesterdays_purchases()
+            # Schedule to run the function at 9:31 am every day
+            schedule.every().day.at("09:31").do(sell_yesterdays_purchases)
 
             print_and_share_positions(api2, show_price_percentage_change=True)
 
