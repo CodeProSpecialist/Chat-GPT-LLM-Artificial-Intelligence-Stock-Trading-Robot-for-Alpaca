@@ -474,8 +474,8 @@ def submit_sell_order(symbol, quantity):
     try:
         position = api2.get_position(symbol)
     except Exception as e:
-        logging.error(f"No sell order was sent. We do not currently own this position: {e}")
-        print(f"No sell order was sent. We do not currently own this position: {e}")
+        logging.error(f"No sell order was sent for {symbol}. We do not currently own this position: {e}")
+        print(f"No sell order was sent for {symbol}. We do not currently own this position: {e}")
         return
 
     if position.qty != '0':
