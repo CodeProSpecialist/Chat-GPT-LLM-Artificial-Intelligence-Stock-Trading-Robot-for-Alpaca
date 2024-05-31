@@ -446,8 +446,8 @@ def submit_buy_order(symbol, quantity):
                 'time_in_force': 'day'
             }
         else:
-            logging.info(f"The market is currently closed. No buy order was submitted for {symbol}.")
-            print(f"The market is currently closed. No buy order was submitted for {symbol}.")
+            logging.info(f"The market is currently closed. No buy order was submitted for {symbol}. ")
+            print(f"The market is currently closed. No buy order was submitted for {symbol}. ")
             return
 
         # Submit the order
@@ -457,7 +457,8 @@ def submit_buy_order(symbol, quantity):
         # Add the symbol to the purchased_today dictionary
         purchased_today[symbol] = True
     else:
-        logging.info("The buy order was not sent. We are outside profit trading strategy hours.")
+        print(f"The buy order was not sent for {symbol}. We are outside profit trading strategy hours. ")
+        logging.info(f"The buy order was not sent for {symbol}. We are outside profit trading strategy hours. ")
 
 
 def submit_sell_order(symbol, quantity):
