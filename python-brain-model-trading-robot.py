@@ -642,7 +642,9 @@ def scheduler_thread():
     schedule.every().day.at("15:58").do(sell_yesterdays_purchases)
 
     while True:
+        print("\n")
         print("Task Scheduler: scheduling sell orders at profit selling strategy times. ")
+        print("\n")
         # below is the debug code to print status messages
         # print("Scheduler tasks thread is successfully running. ")
         # logging.info("Scheduler tasks thread is successfully running. ")
@@ -726,7 +728,9 @@ if __name__ == "__main__":
     scheduler_thread_instance = threading.Thread(target=scheduler_thread)
     scheduler_thread_instance.start()
 
+    print("\n")
     print("Scheduler tasks thread successfully started")
+    print("\n")
     logging.info("Scheduler tasks thread successfully started")
 
     while True:
