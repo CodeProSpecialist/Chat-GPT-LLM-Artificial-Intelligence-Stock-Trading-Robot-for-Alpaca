@@ -9,6 +9,18 @@ in profits.
 I recommend downloading the newest version of this Python Robot. 
 New Updates and more features were added on 6-2-2024. 
 
+There is a new feature called the Task Scheduler and it displays the following 
+messages: 
+
+Scheduler tasks thread successfully started. 
+
+or 
+
+Task Scheduler is waiting for the Stock Market trading hours to start running.
+
+The Task Scheduler helps to increase Stock Market profits by 
+scheduling sell orders at profit selling strategy times. 
+
 ------------------------------------
 This robot has a maximum profit strategy for buying and selling 
 at the perfect times. It only buys and sells at certain strategic times 
