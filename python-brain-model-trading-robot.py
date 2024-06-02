@@ -628,6 +628,7 @@ def stop_scheduler_thread_if_stock_market_is_closed():
 
         print("\n")
         print("Task Scheduler is waiting for the Stock Market trading hours to start running. ")
+        print("Task scheduling sell orders at profit selling strategy times. ")
         print("Working 4:00 - 20:00 ")
         print("\n")
         time.sleep(25)
@@ -641,10 +642,12 @@ def scheduler_thread():
     schedule.every().day.at("15:58").do(sell_yesterdays_purchases)
 
     while True:
-        schedule.run_pending()
+        print("Task Scheduler: scheduling sell orders at profit selling strategy times. ")
         # below is the debug code to print status messages
         # print("Scheduler tasks thread is successfully running. ")
         # logging.info("Scheduler tasks thread is successfully running. ")
+        schedule.run_pending()
+
         time.sleep(29)  # Check for scheduled tasks every 29 seconds
 
 def main():
