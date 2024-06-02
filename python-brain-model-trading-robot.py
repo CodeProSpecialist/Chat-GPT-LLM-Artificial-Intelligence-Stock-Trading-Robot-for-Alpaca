@@ -648,6 +648,13 @@ def main():
 
             for symbol in symbols:
                 try:
+                    # We need to keep the scheduled tasks checking the current time
+                    # Keep running scheduled task scheduler
+                    # First Run scheduled tasks in this repeating program loop
+                    schedule.run_pending()
+                    # wait a second if running scheduled tasks right now
+                    time.sleep(1)
+
                     previous_price = get_14_days_price(symbol)
                     current_price = get_current_price(symbol)
                     if current_price is None:  # Skip to next symbol if current price is None
@@ -684,9 +691,10 @@ def main():
                     time.sleep(5)
                     
             print("\n")
-            print("Waiting 30 seconds ")
+            print("Waiting 25 seconds ")
             print("\n")
-            time.sleep(30)  # keep this under the "f" in for symbol
+            time.sleep(25)  # keep this under the "f" in for symbol
+
         except Exception as e:     # this is under the t in try
             logging.error(f"Error in main loop: {e}")
             time.sleep(5)
