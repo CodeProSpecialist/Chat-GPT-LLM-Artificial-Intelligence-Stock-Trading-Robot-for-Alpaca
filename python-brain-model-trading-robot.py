@@ -621,17 +621,20 @@ def stop_scheduler_thread_if_stock_market_is_closed():
         eastern = pytz.timezone('US/Eastern')
         now = datetime.now(eastern)
         current_time = now.time()
+        current_time_str = now.strftime("EST | %I:%M:%S %p | %m-%d-%Y |")
 
         # Check if the current time is within market hours
         if now.weekday() <= 4 and market_open_time <= current_time <= market_close_time:
             break
 
         print("\n")
+        print(f"{current_time_str}")
+        print("\n")
         print("Task Scheduler is waiting for the Stock Market trading hours to start running. ")
         print("Task scheduling sell orders at profit selling strategy times. ")
         print("Working 4:00 - 20:00 ")
         print("\n")
-        time.sleep(45)
+        time.sleep(59)
 
 def scheduler_thread():
     stop_scheduler_thread_if_stock_market_is_closed()
