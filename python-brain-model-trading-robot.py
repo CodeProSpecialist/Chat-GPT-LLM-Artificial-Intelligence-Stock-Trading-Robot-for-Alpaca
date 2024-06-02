@@ -7,6 +7,7 @@ from ollama import chat
 import alpaca_trade_api as tradeapi
 import logging
 import schedule
+import threading
 import time
 import subprocess
 import talib
@@ -609,6 +610,20 @@ def stop_if_stock_market_is_closed():
         print("\n")
         time.sleep(60)  # Sleep for 1 minute and check again. Keep this under the p in print.
 
+def scheduler_thread():
+    # Schedule tasks once at the start
+    schedule.every().day.at("04:00").do(clear_purchased_today)  # Run at 04:00 am every day
+    schedule.every().day.at("09:31").do(sell_yesterdays_purchases)
+    schedule.every().day.at("11:55").do(sell_yesterdays_purchases)
+    schedule.every().day.at("15:58").do(sell_yesterdays_purchases)
+
+    while True:
+        schedule.run_pending()
+        # below is the debug code to print status messages
+        # print("Scheduler tasks thread is successfully running. ")
+        # logging.info("Scheduler tasks thread is successfully running. ")
+        time.sleep(25)  # Check for scheduled tasks every 25 seconds
+
 def main():
     symbols = get_stocks_to_trade()
     if not symbols:
@@ -632,29 +647,10 @@ def main():
             print(f"Current day trade number: {day_trade_count} out of 3 in 5 business days")
             print("\n")
 
-            # Clear the purchased_today dictionary at the start of each day
-            schedule.every().day.at("04:00").do(clear_purchased_today)  # Run at 04:00am every day
-
-            # Schedule to run the function at 9:31 am every day
-            schedule.every().day.at("09:31").do(sell_yesterdays_purchases)
-
-            # Schedule to run the function at 11:55 am every day
-            schedule.every().day.at("11:55").do(sell_yesterdays_purchases)
-
-            # Schedule to run the function at 15:53 every day
-            schedule.every().day.at("15:53").do(sell_yesterdays_purchases)
-
             print_and_share_positions(api2, show_price_percentage_change=True)
 
             for symbol in symbols:
                 try:
-                    # We need to keep the scheduled tasks checking the current time
-                    # Keep running scheduled task scheduler
-                    # First Run scheduled tasks in this repeating program loop
-                    schedule.run_pending()
-                    # wait a second if running scheduled tasks right now
-                    time.sleep(1)
-
                     previous_price = get_14_days_price(symbol)
                     current_price = get_current_price(symbol)
                     if current_price is None:  # Skip to next symbol if current price is None
@@ -701,6 +697,12 @@ def main():
 
 
 if __name__ == "__main__":
+    scheduler_thread_instance = threading.Thread(target=scheduler_thread)
+    scheduler_thread_instance.start()
+
+    print("Scheduler tasks thread successfully started")
+    logging.info("Scheduler tasks thread successfully started")
+
     while True:
         try:
             main()
