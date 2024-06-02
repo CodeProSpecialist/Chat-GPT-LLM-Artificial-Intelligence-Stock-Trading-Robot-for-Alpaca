@@ -631,7 +631,7 @@ def stop_scheduler_thread_if_stock_market_is_closed():
         print("Task scheduling sell orders at profit selling strategy times. ")
         print("Working 4:00 - 20:00 ")
         print("\n")
-        time.sleep(25)
+        time.sleep(45)
 
 def scheduler_thread():
     stop_scheduler_thread_if_stock_market_is_closed()
@@ -639,18 +639,25 @@ def scheduler_thread():
     schedule.every().day.at("04:00").do(clear_purchased_today)  # Run at 04:00 am every day
     schedule.every().day.at("09:31").do(sell_yesterdays_purchases)
     schedule.every().day.at("11:55").do(sell_yesterdays_purchases)
-    schedule.every().day.at("15:58").do(sell_yesterdays_purchases)
+    schedule.every().day.at("15:59").do(sell_yesterdays_purchases)
 
     while True:
+        # Get the current time in Eastern Time
+        eastern = pytz.timezone('US/Eastern')
+        now = datetime.now(eastern)
+
+        current_time_str = now.strftime("EST | %I:%M:%S %p | %m-%d-%Y |")
+
         print("\n")
-        print("Task Scheduler: scheduling sell orders at profit selling strategy times. ")
+        print(f"{current_time_str}")
+        print(f"Task Scheduler: scheduling sell orders at profit selling strategy times. ")
         print("\n")
         # below is the debug code to print status messages
         # print("Scheduler tasks thread is successfully running. ")
         # logging.info("Scheduler tasks thread is successfully running. ")
         schedule.run_pending()
 
-        time.sleep(29)  # Check for scheduled tasks every 29 seconds
+        time.sleep(59)  # Check for scheduled tasks every 59 seconds
 
 def main():
     symbols = get_stocks_to_trade()
