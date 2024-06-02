@@ -610,7 +610,30 @@ def stop_if_stock_market_is_closed():
         print("\n")
         time.sleep(60)  # Sleep for 1 minute and check again. Keep this under the p in print.
 
+def stop_scheduler_thread_if_stock_market_is_closed():
+    # Check if the current time is within the stock market hours
+    # Set the stock market open and close times
+    market_open_time = time2(4, 0)
+    market_close_time = time2(20, 0)
+
+    while True:
+        # Get the current time in Eastern Time
+        eastern = pytz.timezone('US/Eastern')
+        now = datetime.now(eastern)
+        current_time = now.time()
+
+        # Check if the current time is within market hours
+        if now.weekday() <= 4 and market_open_time <= current_time <= market_close_time:
+            break
+
+        print("\n")
+        print("Task Scheduler is waiting for the Stock Market trading hours to start running. ")
+        print("Working 4:00 - 20:00 ")
+        print("\n")
+        time.sleep(25)
+
 def scheduler_thread():
+    stop_scheduler_thread_if_stock_market_is_closed()
     # Schedule tasks once at the start
     schedule.every().day.at("04:00").do(clear_purchased_today)  # Run at 04:00 am every day
     schedule.every().day.at("09:31").do(sell_yesterdays_purchases)
@@ -622,7 +645,7 @@ def scheduler_thread():
         # below is the debug code to print status messages
         # print("Scheduler tasks thread is successfully running. ")
         # logging.info("Scheduler tasks thread is successfully running. ")
-        time.sleep(25)  # Check for scheduled tasks every 25 seconds
+        time.sleep(29)  # Check for scheduled tasks every 29 seconds
 
 def main():
     symbols = get_stocks_to_trade()
