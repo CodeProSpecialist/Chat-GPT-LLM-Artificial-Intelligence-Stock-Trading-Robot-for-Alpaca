@@ -634,7 +634,7 @@ def stop_scheduler_thread_if_stock_market_is_closed():
         print("Task scheduling sell orders at profit selling strategy times. ")
         print("Working 4:00 - 20:00 ")
         print("\n")
-        time.sleep(59)
+        time.sleep(60)
 
 def scheduler_thread():
     stop_scheduler_thread_if_stock_market_is_closed()
@@ -660,7 +660,7 @@ def scheduler_thread():
         # logging.info("Scheduler tasks thread is successfully running. ")
         schedule.run_pending()
 
-        time.sleep(59)  # Check for scheduled tasks every 59 seconds
+        time.sleep(60)  # Check for scheduled tasks every 59 seconds
 
 def main():
     symbols = get_stocks_to_trade()
