@@ -283,7 +283,7 @@ def trading_robot(symbol, X, Y):
         f"The crucial and mandatory exception that takes priority over all other default rules "
         f"for buying at the early times is that we never buy during the early hour "
         f"time range of 4:00-10:14 unless the current price is less than yesterday's closing price. "
-        f”The default early morning rule for Monday and Tuesday is to never buy during the times: 4:00-10:14. “
+        f"The default early morning rule for Monday is to never buy during the times: 4:00-10:14. "
         f"We cannot trade after 19:59 or when the market is closed. "
         f"Selling for a profit of 1% or more is advisable at any time. "
         f"The stock symbol {symbol} changed by {X}% in the past {Y} days. "
