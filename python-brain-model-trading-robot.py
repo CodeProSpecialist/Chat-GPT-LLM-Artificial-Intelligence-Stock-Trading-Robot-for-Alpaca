@@ -563,6 +563,8 @@ def sell_yesterdays_purchases():
 def clear_purchased_today():
     global purchased_today
     purchased_today = {}
+    print("purchased_today dictionary variable has been cleared. ")
+    logging.info(f"purchased_today dictionary variable has been cleared. ")
 
 def execute_trade(symbol, signal, quantity):
     if signal.startswith("buy"):
@@ -740,6 +742,7 @@ if __name__ == "__main__":
     scheduler_thread_instance = threading.Thread(target=scheduler_thread)
     scheduler_thread_instance.start()
 
+    clear_purchased_today()
     print("\n")
     print("Scheduler tasks thread successfully started")
     print("\n")
