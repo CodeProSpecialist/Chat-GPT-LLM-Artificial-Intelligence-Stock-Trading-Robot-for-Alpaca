@@ -641,6 +641,7 @@ def scheduler_thread():
     stop_scheduler_thread_if_stock_market_is_closed()
     # Schedule tasks once at the start
     schedule.every().day.at("04:00").do(clear_purchased_today)  # Run at 04:00 am every day
+    schedule.every().day.at("04:01").do(clear_purchased_today)  # double check the run at 04:01
     schedule.every().day.at("09:31").do(sell_yesterdays_purchases)
     schedule.every().day.at("11:55").do(sell_yesterdays_purchases)
     schedule.every().day.at("15:59").do(sell_yesterdays_purchases)
