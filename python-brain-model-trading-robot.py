@@ -1,4 +1,5 @@
-import os
+import os, sys
+import csv
 import pytz
 from datetime import datetime, timedelta, date
 from datetime import time as time2
@@ -29,7 +30,18 @@ api2 = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
 purchased_today = {}
 
-global close_prices, time_period
+global close_prices, time_period, csv_writer, csv_filename, fieldnames
+
+# Define the CSV file and fieldnames
+csv_filename = 'log-file-of-buy-and-sell-signals.csv'
+fieldnames = ['Date', 'Buy', 'Sell', 'Quantity', 'Symbol', 'Price Per Share']
+
+# Open the CSV file for writing and set up a CSV writer
+with open(csv_filename, mode='w', newline='') as csv_file:
+    csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+    # Write the header row
+    csv_writer.writeheader()
 
 # Function to check if OLLAMA server service is running
 def is_ollama_running():
@@ -403,6 +415,9 @@ def submit_buy_order(symbol, quantity):
     now = datetime.now(eastern)
     current_time = now.time()
 
+    now = datetime.now(pytz.timezone('US/Eastern'))
+    current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
+
     # Define the allowed time ranges for the function to operate
     trading_start1 = time2(4, 34)
     trading_end1 = time2(5, 34)
@@ -448,19 +463,28 @@ def submit_buy_order(symbol, quantity):
                 'time_in_force': 'day'
             }
         else:
-            logging.info(f"The market is currently closed. No buy order was submitted for {symbol}. ")
+            logging.info(f" {current_time_str} , The market is currently closed. No buy order was submitted for {symbol}. ")
             print(f"The market is currently closed. No buy order was submitted for {symbol}. ")
             return
 
         # Submit the order
         # (**order) is correct here
         api2.submit_order(**order)
-        logging.info(f"Bought {quantity} shares of {symbol} at ${current_price:.2f}")
+        logging.info(f" {current_time_str} , Bought {quantity} shares of {symbol} at ${current_price:.2f}")
+
+        print("")
+        print(f" {current_time_str} , Bought {quantity} shares of {symbol} at {current_price}")
+        print("")
+        with open(csv_filename, mode='a', newline='') as csv_file:
+            csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+            csv_writer.writerow(
+                {'Date': current_time_str, 'Buy': 'Buy', 'Quantity': quantity, 'Symbol': symbol,
+                 'Price Per Share': current_price})
         # Add the symbol to the purchased_today dictionary
         purchased_today[symbol] = True
     else:
         print(f"The buy order was not sent for {symbol}. We are outside profit trading strategy hours. ")
-        logging.info(f"The buy order was not sent for {symbol}. We are outside profit trading strategy hours. ")
+        logging.info(f" {current_time_str} , The buy order was not sent for {symbol}. We are outside profit trading strategy hours. ")
 
 
 def submit_sell_order(symbol, quantity):
@@ -469,6 +493,9 @@ def submit_sell_order(symbol, quantity):
 
     current_price = get_current_price(symbol)
 
+    now = datetime.now(pytz.timezone('US/Eastern'))
+    current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
+
     if current_price is None:
         # Skip order submission if current price is not found
         return
@@ -476,7 +503,7 @@ def submit_sell_order(symbol, quantity):
     try:
         position = api2.get_position(symbol)
     except Exception as e:
-        logging.error(f"No sell order was sent for {symbol}. We do not currently own this position: {e}")
+        logging.error(f" {current_time_str} , No sell order was sent for {symbol}. We do not currently own this position: {e}")
         print(f"No sell order was sent for {symbol}. We do not currently own this position: {e}")
         return
 
@@ -486,6 +513,9 @@ def submit_sell_order(symbol, quantity):
         # Check if the market is open or if it is pre/post market
         eastern = pytz.timezone('US/Eastern')
         now = datetime.now(eastern)
+
+        now = datetime.now(pytz.timezone('US/Eastern'))
+        current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
         pre_market_start = time2(4, 0)
         pre_market_end = time2(9, 30)
@@ -517,7 +547,7 @@ def submit_sell_order(symbol, quantity):
                 'time_in_force': 'day'
             }
         else:
-            logging.info(f"The market is currently closed. No sell order was submitted for {symbol}.")
+            logging.info(f" {current_time_str} , The market is currently closed. No sell order was submitted for {symbol}.")
             print(f"The market is currently closed. No sell order was submitted for {symbol}.")
             return
 
@@ -525,19 +555,28 @@ def submit_sell_order(symbol, quantity):
         # (**order) is correct here
         if day_trade_count < 3 and current_price and current_price >= bought_price + 0.01:
             api2.submit_order(**order)
-            logging.info(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
+            logging.info(f" {current_time_str} , Sold {quantity} shares of {symbol} at ${current_price:.2f}")
             print(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
+            with open(csv_filename, mode='a', newline='') as csv_file:
+                csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+                csv_writer.writerow(
+                    {'Date': current_time_str, 'Sell': 'Sell', 'Quantity': quantity, 'Symbol': symbol,
+                     'Price Per Share': current_price})
         else:
-            logging.info(f"No order was submitted due to day trading limit or insufficient price increase.")
+            logging.info(f" {current_time_str} , No order was submitted due to day trading limit or insufficient "
+                         f"price increase.")
             print(f"No order was submitted due to day trading limit or insufficient price increase.")
     else:
-        logging.info(f"You don't own any shares of {symbol}, so no sell order was submitted.")
+        logging.info(f" {current_time_str} , You don't own any shares of {symbol}, so no sell order was submitted.")
         print(f"You don't own any shares of {symbol}, so no sell order was submitted.")
 
 
 def sell_yesterdays_purchases():
     eastern = pytz.timezone('US/Eastern')
     now = datetime.now(eastern)
+
+    now = datetime.now(pytz.timezone('US/Eastern'))
+    current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
     
     account = api2.get_account()
     positions = api2.list_positions()
@@ -558,13 +597,17 @@ def sell_yesterdays_purchases():
             if current_price >= bought_price + 0.01:
                 quantity = float(position.qty)
                 submit_sell_order(symbol, quantity)
-                logging.info(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
+                logging.info(f" {current_time_str} , Sold {quantity} shares of {symbol} at ${current_price:.2f}")
 
 def clear_purchased_today():
     global purchased_today
     purchased_today = {}
+
+    now = datetime.now(pytz.timezone('US/Eastern'))
+    current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
+
     print("purchased_today dictionary variable has been cleared. ")
-    logging.info(f"purchased_today dictionary variable has been cleared. ")
+    logging.info(f" {current_time_str} , purchased_today dictionary variable has been cleared. ")
 
 def execute_trade(symbol, signal, quantity):
     if signal.startswith("buy"):
@@ -656,8 +699,10 @@ def scheduler_thread():
         current_time_str = now.strftime("EST | %I:%M:%S %p | %m-%d-%Y |")
 
         print("\n")
+        print("--------------------------------------------------------------------------")
         print(f"{current_time_str}")
         print(f"Task Scheduler: scheduling sell orders at profit selling strategy times. ")
+        print("--------------------------------------------------------------------------")
         print("\n")
         # below is the debug code to print status messages
         # print("Scheduler tasks thread is successfully running. ")
@@ -719,7 +764,7 @@ def main():
                     print(compact_current_time_str)
                     print("--------------------------")
                     print("\n")
-                    logging.info(f"Signal: {signal}")
+                    logging.info(f" {current_time_str} , Signal: {signal}")
                     print("Waiting 15 seconds to not exceed API rate limits and to keep the video card at a colder "
                           "temperature. ")
                     time.sleep(15)  # Add a 1-second delay
