@@ -685,18 +685,20 @@ def stop_scheduler_thread_if_stock_market_is_closed():
 def scheduler_thread():
     stop_scheduler_thread_if_stock_market_is_closed()
     # Schedule tasks once at the start
-    schedule.every().day.at("04:00").do(clear_purchased_today)  # Run at 04:00 am every day
-    schedule.every().day.at("04:01").do(clear_purchased_today)  # double check the run at 04:01
-    schedule.every().day.at("09:31").do(sell_yesterdays_purchases)
-    schedule.every().day.at("11:55").do(sell_yesterdays_purchases)
-    schedule.every().day.at("15:59").do(sell_yesterdays_purchases)
+    # these times are in the local time zone for your computer
+    # I will set these times to the Central Time Zone.
+    schedule.every().day.at("03:00").do(clear_purchased_today)  # Run at 04:00 am every day
+    schedule.every().day.at("03:01").do(clear_purchased_today)  # double check the run at 04:01
+    schedule.every().day.at("08:31").do(sell_yesterdays_purchases)
+    schedule.every().day.at("10:55").do(sell_yesterdays_purchases)
+    schedule.every().day.at("14:59").do(sell_yesterdays_purchases)
 
     while True:
-        # Get the current time in Eastern Time
-        eastern = pytz.timezone('US/Eastern')
+        # Get the current time in Central Time
+        eastern = pytz.timezone('US/Central')
         now = datetime.now(eastern)
 
-        current_time_str = now.strftime("EST | %I:%M:%S %p | %m-%d-%Y |")
+        current_time_str = now.strftime("CST | %I:%M:%S %p | %m-%d-%Y |")
 
         print("\n")
         print("--------------------------------------------------------------------------")
