@@ -2,7 +2,7 @@ import os
 import datetime
 from tkinter import *
 from tkcalendar import Calendar
-from alpaca_trade_api import REST
+import alpaca_trade_api as tradeapi
 
 # Configure Alpaca API
 API_KEY_ID = os.getenv('APCA_API_KEY_ID')
@@ -10,7 +10,7 @@ API_SECRET_KEY = os.getenv('APCA_API_SECRET_KEY')
 API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 
 # Initialize Alpaca API
-api = REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
+api = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
 def get_account_balance(date):
     selected_date = ""  # clear the selected date variable
@@ -24,13 +24,19 @@ def get_account_balance(date):
 
     return balance
 
+
 def get_selected_balance():
     selected_date = ""  # clear the selected date variable
     selected_balance = 0  # clear the selected balance variable
 
     selected_date = calendar.selection_get()
     selected_balance = get_account_balance(selected_date)
-    balance_label.config(text=f"Balance for {selected_date}: ${selected_balance}", font=("Courier", 16, "bold"))
+
+    # Reformat the date
+    reformatted_date = selected_date.strftime("%m-%d-%Y")
+
+    balance_label.config(text=f"Balance for {reformatted_date}: ${selected_balance}", font=("Courier", 16, "bold"))
+
 
 root = Tk()
 root.title("Account Balance History")
