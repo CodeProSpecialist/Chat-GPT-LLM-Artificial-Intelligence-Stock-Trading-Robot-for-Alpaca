@@ -13,6 +13,9 @@ API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 api = REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
 def get_account_balance(date):
+    selected_date = {}  # clear the selected date variable
+    selected_balance = {}  # clear the selected balance variable
+
     # Get portfolio history for the specified date
     balance = api.get_portfolio_history(
         timeframe='1D',
