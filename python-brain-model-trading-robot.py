@@ -140,7 +140,7 @@ def print_account_balance_change():
     for label, balance in balances.items():
         if label == "Current Balance":
             print("---------------------------------------------------")
-            print(f"{label}: {balance}")
+            print(f"{label}: ${balance}")
         else:
             percentage_change = calculate_balance_percentage_change(balance, current_balance)
             change_label = {
@@ -149,9 +149,9 @@ def print_account_balance_change():
                 "30 Days Ago": "1 month % Change"
             }[label]
             if percentage_change < 0:
-                print(f"{label}: {balance} | {change_label}: -")
+                print(f"{label}: ${balance} | {change_label}: -")
             else:
-                print(f"{label}: {balance} | {change_label}: {percentage_change:.2f}%")
+                print(f"{label}: ${balance} | {change_label}: {percentage_change:.2f}%")
         print("---------------------------------------------------")
 
 def get_14_days_price(symbol):
@@ -719,6 +719,9 @@ def stop_if_stock_market_is_closed():
         print("Stockbot begins watching stock prices early at 4:00 am Eastern Time.")
         print("Waiting until Stock Market Hours to begin the Stockbot Trading Program.")
         print("\n")
+        print("\n")
+        print("\n")
+        print_account_balance_change()
         print("\n")
         time.sleep(60)  # Sleep for 1 minute and check again. Keep this under the p in print.
 
