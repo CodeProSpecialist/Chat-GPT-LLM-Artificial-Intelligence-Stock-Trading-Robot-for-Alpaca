@@ -17,7 +17,7 @@ def get_account_balance(date):
     balance = api.get_portfolio_history(
         timeframe='1D',
         date_start=date.strftime("%Y-%m-%d")
-    ).equity[-3]
+    ).equity
 
     return balance
 
@@ -28,7 +28,7 @@ def get_selected_balance():
 
 root = Tk()
 root.title("Account Balance Selector")
-root.geometry("500x400")  # Increase width to 500
+root.geometry("600x400")  # Increase width to 600
 
 calendar = Calendar(root)
 calendar.pack(padx=10, pady=10)
