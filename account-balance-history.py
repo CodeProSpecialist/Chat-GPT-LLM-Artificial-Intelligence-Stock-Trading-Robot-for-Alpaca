@@ -17,7 +17,7 @@ def get_account_balance(date):
     balance = api.get_portfolio_history(
         timeframe='1D',
         date_start=date.strftime("%Y-%m-%d")
-    ).equity[-1]
+    ).equity[-3]
 
     return balance
 
