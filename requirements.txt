@@ -6,3 +6,4 @@ schedule
 ta-lib
 numpy
 tabulate
+tkcalendar
