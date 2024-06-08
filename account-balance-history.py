@@ -28,7 +28,7 @@ def get_selected_balance():
 
 root = Tk()
 root.title("Account Balance History")
-root.geometry("1024x400")  # Increase width to 1000
+root.geometry("1024x800")  # Increase width to 1000
 
 calendar = Calendar(root)
 calendar.pack(padx=10, pady=10)
