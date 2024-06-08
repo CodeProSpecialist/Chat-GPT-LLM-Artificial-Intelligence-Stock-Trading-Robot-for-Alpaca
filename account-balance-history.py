@@ -22,6 +22,7 @@ def get_account_balance(date):
     return balance
 
 def get_selected_balance():
+    selected_date = {}     # clear the selected date variable
     selected_date = calendar.selection_get()
     selected_balance = get_account_balance(selected_date)
     balance_label.config(text=f"Balance for {selected_date}: ${selected_balance}", font=("Courier", 16, "bold"))
