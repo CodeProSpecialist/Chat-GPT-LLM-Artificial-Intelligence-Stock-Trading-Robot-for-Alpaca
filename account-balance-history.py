@@ -14,7 +14,9 @@ api = REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
 def get_account_balance(date):
     selected_date = {}  # clear the selected date variable
-    selected_balance = {}  # clear the selected balance variable
+    selected_date = {}  # clear the selected date variable
+    selected_balance = []  # clear the selected balance variable
+    selected_balance = []  # clear the selected balance variable
 
     # Get portfolio history for the specified date
     balance = api.get_portfolio_history(
@@ -25,8 +27,10 @@ def get_account_balance(date):
     return balance
 
 def get_selected_balance():
-    selected_date = {}     # clear the selected date variable
-    selected_balance = {}     # clear the selected balance variable
+    selected_date = {}  # clear the selected date variable
+    selected_date = {}  # clear the selected date variable
+    selected_balance = []  # clear the selected balance variable
+    selected_balance = []  # clear the selected balance variable
     selected_date = calendar.selection_get()
     selected_balance = get_account_balance(selected_date)
     balance_label.config(text=f"Balance for {selected_date}: ${selected_balance}", font=("Courier", 16, "bold"))
