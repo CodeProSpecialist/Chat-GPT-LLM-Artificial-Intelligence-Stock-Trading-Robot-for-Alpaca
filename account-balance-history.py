@@ -27,8 +27,8 @@ def get_selected_balance():
     balance_label.config(text=f"Balance for {selected_date}: ${selected_balance}", font=("Courier", 16, "bold"))
 
 root = Tk()
-root.title("Account Balance Selector")
-root.geometry("1000x400")  # Increase width to 1000
+root.title("Account Balance History")
+root.geometry("1024x400")  # Increase width to 1000
 
 calendar = Calendar(root)
 calendar.pack(padx=10, pady=10)
