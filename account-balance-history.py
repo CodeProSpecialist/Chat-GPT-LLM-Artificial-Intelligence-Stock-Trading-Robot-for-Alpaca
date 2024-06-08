@@ -12,13 +12,6 @@ API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 # Initialize Alpaca API
 api = REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
-def get_last_thursday(year, month, day):
-    # Find the last Thursday before the given date
-    current_date = datetime.date(year, month, day)
-    while current_date.weekday() != 3:  # 3 corresponds to Thursday
-        current_date -= datetime.timedelta(days=1)
-    return current_date
-
 def get_account_balance(date):
     # Get portfolio history for the specified date
     balance = api.get_portfolio_history(
