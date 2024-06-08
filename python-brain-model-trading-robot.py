@@ -9,6 +9,7 @@ import alpaca_trade_api as tradeapi
 import logging
 import schedule
 import threading
+import calendar
 import time
 import subprocess
 import talib
@@ -25,7 +26,7 @@ API_BASE_URL = os.getenv('APCA_API_BASE_URL')
 api2 = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
 # run the OLLAMA server process if it did not start automatically
-# in a seperate command terminal run:
+# in a separate command terminal run:
 # ollama serve
 
 purchased_today = {}
@@ -91,6 +92,67 @@ def get_stocks_to_trade():
         logging.error(f"Error reading stock symbols: {e}")
         return []
 
+def get_account_balance(date):
+    # Get portfolio history for the specified date
+    balance = api2.get_portfolio_history(
+        timeframe='1D',
+        date_start=date.strftime("%Y-%m-%d")
+    ).equity[0]
+    return balance
+
+
+def calculate_balance_percentage_change(old_balance, new_balance):
+    if old_balance == 0:
+        return 0
+    return ((new_balance - old_balance) / old_balance) * 100
+
+
+def get_last_friday(date):
+    while date.weekday() > calendar.FRIDAY:  # 0 is Monday, 4 is Friday
+        date -= timedelta(days=1)
+    return date
+
+def print_account_balance_change():
+    # Get today's date
+    today = datetime.now().date()
+
+    # Adjust today to the last Friday if today is Saturday or Sunday
+    if today.weekday() == calendar.SATURDAY:
+        today -= timedelta(days=1)
+    elif today.weekday() == calendar.SUNDAY:
+        today -= timedelta(days=2)
+
+    # Calculate the dates for 7, 14, and 30 days ago
+    dates = {
+        "Current Balance": today,
+        "7 Days Ago": get_last_friday(today - timedelta(days=7)),
+        "14 Days Ago": get_last_friday(today - timedelta(days=14)),
+        "30 Days Ago": get_last_friday(today - timedelta(days=30))
+    }
+
+    # Fetch balances for each date
+    balances = {label: get_account_balance(date) for label, date in dates.items()}
+
+    # Get the current balance
+    current_balance = balances["Current Balance"]
+
+    # Print balances and percentage changes
+    for label, balance in balances.items():
+        if label == "Current Balance":
+            print("---------------------------------------------------")
+            print(f"{label}: {balance}")
+        else:
+            percentage_change = calculate_balance_percentage_change(balance, current_balance)
+            change_label = {
+                "7 Days Ago": "7 days % Change",
+                "14 Days Ago": "14 days % Change",
+                "30 Days Ago": "1 month % Change"
+            }[label]
+            if percentage_change < 0:
+                print(f"{label}: {balance} | {change_label}: -")
+            else:
+                print(f"{label}: {balance} | {change_label}: {percentage_change:.2f}%")
+        print("---------------------------------------------------")
 
 def get_14_days_price(symbol):
     symbol = symbol.replace('.', '-')  # Replace '.' with '-'
@@ -506,7 +568,8 @@ def submit_sell_order(symbol, quantity):
     try:
         position = api2.get_position(symbol)
     except Exception as e:
-        logging.error(f" {current_time_str} , No sell order was sent for {symbol}. We do not currently own this position: {e}")
+        logging.error(f" {current_time_str} , No sell order was sent for {symbol}. We do not currently own this "
+                      f"position: {e}")
         print(f"No sell order was sent for {symbol}. We do not currently own this position: {e}")
         return
 
@@ -777,7 +840,9 @@ def main():
                 except Exception as e:     # this is under the t in try
                     logging.error(f"Error: {e}")
                     time.sleep(5)
-                    
+
+            print("\n")
+            print_account_balance_change()
             print("\n")
             print("Waiting 25 seconds ")
             print("\n")
