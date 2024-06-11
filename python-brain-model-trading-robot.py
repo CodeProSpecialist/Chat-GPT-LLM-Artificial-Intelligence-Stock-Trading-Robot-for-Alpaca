@@ -838,6 +838,7 @@ def main():
                     quantity = int(cash_balance / current_price)
                     if quantity < 1:
                         quantity = 0
+                    # comment out 2 lines in the below "if statememt" to buy with all of our cash.
                     if quantity >= 1:
                         quantity = 1
                     execute_trade(symbol, signal, quantity)
