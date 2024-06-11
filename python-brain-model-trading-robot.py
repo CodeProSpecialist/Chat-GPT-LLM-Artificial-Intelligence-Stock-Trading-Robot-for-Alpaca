@@ -419,7 +419,9 @@ def trading_robot(symbol, X, Y):
         f"Please summarize in 2 to 8 sentences what the decision was based upon. "
         f"The following must be worded exactly like it is shown because it triggers "
         f"a computer command to buy, sell, or hold: "
-        f"Respond only with: **buy {symbol}**, **sell {symbol}**, or **hold {symbol}** "
+        f"Respond only with: ** buying ** for a buy, "
+        f"** selling ** for a sell, "
+        f"or ** holding ** for a hold. "
 
     )
 
@@ -437,9 +439,9 @@ def organized_response(content, symbol):
     # print("\nMessages:\n", messages, "\n")
     print("\n", response_content, "\n")
 
-    buy_pattern = re.compile(rf"\*\*buy {symbol}\*\*", re.IGNORECASE)
-    sell_pattern = re.compile(rf"\*\*sell {symbol}\*\*", re.IGNORECASE)
-    hold_pattern = re.compile(rf"\*\*hold {symbol}\*\*", re.IGNORECASE)
+    buy_pattern = re.compile(rf"\*\*buying\*\*", re.IGNORECASE)
+    sell_pattern = re.compile(rf"\*\*selling\*\*", re.IGNORECASE)
+    hold_pattern = re.compile(rf"\*\*holding\*\*", re.IGNORECASE)
 
     if buy_pattern.search(response_content):
         return f"buy {symbol}"
