@@ -10,6 +10,7 @@ import logging
 import schedule
 import threading
 import calendar
+import holidays
 import time
 import subprocess
 import talib
@@ -30,6 +31,9 @@ api2 = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 # ollama serve
 
 purchased_today = {}
+
+# Create a list of US federal holidays
+us_holidays = holidays.US()
 
 global close_prices, time_period, csv_writer, csv_filename, fieldnames
 
@@ -100,14 +104,13 @@ def get_account_balance(date):
     ).equity[0]
     return balance
 
-
 def calculate_balance_percentage_change(old_balance, new_balance):
     if old_balance == 0:
         return 0
     return ((new_balance - old_balance) / old_balance) * 100
 
 def get_last_trading_day(date):
-    while date.weekday() > calendar.FRIDAY:  # Adjust for weekends
+    while date.weekday() > calendar.FRIDAY or date in us_holidays:  # Adjust for weekends and holidays
         date -= timedelta(days=1)
     return date
 
@@ -115,11 +118,15 @@ def print_account_balance_change():
     # Get today's date
     today = datetime.now().date()
 
-    # Adjust today to the last trading day if today is Saturday or Sunday
+    # Adjust today to the last trading day if today is Saturday, Sunday, or a holiday
     if today.weekday() == calendar.SATURDAY:
         today -= timedelta(days=1)
-    elif today.weekday() == calendar.SUNDAY:
+    elif today.weekday() == calendar.SUNDAY or today in us_holidays:
         today -= timedelta(days=2)
+
+    # Ensure today is not a holiday
+    if today in us_holidays:
+        today = get_last_trading_day(today)
 
     # Calculate the dates for 7, 14, and 30 days ago
     dates = {

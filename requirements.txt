@@ -7,3 +7,4 @@ ta-lib
 numpy
 tabulate
 tkcalendar
+holidays
