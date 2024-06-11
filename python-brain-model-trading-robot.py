@@ -419,9 +419,9 @@ def trading_robot(symbol, X, Y):
         f"Please summarize in 2 to 8 sentences what the decision was based upon. "
         f"The following must be worded exactly like it is shown because it triggers "
         f"a computer command to buy, sell, or hold: "
-        f"Respond only with: ** buying ** for a buy, "
-        f"** selling ** for a sell, "
-        f"or ** holding ** for a hold. "
+        f"Respond only with: **buying** for a buy, "
+        f"**selling** for a sell, "
+        f"or **holding** for a hold. "
 
     )
 
