@@ -166,7 +166,8 @@ def print_account_balance_change():
                 print(f"{label}: ${balance} | {change_label}: {change_symbol}{abs(percentage_change):.2f}%")
             print("---------------------------------------------------")
         else:
-            print(f"{label}: No data available 7 days ago, possibly a holiday last week.")
+            print(f"{label}: No data available 7 days ago, possibly a holiday last week. "
+                  f"Check back tomorrow. ")
             print("---------------------------------------------------")
 
 def get_14_days_price(symbol):
