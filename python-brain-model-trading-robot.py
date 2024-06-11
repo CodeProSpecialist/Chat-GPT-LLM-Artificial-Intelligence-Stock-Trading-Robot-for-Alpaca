@@ -106,9 +106,8 @@ def calculate_balance_percentage_change(old_balance, new_balance):
         return 0
     return ((new_balance - old_balance) / old_balance) * 100
 
-
-def get_last_friday(date):
-    while date.weekday() > calendar.FRIDAY:  # 0 is Monday, 4 is Friday
+def get_last_trading_day(date):
+    while date.weekday() > calendar.FRIDAY:  # Adjust for weekends
         date -= timedelta(days=1)
     return date
 
@@ -116,7 +115,7 @@ def print_account_balance_change():
     # Get today's date
     today = datetime.now().date()
 
-    # Adjust today to the last Friday if today is Saturday or Sunday
+    # Adjust today to the last trading day if today is Saturday or Sunday
     if today.weekday() == calendar.SATURDAY:
         today -= timedelta(days=1)
     elif today.weekday() == calendar.SUNDAY:
@@ -125,9 +124,9 @@ def print_account_balance_change():
     # Calculate the dates for 7, 14, and 30 days ago
     dates = {
         "Current Balance": today,
-        "7 Days Ago": get_last_friday(today - timedelta(days=7)),
-        "14 Days Ago": get_last_friday(today - timedelta(days=14)),
-        "30 Days Ago": get_last_friday(today - timedelta(days=30))
+        "7 Days Ago": get_last_trading_day(today - timedelta(days=7)),
+        "14 Days Ago": get_last_trading_day(today - timedelta(days=14)),
+        "30 Days Ago": get_last_trading_day(today - timedelta(days=30))
     }
 
     # Fetch balances for each date
@@ -137,9 +136,9 @@ def print_account_balance_change():
     current_balance = balances["Current Balance"]
 
     # Print balances and percentage changes
+    print("---------------------------------------------------")
     for label, balance in balances.items():
         if label == "Current Balance":
-            print("---------------------------------------------------")
             print(f"{label}: ${balance}")
         else:
             percentage_change = calculate_balance_percentage_change(balance, current_balance)
@@ -148,10 +147,8 @@ def print_account_balance_change():
                 "14 Days Ago": "14 days % Change",
                 "30 Days Ago": "1 month % Change"
             }[label]
-            if percentage_change < 0:
-                print(f"{label}: ${balance} | {change_label}: -")
-            else:
-                print(f"{label}: ${balance} | {change_label}: {percentage_change:.2f}%")
+            change_symbol = '+' if percentage_change >= 0 else '-'
+            print(f"{label}: ${balance} | {change_label}: {change_symbol}{abs(percentage_change):.2f}%")
         print("---------------------------------------------------")
 
 def get_14_days_price(symbol):
