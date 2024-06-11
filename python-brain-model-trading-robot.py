@@ -98,11 +98,18 @@ def get_stocks_to_trade():
 
 def get_account_balance(date):
     # Get portfolio history for the specified date
-    balance = api2.get_portfolio_history(
-        timeframe='1D',
-        date_start=date.strftime("%Y-%m-%d")
-    ).equity[0]
-    return balance
+    try:
+        portfolio_history = api2.get_portfolio_history(
+            timeframe='1D',
+            date_start=date.strftime("%Y-%m-%d")
+        )
+        if portfolio_history.equity:
+            return portfolio_history.equity[0]
+        else:
+            raise ValueError("No equity data available for the specified date")
+    except Exception as e:
+        print(f"Error fetching balance for {date}: {e}")
+        return None
 
 def calculate_balance_percentage_change(old_balance, new_balance):
     if old_balance == 0:
@@ -121,7 +128,7 @@ def print_account_balance_change():
     # Adjust today to the last trading day if today is Saturday, Sunday, or a holiday
     if today.weekday() == calendar.SATURDAY:
         today -= timedelta(days=1)
-    elif today.weekday() == calendar.SUNDAY or today in us_holidays:
+    elif today.weekday() == calendar.SUNDAY:
         today -= timedelta(days=2)
 
     # Ensure today is not a holiday
@@ -145,18 +152,22 @@ def print_account_balance_change():
     # Print balances and percentage changes
     print("---------------------------------------------------")
     for label, balance in balances.items():
-        if label == "Current Balance":
-            print(f"{label}: ${balance}")
+        if balance is not None:
+            if label == "Current Balance":
+                print(f"{label}: ${balance}")
+            else:
+                percentage_change = calculate_balance_percentage_change(balance, current_balance)
+                change_label = {
+                    "7 Days Ago": "7 days % Change",
+                    "14 Days Ago": "14 days % Change",
+                    "30 Days Ago": "1 month % Change"
+                }[label]
+                change_symbol = '+' if percentage_change >= 0 else '-'
+                print(f"{label}: ${balance} | {change_label}: {change_symbol}{abs(percentage_change):.2f}%")
+            print("---------------------------------------------------")
         else:
-            percentage_change = calculate_balance_percentage_change(balance, current_balance)
-            change_label = {
-                "7 Days Ago": "7 days % Change",
-                "14 Days Ago": "14 days % Change",
-                "30 Days Ago": "1 month % Change"
-            }[label]
-            change_symbol = '+' if percentage_change >= 0 else '-'
-            print(f"{label}: ${balance} | {change_label}: {change_symbol}{abs(percentage_change):.2f}%")
-        print("---------------------------------------------------")
+            print(f"{label}: No data available, possibly a holiday last week.")
+            print("---------------------------------------------------")
 
 def get_14_days_price(symbol):
     symbol = symbol.replace('.', '-')  # Replace '.' with '-'
