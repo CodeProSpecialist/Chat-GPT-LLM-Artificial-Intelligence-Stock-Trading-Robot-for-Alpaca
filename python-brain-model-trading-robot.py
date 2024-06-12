@@ -363,6 +363,9 @@ def trading_robot(symbol, X, Y):
     # Update content message to include account information
     content = (
         f"Yes, you can assist me with this decision. "
+        f"Your role is crucial to reply only with: ** buy {symbol }** for a buy, "
+        f"** sell {symbol} ** for a sell, "
+        f"or ** hold {symbol} ** for a hold. "
         f"Your role as a stock market trading assistant is crucial here. "
         f"I need your help with analyzing market data. "
         f"Consider all technical indicators to make an informed decision. "
@@ -370,11 +373,11 @@ def trading_robot(symbol, X, Y):
         f"We prefer buying during the times: 4:34-5:34 and 10:15-11:15, "
         f"and selling during the times: 9:31-9:38, 15:30-15:59, and 19:30-19:59. "
         f"Buying early during the times range of 4:34-5:34 is mandatory as a default priority, "
-        f"especially during bear market trends. "
+        f"especially during bear market trends. We never buy anything on Monday. "
         f"The crucial and mandatory exception that takes priority over all other default rules "
         f"for buying at the early times is that we never buy during the early hour "
         f"time range of 4:00-10:14 unless the current price is less than yesterday's closing price. "
-        f"The default early morning rule for Monday is to never buy during the times: 4:00-10:14. "
+        f"The default early morning rule for Tuesday is to never buy during the times: 4:00-10:14. "
         f"We cannot trade after 19:59 or when the market is closed. "
         f"Selling for a profit of 1% or more is advisable at any time. "
         f"The stock symbol {symbol} changed by {X}% in the past {Y} days. "
@@ -413,16 +416,13 @@ def trading_robot(symbol, X, Y):
         f"Current day trade number: {day_trade_count} out of 3 in 5 business days. "
         f"We can only day trade 3 times in 5 business days. "
         f"A day trade is to buy and sell the same stock in the same day. "
-        f"Our crucially urgent goal is to reach an account balance "
-        f"of $25,001.00 dollars as soon as possible to not be limited "
-        f"to the strict requirement of a tiny 3 daytrades in 5 business days. "
-        f"Please summarize in 2 to 8 sentences what the decision was based upon. "
+        f"Our goal is to reach an account balance "
+        f"of $25,001.00 dollars. "
         f"The following must be worded exactly like it is shown because it triggers "
         f"a computer command to buy, sell, or hold: "
-        f"Respond only with: ** buying ** for a buy, "
-        f"** selling ** for a sell, "
-        f"or ** holding ** for a hold. "
-
+        f"Respond only with: ** buy {symbol }** for a buy, "
+        f"** sell {symbol} ** for a sell, "
+        f"or ** hold {symbol} ** for a hold. "
     )
 
     decision = organized_response(content, symbol)
@@ -439,9 +439,9 @@ def organized_response(content, symbol):
     # print("\nMessages:\n", messages, "\n")
     print("\n", response_content, "\n")
 
-    buy_pattern = re.compile(rf"\*\*buying\*\*", re.IGNORECASE)
-    sell_pattern = re.compile(rf"\*\*selling\*\*", re.IGNORECASE)
-    hold_pattern = re.compile(rf"\*\*holding\*\*", re.IGNORECASE)
+    buy_pattern = re.compile(rf"\*\*buy {symbol}\*\*", re.IGNORECASE)
+    sell_pattern = re.compile(rf"\*\*sell {symbol}\*\*", re.IGNORECASE)
+    hold_pattern = re.compile(rf"\*\*hold {symbol}\*\*", re.IGNORECASE)
 
     if buy_pattern.search(response_content):
         return f"buy {symbol}"
@@ -450,7 +450,7 @@ def organized_response(content, symbol):
     elif hold_pattern.search(response_content):
         return f"hold {symbol}"
     else:
-        return f"hold {symbol}"
+        return f"No buy, sell, or hold signal was recognized. "
 
 
 def print_positions(api2, show_price_percentage_change=False):
