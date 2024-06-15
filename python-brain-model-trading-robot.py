@@ -638,7 +638,7 @@ def submit_sell_order(symbol, quantity):
 
         # submit sell order
         # (**order) is correct here
-        if day_trade_count < 3 and current_price and current_price >= bought_price + 0.01:
+        if day_trade_count < 3 and current_price >= bought_price + 0.01:
             api2.submit_order(**order)
             logging.info(f" {current_time_str} , Sold {quantity} shares of {symbol} at ${current_price:.2f}")
             print(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
