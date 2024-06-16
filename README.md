@@ -42,6 +42,12 @@ The following screen pictures were with llama3:8b-instruct-q4_0
 
 ![Screenshot from 2024-05-16 16-37-09](https://github.com/CodeProSpecialist/Chat-GPT-LLM-Artificial-Intelligence-Stock-Trading-Robot-for-Alpaca/assets/111866070/aaf91c92-8588-4588-956a-abcf259ce3f6)
 
+The below picture is an example of how the llama3:8b-instruct-q4_0 
+brain model can analyze the stock market data.
+I modified the def trading_robot 
+function content to obtain some stock analysis text that was printed on 
+the screen. The printed stock market data analysis text slows down the trading robot, and is not always necessary for the trading robot to work. 
+
 ![Screenshot from 2024-05-16 16-38-53](https://github.com/CodeProSpecialist/Chat-GPT-LLM-Artificial-Intelligence-Stock-Trading-Robot-for-Alpaca/assets/111866070/ed2c760b-e27f-4e64-91e5-8d34fee7d3dd)
 
 
