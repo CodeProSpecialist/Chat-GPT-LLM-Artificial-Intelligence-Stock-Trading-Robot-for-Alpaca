@@ -166,8 +166,8 @@ def print_account_balance_change():
                 print(f"{label}: ${balance} | {change_label}: {change_symbol}{abs(percentage_change):.2f}%")
             print("---------------------------------------------------")
         else:
-            print(f"{label}: No percentage change data available 7 days ago in your portfolio. "
-                  f"Possibly a holiday last week or the Stock Market was closed 7 days ago. "
+            print(f"{label}: No percentage change data available 7, 14, or 30 days ago in your portfolio. "
+                  f"Possibly the Stock Market was closed for a holiday 7, 14, or 30 days ago. "
                   f"Check back tomorrow for percentage change data from your portfolio. ")
             print("---------------------------------------------------")
 
