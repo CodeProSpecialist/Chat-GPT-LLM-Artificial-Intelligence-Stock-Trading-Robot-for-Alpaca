@@ -748,20 +748,15 @@ def stop_if_stock_market_is_closed():
         time.sleep(60)  # Sleep for 1 minute and check again. Keep this under the p in print.
 
 def stop_scheduler_thread_if_stock_market_is_closed():
-    # Check if the current time is within the stock market hours
-    # Set the stock market open and close times
-    market_open_time = time2(4, 0)
-    market_close_time = time2(20, 0)
-
     while True:
         # Get the current time in Eastern Time
         eastern = pytz.timezone('US/Eastern')
         now = datetime.now(eastern)
-        current_time = now.time()
+
         current_time_str = now.strftime("EST | %I:%M:%S %p | %m-%d-%Y |")
 
         # Check if the current time is within market hours
-        if now.weekday() <= 4 and market_open_time <= current_time <= market_close_time:
+        if is_market_open(now):
             break
 
         print("\n")
