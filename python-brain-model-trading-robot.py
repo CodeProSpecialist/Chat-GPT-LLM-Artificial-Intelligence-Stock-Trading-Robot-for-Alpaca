@@ -157,9 +157,6 @@ def get_last_trading_day(date):
 
 
 def print_account_balance_change():
-    # Get current datetime in Eastern Time
-    now = datetime.now(eastern)
-
     # Check if the market is open for extended hours
     if not is_market_open(now):
         print("The percentage change information is only available 9:30am - 4:00pm Eastern Time, Monday - Friday.")
@@ -228,8 +225,7 @@ def get_14_days_price(symbol):
 def get_current_price(symbol):
     # Replace '.' with '-'
     symbol = symbol.replace('.', '-')
-    # specify the Eastern Time Zone
-    now = datetime.now(eastern)
+    
     # Define trading hours
     pre_market_start = time2(4, 0)
     pre_market_end = time2(9, 30)
@@ -542,7 +538,6 @@ def print_and_share_positions(api2, show_price_percentage_change=False):
 def submit_buy_order(symbol, quantity):
     # Get the current time in Eastern Time
     
-    now = datetime.now(eastern)
     current_time = now.time()
 
     current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
@@ -623,7 +618,6 @@ def submit_sell_order(symbol, quantity):
 
     current_price = get_current_price(symbol)
 
-    now = datetime.now(eastern)
     current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
     if current_price is None:
@@ -642,8 +636,7 @@ def submit_sell_order(symbol, quantity):
         bought_price = float(position.avg_entry_price)
 
         # Check if the market is open or if it is pre/post market
-        now = datetime.now(eastern)
-
+        
         current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
         pre_market_start = time2(4, 0)
@@ -701,9 +694,6 @@ def submit_sell_order(symbol, quantity):
 
 
 def sell_yesterdays_purchases():
-    now = datetime.now(eastern)
-
-    now = datetime.now(pytz.timezone('US/Eastern'))
     current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
     
     account = api2.get_account()
@@ -731,7 +721,6 @@ def clear_purchased_today():
     global purchased_today
     purchased_today = {}
 
-    now = datetime.now(eastern)
     current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
     print("purchased_today dictionary variable has been cleared. ")
@@ -747,9 +736,6 @@ def execute_trade(symbol, signal, quantity):
 
 def stop_if_stock_market_is_closed():
     while True:
-        # Get the current time in Eastern Time
-        now = datetime.now(eastern)
-
         # Check if the current time is within market hours
         if is_market_open(now):
             break
@@ -782,9 +768,6 @@ def stop_if_stock_market_is_closed():
 
 def stop_scheduler_thread_if_stock_market_is_closed():
     while True:
-        # Get the current time in Eastern Time
-        now = datetime.now(eastern)
-
         current_time_str = now.strftime("EST | %I:%M:%S %p | %m-%d-%Y |")
 
         # Check if the current time is within market hours
@@ -839,7 +822,7 @@ def main():
     while True:
         try:
             stop_if_stock_market_is_closed()  # comment this line to debug the Python code
-            now = datetime.now(eastern)
+            
             current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
             cash_balance = round(float(api2.get_account().cash), 2)
@@ -888,7 +871,7 @@ def main():
                     #print(f"Debug printing 14 days Prices: {debug_print_14_days_prices}")
                     print(f"Decision: {signal}")
                     print("\n")
-                    now = datetime.now(eastern)
+                    
                     compact_current_time_str = now.strftime("EST %I:%M:%S %p ")
                     print(compact_current_time_str)
                     print("--------------------------")
