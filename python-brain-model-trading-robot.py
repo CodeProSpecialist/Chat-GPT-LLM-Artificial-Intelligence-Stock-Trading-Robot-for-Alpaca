@@ -36,10 +36,11 @@ purchased_today = {}
 nyse = mcal.get_calendar('NYSE')
 market_holidays = nyse.holidays().holidays
 
+global close_prices, time_period, csv_writer, csv_filename, fieldnames
+
 # Initialize US Eastern Time
 eastern = pytz.timezone('US/Eastern')
-
-global close_prices, time_period, csv_writer, csv_filename, fieldnames
+now = datetime.now(pytz.timezone('US/Eastern'))
 
 # Define the CSV file and fieldnames
 csv_filename = 'log-file-of-buy-and-sell-signals.csv'
@@ -355,7 +356,6 @@ def trading_robot(symbol, X, Y):
     atr_low_price = get_atr_low_price(symbol)
     atr_high_price = get_atr_high_price(symbol)
 
-	now = datetime.now(eastern)
     day_of_week = now.strftime("%A")  # Get the current day of the week
     month = now.strftime("%B")  # Get the current month
 
