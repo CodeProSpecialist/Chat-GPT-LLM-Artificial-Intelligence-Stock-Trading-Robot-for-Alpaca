@@ -130,9 +130,18 @@ def get_last_trading_day(date):
         date -= timedelta(days=1)
     return date
 
+
 def print_account_balance_change():
+    # Get current datetime in Eastern Time
+    now = datetime.now()  # Adjust timezone as necessary
+
+    # Check if the market is open
+    if not is_market_open(now):
+        print("The percentage change information is only available 9:30am - 4:00pm Eastern Time, Monday - Friday.")
+        return
+
     # Get today's date
-    today = datetime.now().date()
+    today = now.date()
 
     # Adjust today to the last trading day if today is Saturday, Sunday, or a holiday
     if today.weekday() == calendar.SATURDAY:
@@ -179,6 +188,7 @@ def print_account_balance_change():
                   f"Possibly the Stock Market was closed for a holiday 7, 14, or 30 days ago. "
                   f"Check back tomorrow for percentage change data from your portfolio. ")
             print("---------------------------------------------------")
+
 
 def get_14_days_price(symbol):
     symbol = symbol.replace('.', '-')  # Replace '.' with '-'
