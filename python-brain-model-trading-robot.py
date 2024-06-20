@@ -105,6 +105,14 @@ def is_market_open(now):
     market_close_time = time2(20, 0)
     return market_open_time <= now.time() <= market_close_time
 
+def is_daytime_market_hours(now):
+    # Check if the current time is a trading day and within daytime trading hours
+    if now.weekday() >= 5 or now.date() in us_holidays.holidays:
+        return False
+    market_open_time = time2(9, 30)
+    market_close_time = time2(16, 0)
+    return market_open_time <= now.time() <= market_close_time
+
 def get_account_balance(date):
     # Get portfolio history for the specified date
     try:
@@ -135,8 +143,13 @@ def print_account_balance_change():
     # Get current datetime in Eastern Time
     now = datetime.now()  # Adjust timezone as necessary
 
-    # Check if the market is open
+    # Check if the market is open for extended hours
     if not is_market_open(now):
+        print("The percentage change information is only available 9:30am - 4:00pm Eastern Time, Monday - Friday.")
+        return
+
+    # Check if the market is within daytime market hours
+    if not is_daytime_market_hours(now):
         print("The percentage change information is only available 9:30am - 4:00pm Eastern Time, Monday - Friday.")
         return
 
