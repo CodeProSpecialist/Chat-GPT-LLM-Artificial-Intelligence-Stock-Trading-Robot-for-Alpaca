@@ -11,7 +11,6 @@ import schedule
 import threading
 import calendar
 import pandas_market_calendars as mcal
-import holidays
 import time
 import subprocess
 import talib
