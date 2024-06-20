@@ -1,7 +1,7 @@
 import os
 import csv
 import pytz
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from datetime import time as time2
 import yfinance as yf
 from ollama import chat
@@ -170,7 +170,7 @@ def print_account_balance_change():
         print("The percentage change information is only available 9:30am - 4:00pm Eastern Time, Monday - Friday.")
         return
 
-    # Get today's date
+    # Get today's date in Eastern Time
     today = now.date()
 
     # Adjust today to the last trading day if today is Saturday, Sunday, or a holiday
