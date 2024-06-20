@@ -97,21 +97,35 @@ def get_stocks_to_trade():
         logging.error(f"Error reading stock symbols: {e}")
         return []
 
+
 def is_market_open(now):
+    # Convert to Eastern Time
+    eastern = pytz.timezone('US/Eastern')
+    now_eastern = now.astimezone(eastern)
+
     # Check if the current time is a trading day and within trading hours
-    if now.weekday() >= 5 or now.date() in us_holidays.holidays:
+    if now_eastern.weekday() >= 5 or now_eastern.date() in us_holidays:
         return False
-    market_open_time = time2(4, 0)
-    market_close_time = time2(20, 0)
-    return market_open_time <= now.time() <= market_close_time
+
+    market_open_time = time2(4, 0)  # 4:00 AM ET
+    market_close_time = time2(20, 0)  # 8:00 PM ET
+
+    return market_open_time <= now_eastern.time() <= market_close_time
+
 
 def is_daytime_market_hours(now):
+    # Convert to Eastern Time
+    eastern = pytz.timezone('US/Eastern')
+    now_eastern = now.astimezone(eastern)
+
     # Check if the current time is a trading day and within daytime trading hours
-    if now.weekday() >= 5 or now.date() in us_holidays.holidays:
+    if now_eastern.weekday() >= 5 or now_eastern.date() in us_holidays:
         return False
-    market_open_time = time2(9, 30)
-    market_close_time = time2(16, 0)
-    return market_open_time <= now.time() <= market_close_time
+
+    market_open_time = time2(9, 30)  # 9:30 AM ET
+    market_close_time = time2(16, 0)  # 4:00 PM ET
+
+    return market_open_time <= now_eastern.time() <= market_close_time
 
 def get_account_balance(date):
     # Get portfolio history for the specified date
