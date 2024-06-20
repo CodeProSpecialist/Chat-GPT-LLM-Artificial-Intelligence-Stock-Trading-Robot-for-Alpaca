@@ -36,6 +36,9 @@ purchased_today = {}
 nyse = mcal.get_calendar('NYSE')
 us_holidays = nyse.holidays()
 
+# Initialize US Eastern Time
+eastern = pytz.timezone('US/Eastern')
+
 global close_prices, time_period, csv_writer, csv_filename, fieldnames
 
 # Define the CSV file and fieldnames
@@ -155,7 +158,7 @@ def get_last_trading_day(date):
 
 def print_account_balance_change():
     # Get current datetime in Eastern Time
-    now = datetime.now()  # Adjust timezone as necessary
+    now = datetime.now(eastern)
 
     # Check if the market is open for extended hours
     if not is_market_open(now):
