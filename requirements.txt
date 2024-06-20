@@ -7,4 +7,5 @@ ta-lib
 numpy
 tabulate
 tkcalendar
+pandas_market_calendars
 holidays

@@ -10,6 +10,7 @@ import logging
 import schedule
 import threading
 import calendar
+import pandas_market_calendars as mcal
 import holidays
 import time
 import subprocess
@@ -32,8 +33,9 @@ api2 = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
 purchased_today = {}
 
-# Create a list of US federal holidays
-us_holidays = holidays.US()
+# Initialize NYSE calendar
+nyse = mcal.get_calendar('NYSE')
+us_holidays = nyse.holidays()
 
 global close_prices, time_period, csv_writer, csv_filename, fieldnames
 
@@ -96,6 +98,14 @@ def get_stocks_to_trade():
         logging.error(f"Error reading stock symbols: {e}")
         return []
 
+def is_market_open(now):
+    # Check if the current time is a trading day and within trading hours
+    if now.weekday() >= 5 or now.date() in us_holidays.holidays:
+        return False
+    market_open_time = time(4, 0)
+    market_close_time = time(20, 0)
+    return market_open_time <= now.time() <= market_close_time
+
 def get_account_balance(date):
     # Get portfolio history for the specified date
     try:
@@ -117,7 +127,7 @@ def calculate_balance_percentage_change(old_balance, new_balance):
     return ((new_balance - old_balance) / old_balance) * 100
 
 def get_last_trading_day(date):
-    while date.weekday() > calendar.FRIDAY or date in us_holidays:  # Adjust for weekends and holidays
+    while date.weekday() > calendar.FRIDAY or date in us_holidays.holidays:
         date -= timedelta(days=1)
     return date
 
@@ -131,8 +141,8 @@ def print_account_balance_change():
     elif today.weekday() == calendar.SUNDAY:
         today -= timedelta(days=2)
 
-    # Ensure today is not a holiday
-    if today in us_holidays:
+    # Ensure today is not a holiday using pandas_market_calendars
+    if today in us_holidays.holidays:
         today = get_last_trading_day(today)
 
     # Calculate the dates for 7, 14, and 30 days ago
@@ -712,10 +722,9 @@ def stop_if_stock_market_is_closed():
         # Get the current time in Eastern Time
         eastern = pytz.timezone('US/Eastern')
         now = datetime.now(eastern)
-        current_time = now.time()
 
         # Check if the current time is within market hours
-        if now.weekday() <= 4 and market_open_time <= current_time <= market_close_time:
+        if is_market_open(now):
             break
 
         print("\n")
