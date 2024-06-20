@@ -1,7 +1,7 @@
-import os, sys
+import os
 import csv
 import pytz
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from datetime import time as time2
 import yfinance as yf
 from ollama import chat
