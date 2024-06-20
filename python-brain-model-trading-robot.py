@@ -1,7 +1,7 @@
 import os
 import csv
 import pytz
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from datetime import time as time2
 import yfinance as yf
 from ollama import chat
@@ -103,11 +103,10 @@ def get_stocks_to_trade():
 
 def is_market_open(now):
     # Convert to Eastern Time
-    eastern = pytz.timezone('US/Eastern')
     now_eastern = now.astimezone(eastern)
 
     # Check if the current time is a trading day and within trading hours
-    if now_eastern.weekday() >= 5 or now_eastern.date() in us_holidays:
+    if now_eastern.weekday() >= 5 or now_eastern.date() in market_holidays:
         return False
 
     market_open_time = time2(4, 0)  # 4:00 AM ET
@@ -118,17 +117,17 @@ def is_market_open(now):
 
 def is_daytime_market_hours(now):
     # Convert to Eastern Time
-    eastern = pytz.timezone('US/Eastern')
     now_eastern = now.astimezone(eastern)
 
     # Check if the current time is a trading day and within daytime trading hours
-    if now_eastern.weekday() >= 5 or now_eastern.date() in us_holidays:
+    if now_eastern.weekday() >= 5 or now_eastern.date() in market_holidays:
         return False
 
     market_open_time = time2(9, 30)  # 9:30 AM ET
     market_close_time = time2(16, 0)  # 4:00 PM ET
 
     return market_open_time <= now_eastern.time() <= market_close_time
+
 
 def get_account_balance(date):
     # Get portfolio history for the specified date
