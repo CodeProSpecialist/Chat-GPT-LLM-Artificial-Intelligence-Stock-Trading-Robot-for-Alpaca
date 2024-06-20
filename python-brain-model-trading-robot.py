@@ -102,8 +102,8 @@ def is_market_open(now):
     # Check if the current time is a trading day and within trading hours
     if now.weekday() >= 5 or now.date() in us_holidays.holidays:
         return False
-    market_open_time = time(4, 0)
-    market_close_time = time(20, 0)
+    market_open_time = time2(4, 0)
+    market_close_time = time2(20, 0)
     return market_open_time <= now.time() <= market_close_time
 
 def get_account_balance(date):
