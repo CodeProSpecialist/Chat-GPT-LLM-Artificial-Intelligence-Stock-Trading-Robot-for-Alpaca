@@ -804,8 +804,8 @@ def scheduler_thread():
 
     while True:
         # Get the current time in Central Time
-        eastern = pytz.timezone('US/Central')
-        now = datetime.now(eastern)
+        central = pytz.timezone('US/Central')
+        now = datetime.now(central)
 
         current_time_str = now.strftime("CST | %I:%M:%S %p | %m-%d-%Y |")
 
