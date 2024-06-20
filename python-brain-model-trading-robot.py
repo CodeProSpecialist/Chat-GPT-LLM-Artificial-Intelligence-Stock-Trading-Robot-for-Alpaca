@@ -227,8 +227,7 @@ def get_14_days_price(symbol):
 def get_current_price(symbol):
     # Replace '.' with '-'
     symbol = symbol.replace('.', '-')
-    # Define Eastern Time Zone
-    eastern = pytz.timezone('US/Eastern')
+    # specify the Eastern Time Zone
     now = datetime.now(eastern)
     # Define trading hours
     pre_market_start = time2(4, 0)
@@ -356,7 +355,7 @@ def trading_robot(symbol, X, Y):
     atr_low_price = get_atr_low_price(symbol)
     atr_high_price = get_atr_high_price(symbol)
 
-    now = datetime.now(pytz.timezone('US/Eastern'))
+	now = datetime.now(eastern)
     day_of_week = now.strftime("%A")  # Get the current day of the week
     month = now.strftime("%B")  # Get the current month
 
@@ -542,11 +541,10 @@ def print_and_share_positions(api2, show_price_percentage_change=False):
 
 def submit_buy_order(symbol, quantity):
     # Get the current time in Eastern Time
-    eastern = pytz.timezone('US/Eastern')
+    
     now = datetime.now(eastern)
     current_time = now.time()
 
-    now = datetime.now(pytz.timezone('US/Eastern'))
     current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
     # Define the allowed time ranges for the function to operate
@@ -625,7 +623,7 @@ def submit_sell_order(symbol, quantity):
 
     current_price = get_current_price(symbol)
 
-    now = datetime.now(pytz.timezone('US/Eastern'))
+    now = datetime.now(eastern)
     current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
     if current_price is None:
@@ -644,10 +642,8 @@ def submit_sell_order(symbol, quantity):
         bought_price = float(position.avg_entry_price)
 
         # Check if the market is open or if it is pre/post market
-        eastern = pytz.timezone('US/Eastern')
         now = datetime.now(eastern)
 
-        now = datetime.now(pytz.timezone('US/Eastern'))
         current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
         pre_market_start = time2(4, 0)
@@ -705,7 +701,6 @@ def submit_sell_order(symbol, quantity):
 
 
 def sell_yesterdays_purchases():
-    eastern = pytz.timezone('US/Eastern')
     now = datetime.now(eastern)
 
     now = datetime.now(pytz.timezone('US/Eastern'))
@@ -736,7 +731,7 @@ def clear_purchased_today():
     global purchased_today
     purchased_today = {}
 
-    now = datetime.now(pytz.timezone('US/Eastern'))
+    now = datetime.now(eastern)
     current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
     print("purchased_today dictionary variable has been cleared. ")
@@ -753,7 +748,6 @@ def execute_trade(symbol, signal, quantity):
 def stop_if_stock_market_is_closed():
     while True:
         # Get the current time in Eastern Time
-        eastern = pytz.timezone('US/Eastern')
         now = datetime.now(eastern)
 
         # Check if the current time is within market hours
@@ -789,7 +783,6 @@ def stop_if_stock_market_is_closed():
 def stop_scheduler_thread_if_stock_market_is_closed():
     while True:
         # Get the current time in Eastern Time
-        eastern = pytz.timezone('US/Eastern')
         now = datetime.now(eastern)
 
         current_time_str = now.strftime("EST | %I:%M:%S %p | %m-%d-%Y |")
@@ -846,7 +839,7 @@ def main():
     while True:
         try:
             stop_if_stock_market_is_closed()  # comment this line to debug the Python code
-            now = datetime.now(pytz.timezone('US/Eastern'))
+            now = datetime.now(eastern)
             current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
             cash_balance = round(float(api2.get_account().cash), 2)
@@ -895,7 +888,7 @@ def main():
                     #print(f"Debug printing 14 days Prices: {debug_print_14_days_prices}")
                     print(f"Decision: {signal}")
                     print("\n")
-                    now = datetime.now(pytz.timezone('US/Eastern'))
+                    now = datetime.now(eastern)
                     compact_current_time_str = now.strftime("EST %I:%M:%S %p ")
                     print(compact_current_time_str)
                     print("--------------------------")
