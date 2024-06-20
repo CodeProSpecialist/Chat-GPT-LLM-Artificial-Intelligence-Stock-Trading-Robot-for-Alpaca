@@ -150,7 +150,7 @@ def calculate_balance_percentage_change(old_balance, new_balance):
     return ((new_balance - old_balance) / old_balance) * 100
 
 def get_last_trading_day(date):
-    while date.weekday() > calendar.FRIDAY or date in us_holidays.holidays:
+    while date.weekday() > calendar.FRIDAY or date in market_holidays.holidays:
         date -= timedelta(days=1)
     return date
 
@@ -182,7 +182,7 @@ def print_account_balance_change():
         today -= timedelta(days=2)
 
     # Ensure today is not a holiday using pandas_market_calendars
-    if today in us_holidays.holidays:
+    if today in market_holidays.holidays:
         today = get_last_trading_day(today)
 
     # Calculate the dates for 7, 14, and 30 days ago
