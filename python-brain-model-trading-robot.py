@@ -158,7 +158,10 @@ def get_last_trading_day(date):
 
 def print_account_balance_change():
     # Get current datetime in Eastern Time
-    now = datetime.now(eastern)
+    #now = datetime.now(eastern)
+
+    # Get current datetime in Eastern Time
+    now = datetime.now(pytz.utc).astimezone(eastern)
 
     # Check if the market is open for extended hours
     if not is_market_open(now):
