@@ -34,7 +34,7 @@ purchased_today = {}
 
 # Initialize NYSE calendar
 nyse = mcal.get_calendar('NYSE')
-market_holidays = nyse.holidays().holidays
+market_holidays = nyse.holidays()
 
 # Initialize US Eastern Time
 eastern = pytz.timezone('US/Eastern')
