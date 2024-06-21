@@ -915,7 +915,11 @@ def main():
                     #print(f"Debug printing 14 days Prices: {debug_print_14_days_prices}")
                     print(f"Decision: {signal}")
                     print("\n")
-                    
+
+                    # Initialize US Eastern Time
+                    eastern = pytz.timezone('US/Eastern')
+                    now = datetime.now(eastern)
+
                     compact_current_time_str = now.strftime("EST %I:%M:%S %p ")
                     print(compact_current_time_str)
                     print("--------------------------")
