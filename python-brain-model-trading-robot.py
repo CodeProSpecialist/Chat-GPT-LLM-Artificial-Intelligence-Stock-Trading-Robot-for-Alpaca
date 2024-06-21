@@ -32,9 +32,14 @@ api2 = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 
 purchased_today = {}
 
-# Initialize NYSE calendar
+# Get NYSE market calendar
 nyse = mcal.get_calendar('NYSE')
-market_holidays = nyse.holidays()
+
+# Get list of holidays for the year
+holidays = nyse.holidays().holidays
+
+# Convert holidays to a list of date objects
+market_holidays = [holiday.date() for holiday in holidays]
 
 # Initialize US Eastern Time
 eastern = pytz.timezone('US/Eastern')
