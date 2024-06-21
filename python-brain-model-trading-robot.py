@@ -30,6 +30,8 @@ api2 = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 # in a separate command terminal run:
 # ollama serve
 
+global close_prices, time_period, csv_writer, csv_filename, fieldnames, holidays, market_holidays
+
 purchased_today = {}
 
 # Get NYSE market calendar
@@ -43,8 +45,6 @@ market_holidays = [np.datetime64(holiday, 'D').astype(date) for holiday in holid
 
 # Initialize US Eastern Time
 eastern = pytz.timezone('US/Eastern')
-
-global close_prices, time_period, csv_writer, csv_filename, fieldnames
 
 # Define the CSV file and fieldnames
 csv_filename = 'log-file-of-buy-and-sell-signals.csv'
@@ -938,9 +938,9 @@ def main():
                     logging.error(f"Error: {e}")
                     time.sleep(5)
 
-            # Print account balance change at an appropriate place
+                    # Print account balance change at an appropriate place
             print("\n")
-            print_account_balance_change()
+            print_account_balance_change()  # Replace with your actual function
             print("\n")
             print("Waiting 25 seconds ")
             print("\n")
