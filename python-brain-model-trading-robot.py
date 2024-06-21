@@ -110,6 +110,10 @@ def is_market_open(now):
     # Convert to Eastern Time
     now_eastern = now.astimezone(eastern)
 
+    # Initialize NYSE calendar
+    nyse = mcal.get_calendar('NYSE')
+    market_holidays = nyse.holidays().holidays
+
     # Check if the current time is a trading day and within trading hours
     if now_eastern.weekday() >= 5 or now_eastern.date() in market_holidays:
         return False
@@ -123,6 +127,10 @@ def is_market_open(now):
 def is_daytime_market_hours(now):
     # Convert to Eastern Time
     now_eastern = now.astimezone(eastern)
+
+    # Initialize NYSE calendar
+    nyse = mcal.get_calendar('NYSE')
+    market_holidays = nyse.holidays().holidays
 
     # Check if the current time is a trading day and within daytime trading hours
     if now_eastern.weekday() >= 5 or now_eastern.date() in market_holidays:
