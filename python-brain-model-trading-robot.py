@@ -34,14 +34,9 @@ global close_prices, time_period, csv_writer, csv_filename, fieldnames
 
 purchased_today = {}
 
-# Get NYSE market calendar
+# Initialize NYSE calendar
 nyse = mcal.get_calendar('NYSE')
-
-# Get list of holidays for the year
-holidays = nyse.holidays().holidays
-
-# Convert holidays to a list of date objects
-market_holidays = [np.datetime64(holiday, 'D').astype(date) for holiday in holidays]
+market_holidays = nyse.holidays().holidays
 
 # Initialize US Eastern Time
 eastern = pytz.timezone('US/Eastern')
