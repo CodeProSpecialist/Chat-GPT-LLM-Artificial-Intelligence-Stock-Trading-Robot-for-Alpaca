@@ -104,9 +104,9 @@ def get_stocks_to_trade():
         return []
 
 
-def is_market_open(now):
+def is_market_open():
     eastern = pytz.timezone('US/Eastern')
-
+    now = datetime.now(eastern)
     # Convert to Eastern Time
     now_eastern = now.astimezone(eastern)
 
@@ -124,7 +124,9 @@ def is_market_open(now):
     return market_open_time <= now_eastern.time() <= market_close_time
 
 
-def is_daytime_market_hours(now):
+def is_daytime_market_hours():
+    eastern = pytz.timezone('US/Eastern')
+    now = datetime.now(eastern)
     # Convert to Eastern Time
     now_eastern = now.astimezone(eastern)
 
@@ -171,13 +173,13 @@ def get_last_trading_day(date):
 
 
 def print_account_balance_change():
-    # Get current datetime in Eastern Time
+    eastern = pytz.timezone('US/Eastern')
     now = datetime.now(eastern)
 
     # THIS CODE WORKS CORRECTLY. NOTHING SHOWS THE DAY AFTER A HOLIDAY
     # NOTHING SHOWS THE DAY AFTER THE MARKET WAS CLOSED.
     # Check if the market is within daytime market hours
-    if not is_daytime_market_hours(now):
+    if not is_daytime_market_hours():
         print("The percentage change information is only available 9:30am - 4:00pm Eastern Time, Monday - Friday.")
         return
 
@@ -783,7 +785,7 @@ def stop_if_stock_market_is_closed():
         now = datetime.now(eastern)
 
         # Check if the current time is within market hours
-        if is_market_open(now):
+        if is_market_open():
             break
 
         print("\n")
@@ -822,7 +824,7 @@ def stop_scheduler_thread_if_stock_market_is_closed():
         current_time_str = now.strftime("EST | %I:%M:%S %p | %m-%d-%Y |")
 
         # Check if the current time is within market hours
-        if is_market_open(now):
+        if is_market_open():
             break
 
         print("\n")
