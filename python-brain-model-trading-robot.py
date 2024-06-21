@@ -874,6 +874,11 @@ def adjust_quantity(quantity, cash_balance, current_price):
 
 
 def main():
+    global market_holidays, holidays
+    # Initialize NYSE calendar
+    nyse = mcal.get_calendar('NYSE')
+    market_holidays = nyse.holidays().holidays
+
     symbols = get_stocks_to_trade()
     if not symbols:
         return
