@@ -40,7 +40,6 @@ global close_prices, time_period, csv_writer, csv_filename, fieldnames, eastern
 
 # Initialize US Eastern Time
 eastern = pytz.timezone('US/Eastern')
-# now = datetime.now(pytz.timezone('US/Eastern'))
 now = datetime.now(eastern)
 
 # Define the CSV file and fieldnames
@@ -823,7 +822,11 @@ def main():
     while True:
         try:
             stop_if_stock_market_is_closed()  # comment this line to debug the Python code
-            
+
+            # Initialize US Eastern Time
+            eastern = pytz.timezone('US/Eastern')
+            now = datetime.now(eastern)
+
             current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
             cash_balance = round(float(api2.get_account().cash), 2)
