@@ -944,11 +944,12 @@ def main():
             print("\n")
             print("Waiting 25 seconds ")
             print("\n")
-            time.sleep(25)  # keep this under the "f" in for symbol in symbols
+            time.sleep(25)   # keep this under the "f" in for symbol in symbols
 
         except Exception as e:
             logging.error(f"Error: {e}")
             time.sleep(5)
+
 
 if __name__ == "__main__":
     scheduler_thread_instance = threading.Thread(target=scheduler_thread)
