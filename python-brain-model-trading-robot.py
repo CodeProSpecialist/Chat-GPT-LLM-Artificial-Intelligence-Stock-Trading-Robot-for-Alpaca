@@ -30,7 +30,7 @@ api2 = tradeapi.REST(API_KEY_ID, API_SECRET_KEY, API_BASE_URL)
 # in a separate command terminal run:
 # ollama serve
 
-global close_prices, time_period, csv_writer, csv_filename, fieldnames
+global close_prices, time_period, csv_writer, csv_filename, fieldnames, eastern, nyse, market_holidays
 
 purchased_today = {}
 
