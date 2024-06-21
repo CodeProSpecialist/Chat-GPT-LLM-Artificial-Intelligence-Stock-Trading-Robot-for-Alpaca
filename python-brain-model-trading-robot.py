@@ -164,11 +164,8 @@ def print_account_balance_change():
     # Get current datetime in Eastern Time
     now = datetime.now(eastern)
 
-    # Check if the market is open for extended hours
-    if not is_market_open(now):
-        print("The percentage change information is only available 9:30am - 4:00pm Eastern Time, Monday - Friday.")
-        return
-
+    # THIS CODE WORKS CORRECTLY. NOTHING SHOWS THE DAY AFTER A HOLIDAY
+    # NOTHING SHOWS THE DAY AFTER THE MARKET WAS CLOSED.
     # Check if the market is within daytime market hours
     if not is_daytime_market_hours(now):
         print("The percentage change information is only available 9:30am - 4:00pm Eastern Time, Monday - Friday.")
