@@ -934,7 +934,7 @@ def main():
                           "temperature.")
                     time.sleep(15)  # Add a 15-second delay
 
-                except Exception as e:
+                except Exception as e:      # this is under the t in try
                     logging.error(f"Error: {e}")
                     time.sleep(5)
 
@@ -944,10 +944,13 @@ def main():
             print("\n")
             print("Waiting 25 seconds ")
             print("\n")
-            time.sleep(25)   # keep this under the "f" in for symbol in symbols
+            time.sleep(25)   # keep this under the "f" in for symbol
 
-        except Exception as e:
-            logging.error(f"Error: {e}")
+
+        except Exception as e:  # this is under the t in try ( the while true try )
+
+            logging.error(f"Error in main loop: {e}")
+
             time.sleep(5)
 
 
