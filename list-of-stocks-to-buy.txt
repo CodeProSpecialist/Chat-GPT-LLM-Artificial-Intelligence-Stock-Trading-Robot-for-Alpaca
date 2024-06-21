@@ -1,1 +1,2 @@
-SPY
+VOO
+BRK.B
