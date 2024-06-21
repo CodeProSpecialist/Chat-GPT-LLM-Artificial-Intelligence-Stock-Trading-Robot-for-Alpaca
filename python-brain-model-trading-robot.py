@@ -36,10 +36,10 @@ purchased_today = {}
 nyse = mcal.get_calendar('NYSE')
 market_holidays = nyse.holidays().holidays
 
-global close_prices, time_period, csv_writer, csv_filename, fieldnames, eastern
-
 # Initialize US Eastern Time
 eastern = pytz.timezone('US/Eastern')
+
+global close_prices, time_period, csv_writer, csv_filename, fieldnames
 
 # Define the CSV file and fieldnames
 csv_filename = 'log-file-of-buy-and-sell-signals.csv'
@@ -52,6 +52,7 @@ with open(csv_filename, mode='w', newline='') as csv_file:
     # Write the header row
     csv_writer.writeheader()
 
+
 # Function to check if OLLAMA server service is running
 def is_ollama_running():
     try:
@@ -59,6 +60,7 @@ def is_ollama_running():
         return True  # OLLAMA server service is running
     except subprocess.CalledProcessError:
         return False  # OLLAMA server service is not running
+
 
 # Check if OLLAMA server service is running
 if is_ollama_running():
@@ -75,6 +77,7 @@ time.sleep(1)
 
 # Configure logging
 logging.basicConfig(filename='important-program-messages.txt', level=logging.INFO)
+
 
 def get_stocks_to_trade():
     try:
@@ -102,11 +105,8 @@ def get_stocks_to_trade():
 
 
 def is_market_open(now):
-    # Get current datetime in Eastern Time
-    # Initialize US Eastern Time
-    eastern = pytz.timezone('US/Eastern')
-
-    now_eastern = datetime.now(eastern)
+    # Convert to Eastern Time
+    now_eastern = now.astimezone(eastern)
 
     # Check if the current time is a trading day and within trading hours
     if now_eastern.weekday() >= 5 or now_eastern.date() in market_holidays:
@@ -119,11 +119,8 @@ def is_market_open(now):
 
 
 def is_daytime_market_hours(now):
-    # Get current datetime in Eastern Time
-    # Initialize US Eastern Time
-    eastern = pytz.timezone('US/Eastern')
-
-    now_eastern = datetime.now(eastern)
+    # Convert to Eastern Time
+    now_eastern = now.astimezone(eastern)
 
     # Check if the current time is a trading day and within daytime trading hours
     if now_eastern.weekday() >= 5 or now_eastern.date() in market_holidays:
@@ -150,10 +147,12 @@ def get_account_balance(date):
         print(f"Error fetching balance for {date}: {e}")
         return None
 
+
 def calculate_balance_percentage_change(old_balance, new_balance):
     if old_balance == 0:
         return 0
     return ((new_balance - old_balance) / old_balance) * 100
+
 
 def get_last_trading_day(date):
     while date.weekday() > calendar.FRIDAY or date in market_holidays.holidays:
@@ -162,9 +161,16 @@ def get_last_trading_day(date):
 
 
 def print_account_balance_change():
-    # Initialize US Eastern Time
-    eastern = pytz.timezone('US/Eastern')
-    now = datetime.now(eastern)
+    # Get current datetime in Eastern Time
+    # now = datetime.now(eastern)
+
+    # Get current datetime in Eastern Time
+    now = datetime.now(pytz.utc).astimezone(eastern)
+
+    # Check if the market is open for extended hours
+    if not is_market_open(now):
+        print("The percentage change information is only available 9:30am - 4:00pm Eastern Time, Monday - Friday.")
+        return
 
     # Check if the market is within daytime market hours
     if not is_daytime_market_hours(now):
@@ -226,14 +232,13 @@ def get_14_days_price(symbol):
     stock_data = yf.Ticker(symbol)
     return round(stock_data.history(period='14d')['Close'].iloc[0], 4)
 
+
 def get_current_price(symbol):
     # Replace '.' with '-'
     symbol = symbol.replace('.', '-')
-
-    # Initialize US Eastern Time
+    # Define Eastern Time Zone
     eastern = pytz.timezone('US/Eastern')
     now = datetime.now(eastern)
-
     # Define trading hours
     pre_market_start = time2(4, 0)
     pre_market_end = time2(9, 30)
@@ -302,17 +307,21 @@ def get_current_price(symbol):
 
     return round(current_price, 4) if current_price else None
 
+
 def calculate_percentage_change(current_price, previous_price):
     return ((current_price - previous_price) / previous_price) * 100
+
 
 def calculate_rsi(close_prices, time_period=14):
     rsi = talib.RSI(np.array(close_prices), timeperiod=time_period)
     return rsi[-1]
 
+
 def calculate_moving_averages(close_prices, short_window=50, long_window=100):
     short_ma = talib.SMA(np.array(close_prices), timeperiod=short_window)
     long_ma = talib.SMA(np.array(close_prices), timeperiod=long_window)
     return short_ma[-1], long_ma[-1]
+
 
 def get_average_true_range(symbol):
     symbol = symbol.replace('.', '-')  # Replace '.' with '-'
@@ -321,10 +330,12 @@ def get_average_true_range(symbol):
     atr = talib.ATR(data['High'].values, data['Low'].values, data['Close'].values, timeperiod=22)
     return atr[-1]
 
+
 def get_atr_low_price(symbol):
     atr_value = get_average_true_range(symbol)
     current_price = get_current_price(symbol)
     return round(current_price - 0.10 * atr_value, 4)
+
 
 def get_atr_high_price(symbol):
     atr_value = get_average_true_range(symbol)
@@ -334,11 +345,6 @@ def get_atr_high_price(symbol):
 
 def trading_robot(symbol, X, Y):
     symbol = symbol.replace('.', '-')  # Replace '.' with '-'
-
-    # Initialize US Eastern Time
-    eastern = pytz.timezone('US/Eastern')
-    now = datetime.now(eastern)
-
     stock_data = yf.Ticker(symbol)
     history_data = stock_data.history(period='180d')
     close_prices = history_data['Close']
@@ -365,6 +371,7 @@ def trading_robot(symbol, X, Y):
     atr_low_price = get_atr_low_price(symbol)
     atr_high_price = get_atr_high_price(symbol)
 
+    now = datetime.now(pytz.timezone('US/Eastern'))
     day_of_week = now.strftime("%A")  # Get the current day of the week
     month = now.strftime("%B")  # Get the current month
 
@@ -419,7 +426,7 @@ def trading_robot(symbol, X, Y):
     # Update content message to include account information
     content = (
         f"Yes, you can assist me with this decision. "
-        f"Your role is crucial to reply only with: ** buy {symbol }** for a buy, "
+        f"Your role is crucial to reply only with: ** buy {symbol}** for a buy, "
         f"** sell {symbol} ** for a sell, "
         f"or ** hold {symbol} ** for a hold. "
         f"Your role as a stock market trading assistant is crucial here. "
@@ -476,7 +483,7 @@ def trading_robot(symbol, X, Y):
         f"of $25,001.00 dollars. "
         f"The following must be worded exactly like it is shown because it triggers "
         f"a computer command to buy, sell, or hold: "
-        f"Respond only with: ** buy {symbol }** for a buy, "
+        f"Respond only with: ** buy {symbol}** for a buy, "
         f"** sell {symbol} ** for a sell, "
         f"or ** hold {symbol} ** for a hold. "
     )
@@ -539,6 +546,7 @@ def print_positions(api2, show_price_percentage_change=False):
     print(full_output)
     return full_output
 
+
 def print_and_share_positions(api2, show_price_percentage_change=False):
     table_str = print_positions(api2, show_price_percentage_change)
     content = (f"Here are the current stock market positions that I own "
@@ -548,14 +556,14 @@ def print_and_share_positions(api2, show_price_percentage_change=False):
                f"currently own any positions.")
     organized_response(content, "positions")
 
+
 def submit_buy_order(symbol, quantity):
     # Get the current time in Eastern Time
-    # Initialize US Eastern Time
     eastern = pytz.timezone('US/Eastern')
     now = datetime.now(eastern)
-
     current_time = now.time()
 
+    now = datetime.now(pytz.timezone('US/Eastern'))
     current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
     # Define the allowed time ranges for the function to operate
@@ -603,7 +611,8 @@ def submit_buy_order(symbol, quantity):
                 'time_in_force': 'day'
             }
         else:
-            logging.info(f" {current_time_str} , The market is currently closed. No buy order was submitted for {symbol}. ")
+            logging.info(
+                f" {current_time_str} , The market is currently closed. No buy order was submitted for {symbol}. ")
             print(f"The market is currently closed. No buy order was submitted for {symbol}. ")
             return
 
@@ -634,10 +643,7 @@ def submit_sell_order(symbol, quantity):
 
     current_price = get_current_price(symbol)
 
-    # Initialize US Eastern Time
-    eastern = pytz.timezone('US/Eastern')
-    now = datetime.now(eastern)
-
+    now = datetime.now(pytz.timezone('US/Eastern'))
     current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
     if current_price is None:
@@ -656,7 +662,10 @@ def submit_sell_order(symbol, quantity):
         bought_price = float(position.avg_entry_price)
 
         # Check if the market is open or if it is pre/post market
-        
+        eastern = pytz.timezone('US/Eastern')
+        now = datetime.now(eastern)
+
+        now = datetime.now(pytz.timezone('US/Eastern'))
         current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
         pre_market_start = time2(4, 0)
@@ -689,7 +698,8 @@ def submit_sell_order(symbol, quantity):
                 'time_in_force': 'day'
             }
         else:
-            logging.info(f" {current_time_str} , The market is currently closed. No sell order was submitted for {symbol}.")
+            logging.info(
+                f" {current_time_str} , The market is currently closed. No sell order was submitted for {symbol}.")
             print(f"The market is currently closed. No sell order was submitted for {symbol}.")
             return
 
@@ -714,12 +724,12 @@ def submit_sell_order(symbol, quantity):
 
 
 def sell_yesterdays_purchases():
-    # Initialize US Eastern Time
     eastern = pytz.timezone('US/Eastern')
     now = datetime.now(eastern)
 
+    now = datetime.now(pytz.timezone('US/Eastern'))
     current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
-    
+
     account = api2.get_account()
     positions = api2.list_positions()
 
@@ -741,17 +751,17 @@ def sell_yesterdays_purchases():
                 submit_sell_order(symbol, quantity)
                 logging.info(f" {current_time_str} , Sold {quantity} shares of {symbol} at ${current_price:.2f}")
 
+
 def clear_purchased_today():
     global purchased_today
     purchased_today = {}
 
-    # Initialize US Eastern Time
-    eastern = pytz.timezone('US/Eastern')
-    now = datetime.now(eastern)
+    now = datetime.now(pytz.timezone('US/Eastern'))
     current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
     print("purchased_today dictionary variable has been cleared. ")
     logging.info(f" {current_time_str} , purchased_today dictionary variable has been cleared. ")
+
 
 def execute_trade(symbol, signal, quantity):
     if signal.startswith("buy"):
@@ -761,12 +771,13 @@ def execute_trade(symbol, signal, quantity):
     else:
         logging.info(f"Holding {symbol}")
 
-def stop_if_stock_market_is_closed():
-    # Initialize US Eastern Time
-    eastern = pytz.timezone('US/Eastern')
-    now = datetime.now(eastern)
 
+def stop_if_stock_market_is_closed():
     while True:
+        # Get the current time in Eastern Time
+        eastern = pytz.timezone('US/Eastern')
+        now = datetime.now(eastern)
+
         # Check if the current time is within market hours
         if is_market_open(now):
             break
@@ -797,9 +808,10 @@ def stop_if_stock_market_is_closed():
         print("\n")
         time.sleep(60)  # Sleep for 1 minute and check again. Keep this under the p in print.
 
+
 def stop_scheduler_thread_if_stock_market_is_closed():
     while True:
-        # Initialize US Eastern Time
+        # Get the current time in Eastern Time
         eastern = pytz.timezone('US/Eastern')
         now = datetime.now(eastern)
 
@@ -817,6 +829,7 @@ def stop_scheduler_thread_if_stock_market_is_closed():
         print("Working 4:00 - 20:00 ")
         print("\n")
         time.sleep(60)
+
 
 def scheduler_thread():
     stop_scheduler_thread_if_stock_market_is_closed()
@@ -849,6 +862,7 @@ def scheduler_thread():
 
         time.sleep(60)  # Check for scheduled tasks every 59 seconds
 
+
 def main():
     symbols = get_stocks_to_trade()
     if not symbols:
@@ -857,11 +871,7 @@ def main():
     while True:
         try:
             stop_if_stock_market_is_closed()  # comment this line to debug the Python code
-
-            # Initialize US Eastern Time
-            eastern = pytz.timezone('US/Eastern')
-            now = datetime.now(eastern)
-
+            now = datetime.now(pytz.timezone('US/Eastern'))
             current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
             cash_balance = round(float(api2.get_account().cash), 2)
@@ -907,14 +917,10 @@ def main():
                     print(f"Symbol: {symbol}")
                     print(f"Current Price: {current_price}")
                     # debug print 14 days prices
-                    #print(f"Debug printing 14 days Prices: {debug_print_14_days_prices}")
+                    # print(f"Debug printing 14 days Prices: {debug_print_14_days_prices}")
                     print(f"Decision: {signal}")
                     print("\n")
-
-                    # Initialize US Eastern Time
-                    eastern = pytz.timezone('US/Eastern')
-                    now = datetime.now(eastern)
-
+                    now = datetime.now(pytz.timezone('US/Eastern'))
                     compact_current_time_str = now.strftime("EST %I:%M:%S %p ")
                     print(compact_current_time_str)
                     print("--------------------------")
@@ -924,7 +930,7 @@ def main():
                           "temperature. ")
                     time.sleep(15)  # Add a 1-second delay
 
-                except Exception as e:     # this is under the t in try
+                except Exception as e:  # this is under the t in try
                     logging.error(f"Error: {e}")
                     time.sleep(5)
 
@@ -935,7 +941,7 @@ def main():
             print("\n")
             time.sleep(25)  # keep this under the "f" in for symbol
 
-        except Exception as e:     # this is under the t in try
+        except Exception as e:  # this is under the t in try
             logging.error(f"Error in main loop: {e}")
             time.sleep(5)
 
