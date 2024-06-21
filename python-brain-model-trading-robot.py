@@ -40,7 +40,6 @@ global close_prices, time_period, csv_writer, csv_filename, fieldnames, eastern
 
 # Initialize US Eastern Time
 eastern = pytz.timezone('US/Eastern')
-now = datetime.now(eastern)
 
 # Define the CSV file and fieldnames
 csv_filename = 'log-file-of-buy-and-sell-signals.csv'
