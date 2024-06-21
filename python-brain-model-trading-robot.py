@@ -938,7 +938,7 @@ def main():
                     logging.error(f"Error: {e}")
                     time.sleep(5)
 
-                    # Print account balance change at an appropriate place
+            # Print account balance change at an appropriate place
             print("\n")
             print_account_balance_change()  # Replace with your actual function
             print("\n")
@@ -947,9 +947,8 @@ def main():
             time.sleep(25)  # keep this under the "f" in for symbol in symbols
 
         except Exception as e:
-            logging.error(f"Error in main loop: {e}")
+            logging.error(f"Error: {e}")
             time.sleep(5)
-
 
 if __name__ == "__main__":
     scheduler_thread_instance = threading.Thread(target=scheduler_thread)
