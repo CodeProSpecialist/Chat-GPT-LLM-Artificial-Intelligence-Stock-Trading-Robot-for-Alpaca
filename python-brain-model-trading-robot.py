@@ -857,6 +857,19 @@ def scheduler_thread():
         time.sleep(60)  # Check for scheduled tasks every 59 seconds
 
 
+def adjust_quantity(quantity, cash_balance, current_price):
+    """
+    Adjusts the trading quantity based on predefined rules.
+
+    Returns the adjusted quantity.
+    """
+    if quantity < 1:
+        return 0
+    elif quantity == 1 or quantity == 2:
+        return quantity  # No change needed for quantity 1 or 2
+    elif quantity >= 3:
+        return 3
+
 def main():
     symbols = get_stocks_to_trade()
     if not symbols:
@@ -896,12 +909,7 @@ def main():
                     quantity = int(cash_balance / current_price)
 
                     # Adjust quantity based on trading rules
-                    if quantity < 1:
-                        quantity = 0
-                    elif quantity == 1 or quantity == 2:
-                        pass  # No change needed for quantity 1 or 2
-                    elif quantity >= 3:
-                        quantity = 3
+                    quantity = adjust_quantity(quantity, cash_balance, current_price)
 
                     execute_trade(symbol, signal, quantity)
                     print(f"Symbol: {symbol}")
