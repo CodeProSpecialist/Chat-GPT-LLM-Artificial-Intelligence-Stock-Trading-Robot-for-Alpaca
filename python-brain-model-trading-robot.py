@@ -897,7 +897,7 @@ def main():
                     if quantity < 1:
                         quantity = 0
 
-                    # comment out 6 lines in the below "if statememt" to buy with all of our cash.
+                    # comment out 6 lines in the below "if statement" to buy with all of our cash.
                     if quantity >= 3:
                         quantity = 3
 
@@ -920,11 +920,10 @@ def main():
                     print("--------------------------")
                     print("\n")
                     logging.info(f" {current_time_str} , Signal: {signal}")
-                    print("Waiting 15 seconds to not exceed API rate limits and to keep the video card at a colder "
-                          "temperature. ")
-                    time.sleep(15)  # Add a 1-second delay
+                    print("Waiting 15 seconds to not exceed API rate limits and to keep the video card at a colder temperature.")
+                    time.sleep(15)  # Add a 15-second delay
 
-                except Exception as e:  # this is under the t in try
+                except Exception as e:
                     logging.error(f"Error: {e}")
                     time.sleep(5)
 
@@ -935,7 +934,7 @@ def main():
             print("\n")
             time.sleep(25)  # keep this under the "f" in for symbol
 
-        except Exception as e:  # this is under the t in try
+        except Exception as e:
             logging.error(f"Error in main loop: {e}")
             time.sleep(5)
 
