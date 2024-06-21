@@ -110,6 +110,8 @@ def get_stocks_to_trade():
 
 
 def is_market_open(now):
+    eastern = pytz.timezone('US/Eastern')
+
     # Convert to Eastern Time
     now_eastern = now.astimezone(eastern)
 
