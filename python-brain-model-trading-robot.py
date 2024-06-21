@@ -343,7 +343,7 @@ def get_atr_high_price(symbol):
     return round(current_price + 0.40 * atr_value, 4)
 
 
-def trading_robot(symbol, X, Y):
+def trading_robot(symbol, x, y):
     symbol = symbol.replace('.', '-')  # Replace '.' with '-'
     stock_data = yf.Ticker(symbol)
     history_data = stock_data.history(period='180d')
@@ -443,7 +443,7 @@ def trading_robot(symbol, X, Y):
         f"The default early morning rule for Tuesday is to never buy during the times: 4:00-10:14. "
         f"We cannot trade after 19:59 or when the market is closed. "
         f"Selling for a profit of 1% or more is advisable at any time. "
-        f"The stock symbol {symbol} changed by {X}% in the past {Y} days. "
+        f"The stock symbol {symbol} changed by {x}% in the past {y} days. "
         f"The RSI is {rsi:.2f}, 50-day MA is {short_ma:.2f}, "
         f"and 100-day MA is {long_ma:.2f}. "
         f"The market trend is {market_trend}. "
@@ -895,9 +895,9 @@ def main():
                     if current_price is None:  # Skip to next symbol if current price is None
                         continue
                     debug_print_14_days_prices = get_14_days_price(symbol)
-                    X = calculate_percentage_change(current_price, previous_price)
-                    Y = 14
-                    signal = trading_robot(symbol, X, Y)
+                    x = calculate_percentage_change(current_price, previous_price)
+                    y = 14
+                    signal = trading_robot(symbol, x, y)
                     cash_balance = float(api2.get_account().cash)
                     quantity = int(cash_balance / current_price)
                     if quantity < 1:
