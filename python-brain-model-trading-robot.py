@@ -335,6 +335,11 @@ def get_atr_high_price(symbol):
 
 def trading_robot(symbol, X, Y):
     symbol = symbol.replace('.', '-')  # Replace '.' with '-'
+
+    # Initialize US Eastern Time
+    eastern = pytz.timezone('US/Eastern')
+    now = datetime.now(eastern)
+
     stock_data = yf.Ticker(symbol)
     history_data = stock_data.history(period='180d')
     close_prices = history_data['Close']
@@ -360,10 +365,6 @@ def trading_robot(symbol, X, Y):
 
     atr_low_price = get_atr_low_price(symbol)
     atr_high_price = get_atr_high_price(symbol)
-
-    # Initialize US Eastern Time
-    eastern = pytz.timezone('US/Eastern')
-    now = datetime.now(eastern)
 
     day_of_week = now.strftime("%A")  # Get the current day of the week
     month = now.strftime("%B")  # Get the current month
