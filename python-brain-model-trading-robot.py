@@ -884,20 +884,25 @@ def adjust_quantity(quantity, cash_balance, current_price):
 
 
 def main():
-    global market_holidays, holidays
-    # Initialize NYSE calendar
-    nyse = mcal.get_calendar('NYSE')
-    market_holidays = nyse.holidays().holidays
-
     symbols = get_stocks_to_trade()
     if not symbols:
         return
 
     while True:
         try:
-            stop_if_stock_market_is_closed()  # comment this line to debug the Python code
+            global market_holidays, holidays
+            # Initialize NYSE calendar
+            nyse = mcal.get_calendar('NYSE')
+            market_holidays = nyse.holidays()
+
             now = datetime.now(pytz.timezone('US/Eastern'))
             current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
+
+            stop_if_stock_market_is_closed()  # comment this line to debug the Python code
+
+            # Ensure holiday_list is the correct type
+            if not hasattr(market_holidays, 'holidays'):
+                raise AttributeError("holiday_list does not have attribute 'holidays'")
 
             cash_balance = round(float(api2.get_account().cash), 2)
 
