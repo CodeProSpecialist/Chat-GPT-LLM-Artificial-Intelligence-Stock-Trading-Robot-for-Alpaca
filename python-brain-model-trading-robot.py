@@ -962,7 +962,7 @@ if __name__ == "__main__":
 
     while True:
         try:
-            main(market_holidays)
+            main()
         except Exception as e:
             logging.error(f"Error in main loop: {e}")
             time.sleep(5)
