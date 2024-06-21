@@ -870,6 +870,7 @@ def adjust_quantity(quantity, cash_balance, current_price):
     elif quantity >= 3:
         return 3
 
+
 def main():
     symbols = get_stocks_to_trade()
     if not symbols:
@@ -908,7 +909,7 @@ def main():
                     cash_balance = float(api2.get_account().cash)
                     quantity = int(cash_balance / current_price)
 
-                    # Adjust quantity based on trading rules
+                    # Adjust quantity based on the adjust_quantity function settings.
                     quantity = adjust_quantity(quantity, cash_balance, current_price)
 
                     execute_trade(symbol, signal, quantity)
@@ -922,8 +923,8 @@ def main():
                     print("--------------------------")
                     print("\n")
                     logging.info(f" {current_time_str} , Signal: {signal}")
-                    print(
-                        "Waiting 15 seconds to not exceed API rate limits and to keep the video card at a colder temperature.")
+                    print("Waiting 15 seconds to not exceed API rate limits and to keep the video card at a colder "
+                          "temperature.")
                     time.sleep(15)  # Add a 15-second delay
 
                 except Exception as e:
