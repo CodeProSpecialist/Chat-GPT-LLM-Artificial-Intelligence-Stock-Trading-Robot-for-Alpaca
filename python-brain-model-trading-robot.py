@@ -1,7 +1,7 @@
 import os
 import csv
 import pytz
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from datetime import time as time2
 import yfinance as yf
 from ollama import chat
@@ -39,7 +39,7 @@ nyse = mcal.get_calendar('NYSE')
 holidays = nyse.holidays().holidays
 
 # Convert holidays to a list of date objects
-market_holidays = [holiday.date() for holiday in holidays]
+market_holidays = [np.datetime64(holiday, 'D').astype(date) for holiday in holidays]
 
 # Initialize US Eastern Time
 eastern = pytz.timezone('US/Eastern')
