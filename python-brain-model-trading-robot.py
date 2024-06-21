@@ -894,18 +894,14 @@ def main():
                     signal = trading_robot(symbol, x, y)
                     cash_balance = float(api2.get_account().cash)
                     quantity = int(cash_balance / current_price)
+
+                    # Adjust quantity based on trading rules
                     if quantity < 1:
                         quantity = 0
-
-                    # comment out 6 lines in the below "if statement" to buy with all of our cash.
-                    if quantity >= 3:
+                    elif quantity == 1 or quantity == 2:
+                        pass  # No change needed for quantity 1 or 2
+                    elif quantity >= 3:
                         quantity = 3
-
-                    if quantity == 2:
-                        quantity = 2
-
-                    if quantity == 1:
-                        quantity = 1
 
                     execute_trade(symbol, signal, quantity)
                     print(f"Symbol: {symbol}")
