@@ -36,11 +36,12 @@ purchased_today = {}
 nyse = mcal.get_calendar('NYSE')
 market_holidays = nyse.holidays().holidays
 
-global close_prices, time_period, csv_writer, csv_filename, fieldnames
+global close_prices, time_period, csv_writer, csv_filename, fieldnames, now, eastern
 
 # Initialize US Eastern Time
 eastern = pytz.timezone('US/Eastern')
-now = datetime.now(pytz.timezone('US/Eastern'))
+# now = datetime.now(pytz.timezone('US/Eastern'))
+now = datetime.now(eastern)
 
 # Define the CSV file and fieldnames
 csv_filename = 'log-file-of-buy-and-sell-signals.csv'
