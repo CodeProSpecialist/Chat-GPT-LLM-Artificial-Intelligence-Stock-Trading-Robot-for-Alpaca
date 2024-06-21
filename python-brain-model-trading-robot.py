@@ -942,7 +942,7 @@ def main():
             print("\n")
             print("Waiting 25 seconds ")
             print("\n")
-            time.sleep(25)  # keep this under the "f" in for symbol
+            time.sleep(25)  # keep this under the "f" in for symbol in symbols
 
         except Exception as e:
             logging.error(f"Error in main loop: {e}")
