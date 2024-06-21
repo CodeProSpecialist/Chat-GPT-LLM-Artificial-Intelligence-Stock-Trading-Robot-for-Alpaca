@@ -906,8 +906,6 @@ def main():
                     execute_trade(symbol, signal, quantity)
                     print(f"Symbol: {symbol}")
                     print(f"Current Price: {current_price}")
-                    # debug print 14 days prices
-                    # print(f"Debug printing 14 days Prices: {debug_print_14_days_prices}")
                     print(f"Decision: {signal}")
                     print("\n")
                     now = datetime.now(pytz.timezone('US/Eastern'))
@@ -916,13 +914,15 @@ def main():
                     print("--------------------------")
                     print("\n")
                     logging.info(f" {current_time_str} , Signal: {signal}")
-                    print("Waiting 15 seconds to not exceed API rate limits and to keep the video card at a colder temperature.")
+                    print(
+                        "Waiting 15 seconds to not exceed API rate limits and to keep the video card at a colder temperature.")
                     time.sleep(15)  # Add a 15-second delay
 
                 except Exception as e:
                     logging.error(f"Error: {e}")
                     time.sleep(5)
 
+            # Print account balance change at an appropriate place
             print("\n")
             print_account_balance_change()
             print("\n")
