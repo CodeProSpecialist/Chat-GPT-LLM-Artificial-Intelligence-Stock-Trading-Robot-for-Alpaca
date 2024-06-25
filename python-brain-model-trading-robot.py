@@ -844,7 +844,9 @@ def scheduler_thread():
     schedule.every().day.at("03:00").do(clear_purchased_today)  # Run at 03:00 am every day
     schedule.every().day.at("03:01").do(clear_purchased_today)  # Double check run at 03:01
     schedule.every().day.at("08:31").do(sell_yesterdays_purchases)  # Run at 08:31 am every day
-    schedule.every().day.at("08:36").do(sell_yesterdays_purchases)  # Double check run at 08:32 am
+    schedule.every().day.at("08:32").do(sell_yesterdays_purchases)  # Double check run at 08:32 am
+    schedule.every().day.at("08:39").do(sell_yesterdays_purchases)  # Run at 08:39 am every day
+    schedule.every().day.at("08:40").do(sell_yesterdays_purchases)  # Double check run at 08:40 am
     schedule.every().day.at("10:55").do(sell_yesterdays_purchases)  # Run at 10:55 am every day
     schedule.every().day.at("10:56").do(sell_yesterdays_purchases)  # Double check run at 10:56 am
     schedule.every().day.at("14:58").do(sell_yesterdays_purchases)  # Run at 14:58 pm every day
