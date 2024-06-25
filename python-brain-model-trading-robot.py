@@ -736,6 +736,10 @@ def sell_yesterdays_purchases():
     now = datetime.now(pytz.timezone('US/Eastern'))
     current_time_str = now.strftime("Eastern Time | %I:%M:%S %p | %m-%d-%Y |")
 
+    # Add logging for the start of the function
+    logging.info(f"{current_time_str} currently running sell_yesterdays_purchases function. ")
+    print(f"{current_time_str} currently running sell_yesterdays_purchases function. ")
+
     account = api2.get_account()
     positions = api2.list_positions()
 
