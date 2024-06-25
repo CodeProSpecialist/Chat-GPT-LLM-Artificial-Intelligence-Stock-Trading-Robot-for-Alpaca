@@ -839,14 +839,16 @@ def stop_scheduler_thread_if_stock_market_is_closed():
 
 def scheduler_thread():
     stop_scheduler_thread_if_stock_market_is_closed()
-    # Schedule tasks once at the start
-    # these times are in the local time zone for your computer
-    # I will set these times to the Central Time Zone.
-    schedule.every().day.at("03:00").do(clear_purchased_today)  # Run at 04:00 am every day
-    schedule.every().day.at("03:01").do(clear_purchased_today)  # double check the run at 04:01
-    schedule.every().day.at("08:31").do(sell_yesterdays_purchases)
-    schedule.every().day.at("10:55").do(sell_yesterdays_purchases)
-    schedule.every().day.at("14:59").do(sell_yesterdays_purchases)
+    
+    # Schedule tasks once at the start in Central Time Zone
+    schedule.every().day.at("03:00").do(clear_purchased_today)  # Run at 03:00 am every day
+    schedule.every().day.at("03:01").do(clear_purchased_today)  # Double check run at 03:01
+    schedule.every().day.at("08:31").do(sell_yesterdays_purchases)  # Run at 08:31 am every day
+    schedule.every().day.at("08:36").do(sell_yesterdays_purchases)  # Double check run at 08:32 am
+    schedule.every().day.at("10:55").do(sell_yesterdays_purchases)  # Run at 10:55 am every day
+    schedule.every().day.at("10:56").do(sell_yesterdays_purchases)  # Double check run at 10:56 am
+    schedule.every().day.at("14:58").do(sell_yesterdays_purchases)  # Run at 14:58 pm every day
+    schedule.every().day.at("14:59").do(sell_yesterdays_purchases)  # Double check run at 14:59 pm
 
     while True:
         # Get the current time in Central Time
@@ -861,12 +863,13 @@ def scheduler_thread():
         print(f"Task Scheduler: scheduling sell orders at profit selling strategy times. ")
         print("--------------------------------------------------------------------------")
         print("\n")
-        # below is the debug code to print status messages
-        # print("Scheduler tasks thread is successfully running. ")
-        # logging.info("Scheduler tasks thread is successfully running. ")
+        
+        # Debug code to print status messages
+        # print("Scheduler tasks thread is successfully running.")
+        # logging.info(f"Scheduler tasks thread is successfully running. {current_time_str}")
+        
         schedule.run_pending()
-
-        time.sleep(60)  # Check for scheduled tasks every 59 seconds
+        time.sleep(60)  # Check for scheduled tasks every 60 seconds
 
 
 def adjust_quantity(quantity, cash_balance, current_price):
