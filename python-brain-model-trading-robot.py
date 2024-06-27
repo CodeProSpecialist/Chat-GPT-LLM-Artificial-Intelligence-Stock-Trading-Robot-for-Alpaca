@@ -971,6 +971,7 @@ def main():
             print("\n")
             print("Waiting 25 seconds ")
             print("\n")
+            # sleep time is 25 seconds
             time.sleep(25)   # keep this under the "f" in for symbol
 
 
