@@ -757,7 +757,8 @@ def sell_yesterdays_purchases():
             # Check if the last trade date is not today
             if current_price is None:  # Skip to next symbol if current price is None
                 continue
-            if current_price >= bought_price + 0.01:
+            # Sell stocks if the current price is more than 0.1% higher than the purchase price.
+            if current_price >= bought_price * 1.001:
                 quantity = float(position.qty)
                 submit_sell_order(symbol, quantity)
                 logging.info(f" {current_time_str} , Sold {quantity} shares of {symbol} at ${current_price:.2f}")
