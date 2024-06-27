@@ -492,6 +492,7 @@ def trading_robot(symbol, x, y):
         f"Respond only with: ** buy {symbol}** for a buy, "
         f"** sell {symbol} ** for a sell, "
         f"or ** hold {symbol} ** for a hold. "
+        f"Please also summarize to explain what the buy, sell, or hold decision was based upon. "
     )
 
     decision = organized_response(content, symbol)
