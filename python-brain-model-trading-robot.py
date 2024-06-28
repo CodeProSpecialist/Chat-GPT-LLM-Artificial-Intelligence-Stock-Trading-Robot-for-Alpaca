@@ -784,8 +784,10 @@ def sell_yesterdays_purchases():
             # Check if the last trade date is not today
             if current_price is None:  # Skip to next symbol if current price is None
                 continue
-            # Sell stocks if the current price is more than 0.1% higher than the purchase price.
-            if current_price >= bought_price * 1.001:
+            # 0.03% daily profit was recommended by artificial intelligence as the
+            # average daily profit for the S&P 500.
+            # Sell stocks if the current price is more than 0.03% higher than the purchase price.
+            if current_price >= bought_price * 1.0003:
                 quantity = float(position.qty)
                 submit_sell_order(symbol, quantity)
                 logging.info(f" {current_time_str} , Sold {quantity} shares of {symbol} at ${current_price:.2f}")
