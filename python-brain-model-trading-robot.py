@@ -878,12 +878,6 @@ def scheduler_thread():
     # Schedule tasks once at the start in Central Time Zone
     schedule.every().day.at("03:00").do(clear_purchased_today)  # Run at 03:00 am (CST) every day
     schedule.every().day.at("03:01").do(clear_purchased_today)  # Double check run at 03:01 (CST)
-    schedule.every().day.at("08:31").do(sell_yesterdays_purchases)  # Run at 08:31 am (CST) every day
-    schedule.every().day.at("08:32").do(sell_yesterdays_purchases)  # Double check run at 08:32 am (CST)
-    schedule.every().day.at("08:39").do(sell_yesterdays_purchases)  # Run at 08:39 am (CST) every day
-    schedule.every().day.at("08:40").do(sell_yesterdays_purchases)  # Double check run at 08:40 am (CST)
-    schedule.every().day.at("10:55").do(sell_yesterdays_purchases)  # Run at 10:55 am (CST) every day
-    schedule.every().day.at("10:56").do(sell_yesterdays_purchases)  # Double check run at 10:56 am (CST)
     schedule.every().day.at("14:58").do(sell_yesterdays_purchases)  # Run at 14:58 pm (CST) every day
     schedule.every().day.at("14:59").do(sell_yesterdays_purchases)  # Double check run at 14:59 pm (CST)
     schedule.every().day.at("18:58").do(sell_yesterdays_purchases)  # Run at 18:58 pm (CST) every day
