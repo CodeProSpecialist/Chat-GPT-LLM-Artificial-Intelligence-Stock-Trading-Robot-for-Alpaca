@@ -560,15 +560,6 @@ def print_positions(api2, show_price_percentage_change=False):
     return full_output
 
 
-def print_and_share_positions(api2, show_price_percentage_change=False):
-    table_str = print_positions(api2, show_price_percentage_change)
-    content = (f"Here are the current stock market positions that I own "
-               f"and that I need your help with to try to sell for a profit:\n{table_str}. "
-               f"Just remember these owned stock market positions in your memory and no questions are asked about "
-               f"these owned positions at this time. If there are no positions here, then we do not"
-               f"currently own any positions.")
-    organized_response(content, "positions")
-
 def print_positions_in_text_only(api2, show_price_percentage_change=False):
     positions = api2.list_positions()
 
@@ -965,7 +956,7 @@ def main():
             print(f"Current day trade number: {day_trade_count} out of 3 in 5 business days")
             print("\n")
 
-            print_and_share_positions(api2, show_price_percentage_change=True)
+            print_positions(api2, show_price_percentage_change=True)
 
             for symbol in symbols:
                 try:
