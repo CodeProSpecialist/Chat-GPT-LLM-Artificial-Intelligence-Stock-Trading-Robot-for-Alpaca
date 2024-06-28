@@ -423,7 +423,8 @@ def trading_robot(symbol, x, y):
     account_balance = float(account_info.equity)
     available_cash = float(account_info.cash)
     day_trade_count = api2.get_account().daytrade_count
-
+    # the following code will print owned positions and their percentage change.
+    table_str = print_positions_in_text_only(api2, show_price_percentage_change=True)
     # Debug print the account information
     # print(f"Account Balance: ${account_balance:.2f}")
     # print(f"Available Cash: ${available_cash:.2f}")
@@ -485,8 +486,13 @@ def trading_robot(symbol, x, y):
         f"Current day trade number: {day_trade_count} out of 3 in 5 business days. "
         f"We can only day trade 3 times in 5 business days. "
         f"A day trade is to buy and sell the same stock in the same day. "
-        f"Our goal is to reach an account balance "
-        f"of $25,001.00 dollars. "
+        f"Our current owned positions are: "
+        f"{table_str} "
+        f"Our goal is to sell all owned positions today for 0.5% to 1% profit. "
+        f"The more profit, then the better. It could be as much as 5% profit. "
+        f"First, we watch RSI and the current price increase simultaneously, and then "
+        f"at the exact moment when RSI and current price start to decrease simultaneously, "
+        f"we sell all owned shares of that stock symbol for 0.5% to 1% profit. "
         f"The following must be worded exactly like it is shown because it triggers "
         f"a computer command to buy, sell, or hold: "
         f"Respond only with: ** buy {symbol}** for a buy, "
@@ -505,8 +511,8 @@ def organized_response(content, symbol):
     response_content = response['message']['content'].strip().lower()
 
     # Debug prints
-    # print("\nContent:\n", content, "\n")
-    # print("\nMessages:\n", messages, "\n")
+    # print("\nContent:\n", content, "\n")    # comment out after finished debugging
+    # print("\nMessages:\n", messages, "\n")   # comment out after finished debugging
     print("\n", response_content, "\n")
 
     buy_pattern = re.compile(rf"\*\*buy {symbol}\*\*", re.IGNORECASE)
@@ -563,6 +569,36 @@ def print_and_share_positions(api2, show_price_percentage_change=False):
                f"currently own any positions.")
     organized_response(content, "positions")
 
+def print_positions_in_text_only(api2, show_price_percentage_change=False):
+    positions = api2.list_positions()
+
+    formatted_output = []
+
+    for position in positions:
+        symbol = position.symbol
+        quantity = position.qty
+        avg_entry_price = float(position.avg_entry_price)
+
+        row = []
+
+        # Symbol and Quantity
+        row.append(f"{symbol} quantity: {quantity}")
+
+        # Avg Entry Price
+        row.append(f"{symbol} Avg Entry Price: {avg_entry_price:.2f}")
+
+        if show_price_percentage_change:
+            current_price = get_current_price(symbol)  # Replace with your actual method to get current price
+            if current_price is None:  # Skip to next symbol if current price is None
+                continue
+            percentage_change = ((current_price - avg_entry_price) / avg_entry_price) * 100
+            row.append(f"{symbol} percentage change: {percentage_change:.2f}%")
+
+        # Append formatted row to output
+        formatted_output.append(" | ".join(row))
+
+    # Return the formatted output as a single string
+    return " ".join(formatted_output)
 
 def submit_buy_order(symbol, quantity):
     # Get the current time in Eastern Time
