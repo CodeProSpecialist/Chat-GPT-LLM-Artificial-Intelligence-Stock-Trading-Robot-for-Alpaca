@@ -354,8 +354,6 @@ def trading_robot(symbol, x, y):
     stock_data = yf.Ticker(symbol)
     history_data = stock_data.history(period='180d')
     close_prices = history_data['Close']
-    high_prices = history_data['High']
-    low_prices = history_data['Low']
     volume = history_data['Volume']
     rsi = calculate_rsi(close_prices)
     short_ma, long_ma = calculate_moving_averages(close_prices)
@@ -363,7 +361,6 @@ def trading_robot(symbol, x, y):
     current_price = get_current_price(symbol)
 
     fourteen_days_change = calculate_percentage_change(current_price, fourteen_days_ago_price)
-    # Calculate additional technical indicators
     avg_volume = np.mean(volume)
     today_new_volume = history_data['Volume'].iloc[-1]
 
@@ -374,131 +371,87 @@ def trading_robot(symbol, x, y):
     middle_band_value = middle_band[-1]
     lower_band_value = lower_band[-1]
 
-    atr_low_price = get_atr_low_price(symbol)
-    atr_high_price = get_atr_high_price(symbol)
-
     now = datetime.now(pytz.timezone('US/Eastern'))
     day_of_week = now.strftime("%A")  # Get the current day of the week
     month = now.strftime("%B")  # Get the current month
 
-    # Determine if today is a day when prices increase or decrease
+    # Determine price trend based on the day of the week
     if day_of_week in ["Thursday", "Friday"]:
-        # Prices increase on Thursday and Friday
-        price_trend = "increase"
+        price_trend = "increasing"
     elif day_of_week in ["Monday", "Tuesday", "Wednesday"]:
-        # Prices decrease on Monday, Tuesday, and Wednesday
-        price_trend = "decrease"
+        price_trend = "decreasing"
     else:
-        # For other days, expect prices to not increase much
-        price_trend = "stagnant or decrease"
+        price_trend = "stagnant or decreasing"
 
-    # Determine if it's a bull or bear market based on the month
+    # Determine market trend based on the month
     if month in ["May", "June", "July", "November", "December"]:
-        market_trend_month = "bull"
+        market_trend_month = "bullish"
     elif month == "February":
-        market_trend_month = "bull sometimes"
+        market_trend_month = "bullish sometimes"
     else:
-        market_trend_month = "bear or stagnant"
-
-    # debug print the ATR, Volume, and the bbands below
-    print("\n")
-    compact_current_time_str = now.strftime("EST %I:%M:%S %p ")
-    print(compact_current_time_str)
-    extra_compact_current_time_str = now.strftime("%H:%M:%S")
-    print("\n")
-    print(f"Making a decision for: {symbol}")
-    print("\n")
+        market_trend_month = "bearish or stagnant"
 
     yesterday_close = close_prices.iloc[-2]
     today_open = history_data.iloc[-1]['Open']
     today_current = current_price
 
     if fourteen_days_change > 0:
-        market_trend = 'bull'
+        market_trend = 'bullish'
     else:
-        market_trend = 'bear'
+        market_trend = 'bearish'
 
     # Retrieve account information
     account_info = api2.get_account()
     account_balance = float(account_info.equity)
     available_cash = float(account_info.cash)
     day_trade_count = api2.get_account().daytrade_count
-    # the following code will print owned positions and their percentage change.
     table_str = print_positions_in_text_only(api2, show_price_percentage_change=True)
-    # Debug print the account information
-    # print(f"Account Balance: ${account_balance:.2f}")
-    # print(f"Available Cash: ${available_cash:.2f}")
-    # print("Day Trades Remaining:", day_trades_remaining)
 
-    # Update content message to include account information
     content = (
-        f"Yes, you can assist me with this decision. "
-        f"Your role is crucial to reply only with: ** buy {symbol}** for a buy, "
-        f"** sell {symbol} ** for a sell, "
-        f"or ** hold {symbol} ** for a hold. "
+        f"Decision assistance required: "
+        f"Respond with **buy {symbol}** to suggest a purchase, "
+        f"**sell {symbol}** to recommend selling, "
+        f"or **hold {symbol}** to advise holding. "
+        f"Analyze all technical indicators for informed decisions. "
         f"Your role as a stock market trading assistant is crucial here. "
-        f"I need your help with analyzing market data. "
-        f"Consider all technical indicators to make an informed decision. "
-        f"The current time is: {now.strftime('%H:%M:%S')}. "
-        f"We prefer buying during the times: 4:34-5:34 and 10:15-11:15, "
-        f"and selling during the times: 9:31-9:38, 15:30-15:59, and 19:30-19:59. "
         f"Buying early during the times range of 4:34-5:34 is mandatory as a default priority, "
         f"especially during bear market trends. We never buy anything on Monday. "
-        f"The crucial and mandatory exception that takes priority over all other default rules "
-        f"for buying at the early times is that we never buy during the early hour "
-        f"time range of 4:00-10:14 unless the current price is less than yesterday's closing price. "
-        f"The default early morning rule for Tuesday is to never buy during the times: 4:00-10:14. "
-        f"We cannot trade after 19:59 or when the market is closed. "
-        f"Selling for a profit of 0.25% or more is advisable at any time. "
-        f"The stock symbol {symbol} changed by {x}% in the past {y} days. "
-        f"The RSI is {rsi:.2f}, 50-day MA is {short_ma:.2f}, "
-        f"and 100-day MA is {long_ma:.2f}. "
-        f"The market trend is {market_trend}. "
-        f"We buy during a bull market and hold during a bear market. "
-        f"Price changed by {fourteen_days_change:.2f}% in the past 14 days. "
-        f"Current Volume is {today_new_volume:2f}. "
-        f"Average Volume is {avg_volume:.2f}. "
-        f"Better to buy when Volume <= Average Volume. "
-        f"Better to sell when RSI > 70 or Volume >= Average Volume. "
-        f"Should I buy or sell {symbol}? "
-        f"Instructions: Buy if RSI < 30, 50-day MA > 200-day MA, "
-        f"and price increased in the past 14 days. "
-        f"Sell if RSI > 70, 50-day MA < 200-day MA, "
-        f"and price decreased in the past 14 days. "
-        f"Today's Bollinger Band prices: upper:{upper_band_value:.2f}, "
-        f"middle:{middle_band_value:.2f}, lower:{lower_band_value:.2f}. "
-        f"Buy <= lower band price, sell >= upper band price. "
-        f"Yesterday's closing price: {yesterday_close:.2f}, "
-        f"today's opening price: {today_open:.2f}, and current price: {today_current:.2f}. "
-        f"ATR low price: {atr_low_price:.2f}. "
-        f"ATR high price: {atr_high_price:.2f}. "
+        f"Current time: {now.strftime('%H:%M:%S')}. "
+        f"Preferred buying times: 4:34-5:34 and 10:15-11:15. "
+        f"Selling times: 9:31-9:38, 15:30-15:59, and 19:30-19:59. "
+        f"Exception: No buying 4:00-10:14 unless price < yesterday's close. "
+        f"On Tuesdays, no buying 4:00-10:14. "
+        f"No trading after 19:59 or when the market is closed. "
+        f"Sell for ≥ 0.25% profit anytime. "
+        f"{symbol} changed by {x}% in the last {y} days. "
+        f"RSI: {rsi:.2f}, 50-day MA: {short_ma:.2f}, 100-day MA: {long_ma:.2f}. "
+        f"Market trend: {market_trend}. "
+        f"Price changed by {fourteen_days_change:.2f}% in the last 14 days. "
+        f"Current Volume: {today_new_volume:.2f}, Average Volume: {avg_volume:.2f}. "
+        f"Buy when Volume ≤ Average Volume, sell when RSI > 70 or Volume ≥ Average Volume. "
+        f"Criteria: Buy if RSI < 30, 50-day MA > 200-day MA, and price ↑ in 14 days. "
+        f"Sell if RSI > 70, 50-day MA < 200-day MA, and price ↓ in 14 days. "
+        f"Bollinger Bands: Upper: {upper_band_value:.2f}, Middle: {middle_band_value:.2f}, Lower: {lower_band_value:.2f}. "
+        f"Buy ≤ Lower Band, sell ≥ Upper Band. "
+        f"Yesterday's close: {yesterday_close:.2f}, Today's open: {today_open:.2f}, Current price: {today_current:.2f}. "
+        f"ATR low price: {atr_low_price:.2f}, ATR high price: {atr_high_price:.2f}. "
         f"Buy near ATR low, sell near ATR high. "
-        f"The current date is {now.strftime('%A, %B %d, %Y')}. "
-        f"Today is {day_of_week}. "
-        f"Prices usually {price_trend} on {day_of_week}s. "
-        f"Prices usually {market_trend_month} in {month}. "
-        f"During a bear market the default preferred choice is to sell during the time range of 11:40-12:10. "
-        f"On Monday, Tuesday, and Wednesday, the default preferred sell time range is 11:40-12:10. "
-        f"On Friday, default mandatory rule is to sell everything 11:40-12:10 because prices decrease until Monday. "
-        f"On Friday, default mandatory rule is no buying 11:16-20:00 because prices decrease until Monday. "
-        f"Account Balance: {account_balance:.2f}, "
-        f"Available Cash: {available_cash:.2f}, "
-        f"Current day trade number: {day_trade_count} out of 3 in 5 business days. "
-        f"We can only day trade 3 times in 5 business days. "
-        f"A day trade is to buy and sell the same stock in the same day. "
-        f"Our current owned positions are: "
-        f"{table_str} "
-        f"Our goal is to sell all owned positions today for 0.25% to 1% profit. "
-        f"The more profit, then the better. It could be as much as 5% profit. "
-        f"First, we watch RSI and the current price increase simultaneously, and then "
-        f"at the exact moment when RSI and current price start to decrease simultaneously, "
-        f"we sell all owned shares of that stock symbol for 0.25% to 1% profit. "
-        f"The following must be worded exactly like it is shown because it triggers "
-        f"a computer command to buy, sell, or hold: "
-        f"Respond only with: ** buy {symbol}** for a buy, "
-        f"** sell {symbol} ** for a sell, "
-        f"or ** hold {symbol} ** for a hold. "
-        f"Please also summarize to explain what the buy, sell, or hold decision was based upon. "
+        f"Date: {now.strftime('%A, %B %d, %Y')}. "
+        f"Today is {day_of_week}, prices typically {price_trend}. "
+        f"Month: {month}, market usually {market_trend_month}. "
+        f"Default sell time during bear markets: 11:40-12:10. "
+        f"On Monday-Wednesday, sell 11:40-12:10. "
+        f"On Friday, sell all 11:40-12:10 due to weekend decline. "
+        f"No buying Fridays 11:16-20:00 due to weekend decline. "
+        f"Account Balance: {account_balance:.2f}, Available Cash: {available_cash:.2f}, "
+        f"Day Trades Left: {day_trade_count} of 3 in 5 days. "
+        f"Max 3 day trades per 5 days; buy and sell same day. "
+        f"Positions: {table_str}. "
+        f"Goal: Sell all today for 0.25-1% profit, possibly up to 5%. "
+        f"Buy when RSI and price rise, sell when both fall. "
+        f"Your response should be formatted as: "
+        f"**buy {symbol}**, **sell {symbol}**, or **hold {symbol}**. "
+        f"Explain reasoning briefly after. "
     )
 
     decision = organized_response(content, symbol)
