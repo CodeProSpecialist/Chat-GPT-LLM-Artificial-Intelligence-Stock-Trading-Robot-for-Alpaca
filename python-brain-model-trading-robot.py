@@ -434,7 +434,7 @@ def trading_robot(symbol, x, y):
         f"Bollinger Bands: Upper: {upper_band_value:.2f}, Middle: {middle_band_value:.2f}, Lower: {lower_band_value:.2f}. "
         f"Buy ≤ Lower Band, sell ≥ Upper Band. "
         f"Yesterday's close: {yesterday_close:.2f}, Today's open: {today_open:.2f}, Current price: {today_current:.2f}. "
-        f"ATR low price: {atr_low_price:.2f}, ATR high price: {atr_high_price:.2f}. "
+        f"ATR low price: {get_atr_low_price(symbol):.2f}, ATR high price: {get_atr_high_price(symbol):.2f}. "
         f"Buy near ATR low, sell near ATR high. "
         f"Date: {now.strftime('%A, %B %d, %Y')}. "
         f"Today is {day_of_week}, prices typically {price_trend}. "
