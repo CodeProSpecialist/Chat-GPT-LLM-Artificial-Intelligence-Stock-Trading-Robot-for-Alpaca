@@ -354,6 +354,8 @@ def trading_robot(symbol, x, y):
     stock_data = yf.Ticker(symbol)
     history_data = stock_data.history(period='180d')
     close_prices = history_data['Close']
+    high_prices = history_data['High']
+    low_prices = history_data['Low']
     volume = history_data['Volume']
     rsi = calculate_rsi(close_prices)
     short_ma, long_ma = calculate_moving_averages(close_prices)
@@ -370,6 +372,9 @@ def trading_robot(symbol, x, y):
     upper_band_value = upper_band[-1]
     middle_band_value = middle_band[-1]
     lower_band_value = lower_band[-1]
+
+    atr_low_price = get_atr_low_price(symbol)
+    atr_high_price = get_atr_high_price(symbol)
 
     now = datetime.now(pytz.timezone('US/Eastern'))
     day_of_week = now.strftime("%A")  # Get the current day of the week
@@ -391,6 +396,15 @@ def trading_robot(symbol, x, y):
     else:
         market_trend_month = "bearish or stagnant"
 
+    # debug print the ATR, Volume, and the bbands below
+    print("\n")
+    compact_current_time_str = now.strftime("EST %I:%M:%S %p ")
+    print(compact_current_time_str)
+    extra_compact_current_time_str = now.strftime("%H:%M:%S")
+    print("\n")
+    print(f"Making a decision for: {symbol}")
+    print("\n")
+
     yesterday_close = close_prices.iloc[-2]
     today_open = history_data.iloc[-1]['Open']
     today_current = current_price
@@ -405,7 +419,15 @@ def trading_robot(symbol, x, y):
     account_balance = float(account_info.equity)
     available_cash = float(account_info.cash)
     day_trade_count = api2.get_account().daytrade_count
+
+    # the following code will print owned positions and their percentage change.
     table_str = print_positions_in_text_only(api2, show_price_percentage_change=True)
+    # Debug print the account information
+    # print(f"Account Balance: ${account_balance:.2f}")
+    # print(f"Available Cash: ${available_cash:.2f}")
+    # print("Day Trades Remaining:", day_trades_remaining)
+
+    # content message includes account information for making trading decisions
 
     content = (
         f"Decision assistance required: "
@@ -434,7 +456,7 @@ def trading_robot(symbol, x, y):
         f"Bollinger Bands: Upper: {upper_band_value:.2f}, Middle: {middle_band_value:.2f}, Lower: {lower_band_value:.2f}. "
         f"Buy ≤ Lower Band, sell ≥ Upper Band. "
         f"Yesterday's close: {yesterday_close:.2f}, Today's open: {today_open:.2f}, Current price: {today_current:.2f}. "
-        f"ATR low price: {get_atr_low_price(symbol):.2f}, ATR high price: {get_atr_high_price(symbol):.2f}. "
+        f"ATR low price: {atr_low_price:.2f}, ATR high price: {atr_high_price:.2f}. "
         f"Buy near ATR low, sell near ATR high. "
         f"Date: {now.strftime('%A, %B %d, %Y')}. "
         f"Today is {day_of_week}, prices typically {price_trend}. "
