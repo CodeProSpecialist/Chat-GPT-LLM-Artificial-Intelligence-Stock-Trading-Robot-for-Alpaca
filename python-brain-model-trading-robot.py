@@ -713,9 +713,14 @@ def submit_sell_order(symbol, quantity):
             print(f"The market is currently closed. No sell order was submitted for {symbol}.")
             return
 
+        # sell at + 0.03% or greater profit to allow selling with market sell orders for profit
+        # current_price >= bought_price * 1.0003
+        # 0.03% daily profit was recommended by artificial intelligence as the
+        # average daily profit for the S&P 500.
+        # Sell stocks if the current price is more than 0.03% higher than the purchase price.
         # submit sell order
         # (**order) is correct here
-        if day_trade_count < 3 and current_price >= bought_price + 0.01:
+        if day_trade_count < 3 and current_price >= bought_price * 1.0003:
             api2.submit_order(**order)
             logging.info(f" {current_time_str} , Sold {quantity} shares of {symbol} at ${current_price:.2f}")
             print(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}")
@@ -760,6 +765,8 @@ def sell_yesterdays_purchases():
             # Check if the last trade date is not today
             if current_price is None:  # Skip to next symbol if current price is None
                 continue
+            # sell at + 0.03% or greater profit to allow selling with market sell orders for profit
+            # current_price >= bought_price * 1.0003
             # 0.03% daily profit was recommended by artificial intelligence as the
             # average daily profit for the S&P 500.
             # Sell stocks if the current price is more than 0.03% higher than the purchase price.
