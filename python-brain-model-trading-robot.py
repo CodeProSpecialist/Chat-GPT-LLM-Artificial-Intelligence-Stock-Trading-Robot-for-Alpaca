@@ -472,7 +472,7 @@ def trading_robot(symbol, x, y):
         f"Goal: Sell all today for 3-5% profit. "
         f"Buy when RSI and price rise, sell immediately when both RSI and price fall after rising to "
         f"3-5% profit per owned position. "
-        f"Your response should be formatted as: "
+        f"Your response should be only for {symbol} and needs to be strictly text formatted as: "
         f"**buy {symbol}**, **sell {symbol}**, or **hold {symbol}**. "
         f"Explain reasoning briefly after. "
     )
