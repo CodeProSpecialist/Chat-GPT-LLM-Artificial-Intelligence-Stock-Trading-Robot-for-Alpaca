@@ -964,9 +964,9 @@ def main():
                     print("--------------------------")
                     print("\n")
                     logging.info(f" {current_time_str} , Signal: {signal}")
-                    print("Waiting 7 seconds to not exceed API rate limits and to keep the video card at a colder "
+                    print("Waiting 2 seconds to not exceed API rate limits and to keep the video card at a colder "
                           "temperature.")
-                    time.sleep(7)  # keep this under the p in print.
+                    time.sleep(2)  # keep this under the p in print.
 
                 except Exception as e:      # this is under the t in try
                     logging.error(f"Error: {e}")
